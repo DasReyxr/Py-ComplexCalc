@@ -1,0 +1,7 @@
+hola_mundo9 = 'Hola mundo'
+
+nombreCliente = "Juan" camelCase
+NombreCliente = "Juan" Pascal Case Capital Camel Case
+nombrecliente = "Juan" flat case
+nombre-cliente = "Juan" Kebab Case dash case
+nombre_cliente = "Juan" snake case
