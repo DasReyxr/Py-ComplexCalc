@@ -1,0 +1,147 @@
+Generate a CustomTkinter theme JSON file following EXACTLY this specification:
+
+THEME MUST BE A VALID JSON OBJECT WITH THESE EXACT SECTIONS AND ATTRIBUTES:
+THIS IS THE FULL CUSTOMTKINTER THEME JSON SPECIFICATION.
+AN AI MUST FOLLOW THIS EXACT STRUCTURE AND INCLUDE ALL WIDGET SECTIONS.
+
+THE THEME MUST BE A VALID JSON OBJECT WITH THE FOLLOWING TOP-LEVEL SECTIONS:
+
+# CustomTkinter Theme Attributes
+
+## CTk / CTkToplevel
+- fg_color
+
+## CTkFrame
+- corner_radius
+- border_width
+- fg_color
+- top_fg_color
+- border_color
+
+## CTkLabel
+- corner_radius
+- fg_color
+- text_color
+
+## CTkButton
+- corner_radius
+- border_width
+- fg_color
+- hover_color
+- border_color
+- text_color
+- text_color_disabled
+
+## CTkEntry
+- corner_radius
+- border_width
+- fg_color
+- border_color
+- text_color
+- placeholder_text_color
+
+## CTkTextbox
+- corner_radius
+- border_width
+- fg_color
+- border_color
+- text_color
+- scrollbar_button_color
+- scrollbar_button_hover_color
+
+## CTkCheckBox
+- corner_radius
+- border_width
+- fg_color
+- border_color
+- hover_color
+- checkmark_color
+- text_color
+- text_color_disabled
+
+## CTkSwitch
+- corner_radius
+- border_width
+- button_length
+- fg_color
+- progress_color
+- button_color
+- button_hover_color
+- text_color
+- text_color_disabled
+
+## CTkOptionMenu
+- corner_radius
+- fg_color
+- button_color
+- button_hover_color
+- text_color
+- text_color_disabled
+
+## CTkComboBox
+- corner_radius
+- border_width
+- fg_color
+- border_color
+- button_color
+- button_hover_color
+- text_color
+- text_color_disabled
+
+## CTkProgressBar
+- corner_radius
+- border_width
+- fg_color
+- progress_color
+
+## CTkSlider
+- corner_radius
+- button_corner_radius
+- border_width
+- button_length
+- fg_color
+- progress_color
+- button_color
+- button_hover_color
+
+## CTkSegmentedButton
+- corner_radius
+- border_width
+- fg_color
+- selected_color
+- selected_hover_color
+- unselected_color
+- unselected_hover_color
+- text_color
+- text_color_disabled
+
+## CTkScrollableFrame
+- label_fg_color
+
+## DropdownMenu
+- fg_color
+- hover_color
+- text_color
+
+## CTkFont
+- macOS: family, size, weight
+- Windows: family, size, weight
+- Linux: family, size, weight
+
+## CTkScrollbar
+- corner_radius
+- border_spacing
+- button_color
+- button_hover_color
+- bg_color
+
+RULES:
+- Colors must be hex strings OR dual-mode arrays like ["#ffffff", "#000000"]
+- NO section may be omitted or empty
+- NO attribute may be omitted
+- All corner_radius, border_width must be numbers
+- bg_color may be "transparent" or a color
+- Output MUST be valid JSON with no trailing commas
+- Follow the exact structure and attribute names as specified
+
+Generate a theme with: [YOUR THEME REQUIREMENTS HERE]
