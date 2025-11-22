@@ -35,7 +35,7 @@ class FasorCalculator(ctk.CTk):
     def __init__(self):
         super().__init__()
         
-        self.title("Calculadora de Sistemas con Fasores y Complejos")
+        self.title("Complex Calc v2.7")
         self.geometry("1200x700")
         
         self.size = 3
@@ -125,23 +125,30 @@ class FasorCalculator(ctk.CTk):
             ctk.CTkLabel(image_frame, text="⚠️ Imagen no encontrada").pack()
             print(f"Error loading image: {e}")
 
-        ctk.CTkButton(left, text="Cambiar tamaño", command=self.change_size).pack(pady=5)
-        ctk.CTkButton(left, text="Cargar ejemplo", command=self.load_default_example).pack(pady=5)
+        # keep references so we can re-style them on mode toggle
+        self.btn_change_size = ctk.CTkButton(left, text="Cambiar tamaño", command=self.change_size)
+        self.btn_change_size.pack(pady=5)
+        self.btn_load_example = ctk.CTkButton(left, text="Cargar ejemplo", command=self.load_default_example)
+        self.btn_load_example.pack(pady=5)
 
         self.frame_matrix = ctk.CTkFrame(left)
         self.frame_matrix.pack(pady=10)
 
         self.build_matrix()
 
-        ctk.CTkButton(left, text="Resolver", command=self.solve).pack(pady=10)
+        self.btn_solve = ctk.CTkButton(left, text="Resolver", command=self.solve)
+        self.btn_solve.pack(pady=10)
 
         # Buttons for save/load
         btn_frame = ctk.CTkFrame(left)
         btn_frame.pack(pady=5)
 
-        ctk.CTkButton(btn_frame, text="Cargar sistema guardado", command=self.load_saved_menu_popup).grid(row=0, column=0, padx=5)
-        ctk.CTkButton(btn_frame, text="Importar desde archivo...", command=self.import_from_file).grid(row=0, column=1, padx=5)
-        ctk.CTkButton(btn_frame, text="Refrescar lista guardada", command=self.load_saved_systems).grid(row=0, column=2, padx=5)
+        self.btn_load_saved = ctk.CTkButton(btn_frame, text="Cargar sistema guardado", command=self.load_saved_menu_popup)
+        self.btn_load_saved.grid(row=0, column=0, padx=5)
+        self.btn_import = ctk.CTkButton(btn_frame, text="Importar desde archivo...", command=self.import_from_file)
+        self.btn_import.grid(row=0, column=1, padx=5)
+        self.btn_refresh_saved = ctk.CTkButton(btn_frame, text="Refrescar lista guardada", command=self.load_saved_systems)
+        self.btn_refresh_saved.grid(row=0, column=2, padx=5)
 
         # RIGHT COLUMN
         right = ctk.CTkFrame(main_frame)
@@ -206,6 +213,22 @@ class FasorCalculator(ctk.CTk):
                     fg_color=self.current_colors["textbox"],
                     text_color=self.current_colors["text"]
                 )
+        # Also style the specific buttons/menus we kept references for (ensures they update)
+        for btn in ("btn_change_size", "btn_load_example", "btn_solve", "btn_load_saved", "btn_import", "btn_refresh_saved"):
+            if hasattr(self, btn):
+                getattr(self, btn).configure(
+                    fg_color=self.current_colors["button"],
+                    text_color="#FFFFFF",
+                    hover_color=self.current_colors["button_hover"]
+                )
+        # Ensure option menu dropdown (tk.Menu) matches theme if available
+        if hasattr(self, "saved_menu") and getattr(self.saved_menu, "_menu", None) is not None:
+            try:
+                # tk.Menu expects different option names
+                self.saved_menu._menu.configure(background=self.current_colors["frame"], foreground=self.current_colors["label_text"], activebackground=self.current_colors["button"], activeforeground="#FFFFFF")
+            except Exception:
+                pass
+
     def setup_colors(self):
             """Define all color variables for easy customization."""
             # Dark Mode Colors (Dark Pink Theme)
@@ -278,7 +301,7 @@ class FasorCalculator(ctk.CTk):
             
             # Update switch with pink colors
             self.mode_switch.configure(
-                text="Modo Puto",
+                text="Modo Rosa",
                 fg_color=self.current_colors["button"],  # Pink background for switch
                 text_color=self.current_colors["text"],  # Dark text
                 button_color=self.current_colors["button_hover"],  # Deep pink dot
@@ -339,6 +362,22 @@ class FasorCalculator(ctk.CTk):
                     fg_color=self.current_colors["textbox"],
                     text_color=self.current_colors["text"]
                 )
+        # Re-style referenced buttons/menus to ensure visual consistency
+        for btn in ("btn_change_size", "btn_load_example", "btn_solve", "btn_load_saved", "btn_import", "btn_refresh_saved"):
+            if hasattr(self, btn):
+                getattr(self, btn).configure(
+                    fg_color=self.current_colors["button"],
+                    text_color="#FFFFFF",
+                    hover_color=self.current_colors["button_hover"]
+                )
+        if hasattr(self, "saved_menu"):
+            self.saved_menu.configure(fg_color=self.current_colors["button"], text_color="#FFFFFF", button_color=self.current_colors["button_hover"])
+            if getattr(self.saved_menu, "_menu", None) is not None:
+                try:
+                    self.saved_menu._menu.configure(background=self.current_colors["frame"], foreground=self.current_colors["label_text"], activebackground=self.current_colors["button"], activeforeground="#FFFFFF")
+                except Exception:
+                    pass
+
     def _get_all_widgets(self, parent):
         """Recursively get all widgets from parent."""
         widgets = []
@@ -358,6 +397,16 @@ class FasorCalculator(ctk.CTk):
             row = []
             for j in range(self.size):
                 e = ctk.CTkEntry(self.frame_matrix, width=130)
+                # apply current theme colors immediately so new entries match current mode
+                try:
+                    e.configure(
+                        fg_color=self.current_colors.get("entry", "#333333"),
+                        text_color=self.current_colors.get("entry_text", "#FFFFFF"),
+                        border_color=self.current_colors.get("border", "#555555")
+                    )
+                except Exception:
+                    # older customtkinter versions may not support some options
+                    pass
                 e.grid(row=i, column=j, padx=3, pady=3)
                 e.insert(0, "1c0")
                 row.append(e)
@@ -365,15 +414,34 @@ class FasorCalculator(ctk.CTk):
 
         # Separator
         sep = ctk.CTkLabel(self.frame_matrix, text="  |  ")
+        try:
+            sep.configure(text_color=self.current_colors.get("label_text", "#FFFFFF"), fg_color="transparent")
+        except Exception:
+            pass
         sep.grid(row=0, column=self.size, rowspan=self.size)
 
         self.entries_b = []
         for i in range(self.size):
             e = ctk.CTkEntry(self.frame_matrix, width=130)
+            try:
+                e.configure(
+                    fg_color=self.current_colors.get("entry", "#333333"),
+                    text_color=self.current_colors.get("entry_text", "#FFFFFF"),
+                    border_color=self.current_colors.get("border", "#555555")
+                )
+            except Exception:
+                pass
             e.grid(row=i, column=self.size + 1, padx=3, pady=3)
             e.insert(0, "0")
             self.entries_b.append(e)
 
+        # ensure referenced widgets (entries) are styled consistently with the rest of UI
+        # In case other global styling is needed (option menus / buttons), call the apply function:
+        try:
+            self.apply_dark_mode_colors()
+        except Exception:
+            # fallback: ignore if apply function misbehaves
+            pass
     def load_default_example(self):
         """Fill the matrix entries with a helpful default example.
         The example demonstrates rectangular notation with 'i' as imaginary unit.
@@ -617,25 +685,101 @@ class FasorCalculator(ctk.CTk):
     # SIZE MODIFIER
     # ============================
     def change_size(self):
-        dialog = ctk.CTkInputDialog(
-            text="Ingresa el tamaño (máx 10):",
-            title="Nuevo tamaño"
-        )
+        """Show a themed modal dialog to change matrix size."""
+        result = self._themed_size_dialog(current=self.size)
+        if result is None:
+            return
+        try:
+            new_size = int(result)
+            if 1 <= new_size <= 10:
+                self.size = new_size
+                self.build_matrix()
+                self.dynamic_window_resize()
+            else:
+                messagebox.showwarning("Advertencia", "El tamaño debe estar entre 1 y 10.")
+        except ValueError:
+            messagebox.showerror("Error", "Por favor ingresa un número válido.")
+
+    def _themed_size_dialog(self, current=None):
+        """Create a modal CTkToplevel input dialog using current theme colors.
+        Returns the string entered or None if cancelled.
+        """
+        dlg = ctk.CTkToplevel(self)
+        dlg.title("Nuevo tamaño")
+        dlg.transient(self)
+        dlg.grab_set()
+
+        # Ensure dialog uses current theme colors
+        frame_color = self.current_colors.get("frame", "#2d2d2d")
+        label_color = self.current_colors.get("label_text", "#FFFFFF")
+        entry_bg = self.current_colors.get("entry", "#333333")
+        entry_text = self.current_colors.get("entry_text", "#FFFFFF")
+        button_bg = self.current_colors.get("button", "#FF69B4")
+        button_hover = self.current_colors.get("button_hover", "#FF1493")
+        border = self.current_colors.get("border", "#555555")
+
+        dlg.configure(fg_color=frame_color)
+
+        # Content
+        ctk.CTkLabel(dlg, text="Ingresa el tamaño (máx 10):", text_color=label_color).pack(padx=12, pady=(12,6))
+
+        entry = ctk.CTkEntry(dlg, width=120)
+        try:
+            entry.configure(fg_color=entry_bg, text_color=entry_text, border_color=border)
+        except Exception:
+            pass
+        entry.pack(padx=12, pady=(0,12))
+        if current is not None:
+            entry.insert(0, str(current))
+        entry.focus_set()
+
+        res = {"value": None}
+
+        def on_ok():
+            res["value"] = entry.get()
+            dlg.destroy()
+
+        def on_cancel():
+            dlg.destroy()
+
+        btn_frame = ctk.CTkFrame(dlg, fg_color=frame_color)
+        btn_frame.pack(padx=12, pady=(0,12))
+
+        ok_btn = ctk.CTkButton(btn_frame, text="OK", width=80, command=on_ok,
+                               fg_color=button_bg, hover_color=button_hover, text_color="#FFFFFF")
+        cancel_btn = ctk.CTkButton(btn_frame, text="Cancelar", width=80, command=on_cancel,
+                                   fg_color=button_bg, hover_color=button_hover, text_color="#FFFFFF")
+        ok_btn.grid(row=0, column=0, padx=6)
+        cancel_btn.grid(row=0, column=1, padx=6)
+
+        # Force immediate styling in case customtkinter deferred theme mapping
+        try:
+            ok_btn.configure(fg_color=button_bg, hover_color=button_hover, text_color="#FFFFFF")
+            cancel_btn.configure(fg_color=button_bg, hover_color=button_hover, text_color="#FFFFFF")
+            btn_frame.configure(fg_color=frame_color)
+            dlg.configure(fg_color=frame_color)
+        except Exception:
+            pass
+
+        # Bind Enter/Escape
+        dlg.bind("<Return>", lambda e: on_ok())
+        dlg.bind("<Escape>", lambda e: on_cancel())
+
+        # Center dialog over parent
+        dlg.update_idletasks()
+        w = dlg.winfo_reqwidth()
+        h = dlg.winfo_reqheight()
+        px = self.winfo_rootx()
+        py = self.winfo_rooty()
+        pw = self.winfo_width()
+        ph = self.winfo_height()
+        x = px + (pw // 2) - (w // 2)
+        y = py + (ph // 2) - (h // 2)
+        dlg.geometry(f"+{x}+{y}")
+
+        dlg.wait_window()
+        return res["value"]
         
-        result = dialog.get_input()
-        
-        if result:
-            try:
-                new_size = int(result)
-                if 1 <= new_size <= 10:
-                    self.size = new_size
-                    self.build_matrix()
-                    self.dynamic_window_resize()
-                else:
-                    messagebox.showwarning("Advertencia", "El tamaño debe estar entre 1 y 10.")
-            except ValueError:
-                messagebox.showerror("Error", "Por favor ingresa un número válido.")
-    
     def dynamic_window_resize(self):
         """Dynamically resize window based on actual content size"""
         # Force update of all widgets
