@@ -1,3 +1,4 @@
+import re
 import numpy as np
 import math
 import json
@@ -6,10 +7,10 @@ from datetime import datetime
 
 
 def complejo_a_fasor(z):
-    """Return polar form with 'c' as angle symbol, angle in degrees."""
+    """Return polar form with '' as angle symbol, angle in degrees."""
     r = abs(z)
     ang = math.degrees(math.atan2(z.imag, z.real))
-    return f"{r:.4g}c{ang:.4g}°"
+    return f"{r:.4g} L {ang:.4g}°"
 
 
 def complejo_rect(z):
@@ -32,31 +33,40 @@ class FasorCalculatorCore:
     # Parsing
     # ----------------------------
     def parse_value(self, text: str) -> complex:
-        import re
-        t = text.replace(" ", "")
-        # Fasor form (e.g. 10c30 or 10∠30°)
-        if "c" in t or "∠" in t:
-            t = t.replace("∠", "c")
-            r, ang = t.split("c")
+        
+        t = (text or "").strip()
+        if not t:
+            raise ValueError("Empty value")
+
+        # remove spaces and normalize angle symbol
+        t = t.replace(" ", "").replace("∠", "L")
+
+        # Fasor form (e.g. 10L30 or 10L30°)
+        if "L" in t:
+            r, ang = t.split("L", 1)
             r = float(r)
             ang = ang.rstrip("°")
             ang = np.deg2rad(float(ang))
             return r * (np.cos(ang) + 1j * np.sin(ang))
 
-        # Accept both 'j' (python) and 'i' (common math notation) for imaginary unit.
-        # If user used 'i' (uppercase or lowercase) and didn't use 'j', convert.
-        if ('i' in t or 'I' in t) and 'j' not in t:
-            t = t.replace('I', 'i')
-            t = t.replace('i', 'j')
-            # normalize lonely j like 'j', '+j', '-j' to '1j', '+1j', '-1j'
-            t = t.replace('+j', '+1j').replace('-j', '-1j')
-            if t == 'j':
-                t = '1j'
-            elif t.startswith('j'):
-                t = '1' + t
+        # normalize 'i' or 'I' to python 'j'
+        t = re.sub(r'(?i)i', 'j', t)
 
-        # fallback to Python complex literal; raise if invalid
-        return complex(t)
+        # convert "j5" / "+j5" / "-j5" => "5j" / "+5j" / "-5j"
+        t = re.sub(r'(?<!\d)([+-]?)j(\d+(\.\d+)?)', r'\1\2j', t)
+
+        # convert standalone j to 1j: "+j" -> "+1j", "-j" -> "-1j", "j" -> "1j"
+        t = t.replace('+j', '+1j').replace('-j', '-1j')
+        t = re.sub(r'^j', '1j', t)
+
+        # final attempts: python complex literal, then real number fallback
+        try:
+            return complex(t)
+        except Exception:
+            try:
+                return complex(float(t), 0)
+            except Exception:
+                raise ValueError(f"Invalid complex value: {text}")
 
     # ----------------------------
     # Solver / formatter
