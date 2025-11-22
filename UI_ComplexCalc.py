@@ -1,14 +1,35 @@
+"""
+------ Iker Garcia  ------
+--------- Auf Das ---------
+------ Complex Calc ------
+-------- 15/11/2025 -------
+"""
+# ------- Main Library -------
+
+'''
+python -m PyInstaller --onefile --windowed UI_ComplexCalc.py  --add-data "HK.jpg;." --add-data "IE.png;." 
+
+'''
 import numpy as np
 import customtkinter as ctk
 from tkinter import messagebox, simpledialog, filedialog
 from ComplexCalc import FasorCalculatorCore
 import os
 from PIL import Image
+import sys
 
-CURRENT_PATH = r"C:\Users\dasre\Wkn\Python\gittcloned\Py-ComplexCalc"
-PINK_PATH_PHOTO = fr"{CURRENT_PATH}\HK.jpg"
-DPINK_PATH_THEME = fr"{CURRENT_PATH}\DarkPink.json"
-LPINK_PATH_THEME = fr"{CURRENT_PATH}\LightPink.json"
+
+def resource_path(relative):
+    if hasattr(sys, '_MEIPASS'):           # Running from PyInstaller
+        return os.path.join(sys._MEIPASS, relative)
+    return os.path.join(os.getcwd(), relative)   # Running normally
+
+
+PINK_PATH_PHOTO = resource_path("HK.jpg")
+IE_PATH_PHOTO = resource_path("IE.png")
+
+#DPINK_PATH_THEME = resource_path("DarkPink.json")
+#LPINK_PATH_THEME = fr"{CURRENT_PATH}\LightPink.json"
 
 class FasorCalculator(ctk.CTk):
     def __init__(self):
@@ -29,52 +50,80 @@ class FasorCalculator(ctk.CTk):
         # core logic (UI-independent)
         self.core = FasorCalculatorCore(saved_filename=self.saved_filename, exported_py=self.exported_py)
 
+        
+        # ===== COLOR VARIABLES =====
+        self.setup_colors()
+        
         # Set initial theme
-        ctk.set_appearance_mode("dark")
-        ctk.ThemeManager.load_theme(DPINK_PATH_THEME)
+        #ctk.set_appearance_mode("dark")
+        #ctk.ThemeManager.load_theme(DPINK_PATH_THEME)
+        
         
         # --- Dark/Light Mode Switch ---
-        # self.mode_switch = ctk.CTkSwitch(
-        #     self,
-        #     text="Modo oscuro",
-        #     command=self.toggle_mode,
-        #     onvalue="dark",
-        #     offvalue="light",
-        # )
-        # self.mode_switch.select()  # start in dark mode
-        # self.mode_switch.pack(pady=(10, 15))
+        self.mode_switch = ctk.CTkSwitch(
+            self,
+            text="Modo Darks",
+            command=self.toggle_mode,
+            onvalue="dark",
+            offvalue="light",
+        )
+        self.mode_switch.select()  # start in dark mode
+        self.mode_switch.pack(pady=(10, 15))
 
-        # --- Hello Kitty background image (hidden by default) ---
-        image_path = os.path.join(os.path.dirname(__file__), PINK_PATH_PHOTO) 
-        if os.path.exists(image_path):
-            self.bg_image = ctk.CTkImage(light_image=Image.open(image_path),
-                                        dark_image=Image.open(image_path),
-                                        size=(520, 560))
-            self.bg_label = ctk.CTkLabel(self, image=self.bg_image, text="")
-            # Don't place it yet — we'll only show it in Modo Rosa
-        else:
-            self.bg_label = None
-            print("⚠️ Hello Kitty image not found — background disabled.")
-
+        
+    
+        # Set initial colors to dark mode
+        self.current_colors = self.colors_dark.copy()
         # ============================
         # MAIN FRAME
         # ============================
         main_frame = ctk.CTkFrame(self)
         main_frame.pack(fill="both", expand=True, padx=10, pady=10)
 
-        # LEFT COLUMN
+          # LEFT COLUMN
         left = ctk.CTkFrame(main_frame)
         left.pack(side="left", padx=10, pady=10)
 
+        # Create a frame for text and image side by side
+        info_frame = ctk.CTkFrame(left)
+        info_frame.pack(pady=10)
+
+        # TEXT COLUMN
+        text_frame = ctk.CTkFrame(info_frame)
+        text_frame.pack(side="left", padx=10)
+
+        modestos = (
+            "Complex Calc v2.:\n"
+            "Hecha por:\n"
+            "--------  Das Reyes   --------\n"
+            "--------  Iker Garcia --------\n"
+            "------- Roberto Lopez  -------\n"
+            "--------  Kevin Lara  --------\n"
+        )
         instrucciones_texto = (
-            " Cómo ingresar valores:\n"
+            "Cómo ingresar valores:\n"
             "Puedes escribir valores como complejos o fasores.\n"
             "Complejos: 3+4j, -2j, 5, 1.2-3j\n"
-            "Fasores: 10c30°, 5c-90, 3c0°, 2.5c45\n"
+            "Fasores: 10L30°, 5L-90, 3L0°, 2.5L45\n"
             "Ángulo siempre en grados. Máximo tamaño: 10x10."
         )
+        ctk.CTkLabel(text_frame, text=modestos, justify="center", anchor="w").pack(pady=1)
+        ctk.CTkLabel(text_frame, text=instrucciones_texto, justify="left", anchor="w").pack(pady=5)
 
-        ctk.CTkLabel(left, text=instrucciones_texto, justify="left", anchor="w").pack(pady=5)
+        # IMAGE COLUMN
+        image_frame = ctk.CTkFrame(info_frame)
+        image_frame.pack(side="left", padx=10)
+
+        try:
+            hk_image = ctk.CTkImage(light_image=Image.open(IE_PATH_PHOTO),
+                                     dark_image=Image.open(IE_PATH_PHOTO),
+                                     size=(200, 200))
+            image_label = ctk.CTkLabel(image_frame, image=hk_image, text="")
+            image_label.image = hk_image  # Keep a reference
+            image_label.pack()
+        except Exception as e:
+            ctk.CTkLabel(image_frame, text="⚠️ Imagen no encontrada").pack()
+            print(f"Error loading image: {e}")
 
         ctk.CTkButton(left, text="Cambiar tamaño", command=self.change_size).pack(pady=5)
         ctk.CTkButton(left, text="Cargar ejemplo", command=self.load_default_example).pack(pady=5)
@@ -99,7 +148,7 @@ class FasorCalculator(ctk.CTk):
         right.pack(side="right", padx=10, pady=10)
 
         ctk.CTkLabel(right, text="Historial de soluciones:").pack()
-        self.history_box = ctk.CTkTextbox(right, width=640, height=350)
+        self.history_box = ctk.CTkTextbox(right, width=720, height=450)
         self.history_box.pack(pady=10)
 
         # Saved systems dropdown
@@ -111,27 +160,192 @@ class FasorCalculator(ctk.CTk):
         self.load_saved_systems()
         # Pre-fill a default example (helps users see input format and 'i' support)
         self.load_default_example()
+        # Apply initial dark mode styling
+        self.apply_dark_mode_colors()
 
+    def apply_dark_mode_colors(self):
+        """Apply dark mode colors to all widgets on startup."""
+        self.configure(fg_color=self.current_colors["bg"])
+        self.mode_switch.configure(
+            text="Modo Darks",
+            fg_color=self.current_colors["frame"],
+            text_color=self.current_colors["text"],
+            button_color=self.current_colors["button"],
+            progress_color=self.current_colors["button"]
+        )
+        
+        # Apply colors to all widgets
+        for widget in self._get_all_widgets(self):
+            if isinstance(widget, ctk.CTkFrame):
+                widget.configure(fg_color=self.current_colors["frame"])
+            elif isinstance(widget, ctk.CTkLabel):
+                widget.configure(
+                    fg_color="transparent",
+                    text_color=self.current_colors["label_text"]
+                )
+            elif isinstance(widget, ctk.CTkButton):
+                widget.configure(
+                    fg_color=self.current_colors["button"],
+                    text_color="#FFFFFF",
+                    hover_color=self.current_colors["button_hover"]
+                )
+            elif isinstance(widget, ctk.CTkEntry):
+                widget.configure(
+                    fg_color=self.current_colors["entry"],
+                    text_color=self.current_colors["entry_text"],
+                    border_color=self.current_colors["border"]
+                )
+            elif isinstance(widget, ctk.CTkOptionMenu):
+                widget.configure(
+                    fg_color=self.current_colors["button"],
+                    text_color="#FFFFFF",
+                    button_color=self.current_colors["button_hover"]
+                )
+            elif isinstance(widget, ctk.CTkTextbox):
+                widget.configure(
+                    fg_color=self.current_colors["textbox"],
+                    text_color=self.current_colors["text"]
+                )
+    def setup_colors(self):
+            """Define all color variables for easy customization."""
+            # Dark Mode Colors (Dark Pink Theme)
+            self.colors_dark = {
+                "bg": "#1a1a1a",           # Dark gray background
+                "frame": "#2d2d2d",        # Medium dark gray frames
+                "text": "#FFFFFF",         # White text
+                "button": "#FF69B4",       # Blue buttons
+                "button_hover": "#FF1493", # Darker blue hover
+                "entry": "#333333",        # Dark gray entry boxes
+                "entry_text": "#FFFFFF",   # White entry text
+                "border": "#555555",       # Gray borders
+                "textbox": "#252525",      # Very dark gray textbox
+                "label_text": "#FFFFFF",   # White labels
+            }
+
+        
+            
+            # Light Mode Colors (Light Pink Theme)
+            self.colors_light = {
+                "bg": "#FFE4F0",           # Light pink background
+                "frame": "#FFF0F5",        # Very light pink frames
+                "text": "#8B4789",         # Dark purple-pink text
+                "button": "#FF69B4",       # Hot pink buttons
+                "button_hover": "#FF1493", # Deep pink hover
+                "entry": "#FFFFFF",        # White entry boxes
+                "entry_text": "#8B4789",   # Dark purple-pink entry text
+                "border": "#FFB6D9",       # Light pink borders
+                "textbox": "#FFFFFF",      # White textbox
+                "label_text": "#8B4789",   # Dark purple-pink labels
+            }
+            
     def toggle_mode(self):
-        """Switch between dark and light modes."""
+        """Switch between dark mode and pink mode with full color changes."""
         new_mode = self.mode_switch.get()
-        ctk.set_appearance_mode(new_mode)
+        ctk.set_appearance_mode("dark")  # Always use dark appearance for CustomTkinter
         self.current_mode = new_mode
 
-        if new_mode == "light":  # Modo Blanco
-            ctk.ThemeManager.load_theme(LPINK_PATH_THEME)  # Load white theme
-            if self.bg_label:
+        if new_mode == "light":
+            # PINK MODE - Set HK image as background with transparent frames
+            self.current_colors = self.colors_light.copy()
+            '''
+            try:
+                # Get window dimensions
+                self.update_idletasks()
+                width = self.winfo_width()
+                height = self.winfo_height()
+                
+                hk_bg_image = ctk.CTkImage(
+                    light_image=Image.open(PINK_PATH_PHOTO),
+                    dark_image=Image.open(PINK_PATH_PHOTO),
+                    size=(width, height)
+                )
+                
+                # Set main window background to light pink
+                self.configure(fg_color=self.current_colors["bg"])
+                
+                # Create background label that fills entire window
+                if hasattr(self, 'bg_label'):
+                    self.bg_label.destroy()
+                
+                self.bg_label = ctk.CTkLabel(self, image=hk_bg_image, text="", fg_color=self.current_colors["bg"])
+                self.bg_label.image = hk_bg_image
                 self.bg_label.place(x=0, y=0, relwidth=1, relheight=1)
-                self.bg_label.lower()
-            self.configure(fg_color="white")
-            self.mode_switch.configure(text="Modo Blanco")
-        else:  # Modo Oscuro
-            ctk.ThemeManager.load_theme(DPINK_PATH_THEME)  # Load dark theme
-            if self.bg_label:
-                self.bg_label.place_forget()
-            self.configure(fg_color="#272727")
-            self.mode_switch.configure(text="Modo Oscuro")
+                self.bg_label.lower()  # Send to back
+            except Exception as e:
+                print(f"Error setting background image: {e}")
+            '''
+            self.configure(fg_color=self.current_colors["bg"])
+            
+            # Update switch with pink colors
+            self.mode_switch.configure(
+                text="Modo Puto",
+                fg_color=self.current_colors["button"],  # Pink background for switch
+                text_color=self.current_colors["text"],  # Dark text
+                button_color=self.current_colors["button_hover"],  # Deep pink dot
+                progress_color=self.current_colors["button"]  # Pink progress bar
+            )
 
+        else:
+            # DARK MODE - Clean dark theme
+            self.current_colors = self.colors_dark.copy()
+            
+            # Remove background image if it exists
+            if hasattr(self, 'bg_label'):
+                self.bg_label.destroy()
+            
+            self.configure(fg_color=self.current_colors["bg"])
+            
+            # Update switch with dark colors
+            self.mode_switch.configure(
+                text="Modo Darks",
+                fg_color=self.current_colors["frame"],  # Dark gray background
+                text_color=self.current_colors["text"],  # White text
+                button_color=self.current_colors["button"],  # Pink dot for contrast
+                progress_color=self.current_colors["button"]  # Pink progress
+            )
+            
+        # Apply colors to all widgets
+        for widget in self._get_all_widgets(self):
+            if isinstance(widget, ctk.CTkFrame):
+                if new_mode == "light":
+                    widget.configure(fg_color="transparent")  # Transparent frames in pink mode
+                else:
+                    widget.configure(fg_color=self.current_colors["frame"])
+            elif isinstance(widget, ctk.CTkLabel):
+                widget.configure(
+                    fg_color="transparent",
+                    text_color=self.current_colors["label_text"]
+                )
+            elif isinstance(widget, ctk.CTkButton):
+                widget.configure(
+                    fg_color=self.current_colors["button"],
+                    text_color="#FFFFFF",
+                    hover_color=self.current_colors["button_hover"]
+                )
+            elif isinstance(widget, ctk.CTkEntry):
+                widget.configure(
+                    fg_color=self.current_colors["entry"],
+                    text_color=self.current_colors["entry_text"],
+                    border_color=self.current_colors["border"]
+                )
+            elif isinstance(widget, ctk.CTkOptionMenu):
+                widget.configure(
+                    fg_color=self.current_colors["button"],
+                    text_color="#FFFFFF",
+                    button_color=self.current_colors["button_hover"]
+                )
+            elif isinstance(widget, ctk.CTkTextbox):
+                widget.configure(
+                    fg_color=self.current_colors["textbox"],
+                    text_color=self.current_colors["text"]
+                )
+    def _get_all_widgets(self, parent):
+        """Recursively get all widgets from parent."""
+        widgets = []
+        for widget in parent.winfo_children():
+            widgets.append(widget)
+            widgets.extend(self._get_all_widgets(widget))
+        return widgets
     # ============================
     # MATRIX BUILDER
     # ============================
@@ -215,10 +429,10 @@ class FasorCalculator(ctk.CTk):
             self.history.append((result["A"].copy(), result["b"].copy(), result["x"].copy(), result["timestamp"]))
             self.update_history_menu_session()
 
-            # Popup solution (rectangular numeric)
+            '''# Popup solution (rectangular numeric)
             result_str = "\n".join([f"x{i+1} = {val}" for i, val in enumerate(result["x"])])
             messagebox.showinfo("Solución", result_str)
-
+            '''
             # Add to GUI history using formatted strings from core
             self.add_to_history_view(result["A_polar"], result["b_polar"], result["x_polar"], result["A_rect"], result["b_rect"], result["x_rect"], result["timestamp"])  
 
@@ -253,7 +467,7 @@ class FasorCalculator(ctk.CTk):
     def add_to_history_view(self, A_f, b_f, x_f, A_r, b_r, x_r, timestamp):
         self.history_box.insert("end", "\n=== SOLUCIÓN ===\n")
         self.history_box.insert("end", f"Guardado: {timestamp}\n\n")
-
+        '''
         # A matrix: row by row with side-by-side polar | rect
         self.history_box.insert("end", "A:\n")
         for i in range(self.size):
@@ -265,6 +479,7 @@ class FasorCalculator(ctk.CTk):
         self.history_box.insert("end", "b:\n")
         for i in range(self.size):
             self.history_box.insert("end", f"  {b_f[i]}   |   {b_r[i]}\n")
+        '''
         self.history_box.insert("end", "\nSolución:\n")
         for i in range(self.size):
             self.history_box.insert("end", f"  x{i+1} = {x_f[i]}   |   {x_r[i]}\n")
