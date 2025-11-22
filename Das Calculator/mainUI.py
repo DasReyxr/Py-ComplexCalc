@@ -5,12 +5,6 @@
 -------- 15/11/2025 --------
 """
 # ------- Main Library -------
-# --------- Function ---------
-# ---------- Class ----------
-# -------- Variables --------
-# ----------- Main -----------
-
-
 import customtkinter as ctk
 import tkinter as tk
 import traceback
@@ -19,6 +13,13 @@ import re
 from Eng import *
 from Dig import *
 
+
+# --------- Function ---------
+# ---------- Class ----------
+# -------- Variables --------
+PINK_BUTTON_COLOR = "#ff69b4"       # main button color
+PINK_BUTTON_HOVER = "#ff85c6"       # hover color
+PINK_TEXT_COLOR = "white"
 
 MODULES = {
     "ENG": {
@@ -33,9 +34,16 @@ MODULES = {
     }
 }
 
+DPINK_PATH_THEME = r"C:\Users\dasre\Wkn\Python\gittcloned\Py-ComplexCalc\Das Calculator\DarkPink.json"
+# ----------- Main -----------
+
+
+
+
 # ---------------- CTk Appearance ----------------
-ctk.set_appearance_mode("dark")
-ctk.set_default_color_theme("blue")
+#ctk.set_appearance_mode("dark")
+#
+#ctk.set_default_color_theme("blue")
 
 
 # ---------------- The Calculator GUI ----------------
@@ -45,6 +53,20 @@ class EngCalculator(ctk.CTk):
         self.title("Das Calculator")
         self.geometry("820x600")
         self.resizable(False, False)
+           # ------ THEME SWITCH ---------
+        self.theme_mode = "dark"   # track mode yourself
+        
+        self.theme_switch = ctk.CTkSwitch(
+            self,
+            text="Dark Mode",
+            command=self.toggle_theme,
+            onvalue="dark",
+            offvalue="light"
+        )
+        self.theme_switch.pack(pady=5)
+
+        # Ensure switch starts in dark mode ON
+        self.theme_switch.select()
 
         # ------ HISTORY ---------
         self.history = []  # list of (expr, result)
@@ -87,11 +109,16 @@ class EngCalculator(ctk.CTk):
             self,
             text="Mode: Degrees",
             width=200,
-            command=self.toggle_mode
+            command=self.toggle_mode,
+            fg_color=PINK_BUTTON_COLOR,
+            hover_color=PINK_BUTTON_HOVER,
+            text_color=PINK_TEXT_COLOR
         )
         self.mode_btn.pack(pady=5)
 
         self.build_keypad_for_mode(self.calc_mode)
+
+     
 
     # ---------------- Mode Management ----------------
     def open_modes_popup(self):
@@ -101,7 +128,7 @@ class EngCalculator(ctk.CTk):
         win.transient(self)
         ctk.CTkLabel(win, text="Choose a mode", font=("Arial", 14)).pack(pady=8)
         for name in MODULES.keys():
-            b = ctk.CTkButton(win, text=name.capitalize(), command=lambda n=name, w=win: self.select_mode(n, w))
+            b = ctk.CTkButton(win, text=name.capitalize(), command=lambda n=name, w=win: self.select_mode(n, w),fg_color=PINK_BUTTON_COLOR,hover_color=PINK_BUTTON_HOVER,text_color=PINK_TEXT_COLOR)
             b.pack(fill="x", padx=12, pady=6)
         win.grab_set()
 
@@ -115,7 +142,7 @@ class EngCalculator(ctk.CTk):
                     self,
                     text=f"Base: {self.base_mode}",
                     width=120,
-                    command=self.toggle_base_mode
+                    command=self.toggle_base_mode,fg_color=PINK_BUTTON_COLOR,hover_color=PINK_BUTTON_HOVER,text_color=PINK_TEXT_COLOR
                 )
                 self.base_mode_btn.pack(pady=4)
             else:
@@ -147,7 +174,25 @@ class EngCalculator(ctk.CTk):
                     if txt == "=": cmd = lambda val=txt: self.button_press("=")
                 elif mode_name == "DIG" and txt == "HEX":
                     cmd = lambda: self.toggle_base_mode()
-                b = ctk.CTkButton(self.keypad_frame, text=txt, width=90, command=cmd)
+                b = ctk.CTkButton(self.keypad_frame, text=txt, width=90, command=cmd,fg_color=PINK_BUTTON_COLOR,hover_color=PINK_BUTTON_HOVER,text_color=PINK_TEXT_COLOR)
+                b.grid(row=r, column=c, padx=5, pady=5)
+
+    def build_keypad_for_mode(self, mode_name):
+        for child in self.keypad_frame.winfo_children():
+            child.destroy()
+        layout = MODULES[mode_name]["layout"]
+        for r, row in enumerate(layout):
+            for c, txt in enumerate(row):
+                if txt == "":
+                    continue
+                cmd = lambda val=txt: self.button_press(val)
+                if mode_name == "DIG" and txt in ("DEL", "CLR", "="):
+                    if txt == "DEL": cmd = lambda val=txt: self.button_press("DEL")
+                    if txt == "CLR": cmd = lambda val=txt: self.button_press("CLR")
+                    if txt == "=": cmd = lambda val=txt: self.button_press("=")
+                elif mode_name == "DIG" and txt == "HEX":
+                    cmd = lambda: self.toggle_base_mode()
+                b = ctk.CTkButton(self.keypad_frame, text=txt, width=90, command=cmd,fg_color=PINK_BUTTON_COLOR,hover_color=PINK_BUTTON_HOVER,text_color=PINK_TEXT_COLOR)
                 b.grid(row=r, column=c, padx=5, pady=5)
 
     def toggle_mode(self):
@@ -189,12 +234,18 @@ class EngCalculator(ctk.CTk):
 
         expr_for_eval = insert_implicit_multiplication(Input_Clean(Eng_Num_IN(expr)))
         try:
+#            print("[DEBUG] Original:", expr)
+#            print("[DEBUG] Cleaned:", expr_for_eval)
+
             raw_result = eval(expr_for_eval, {"__builtins__": None}, local_env)
         except ZeroDivisionError:
             self.output_label.configure(text="Math Error")
             return
         except Exception:
             self.output_label.configure(text="Error")
+            print("\n=== ENGINEERING MODE ERROR ===")
+            traceback.print_exc()
+            print("Exception:", e)
             return
 
         try:
@@ -312,7 +363,10 @@ class EngCalculator(ctk.CTk):
             ("exp(x)", "exp("), ("abs(x)", "abs("), ("pi", "pi"), ("e", "e")
         ]
         for name, ins in funcs:
-            b = ctk.CTkButton(win, text=name, command=lambda t=ins: self.insert_func_from_popup(t, win))
+            b = ctk.CTkButton(win, text=name, command=lambda t=ins: self.insert_func_from_popup(t, win),
+    fg_color=PINK_BUTTON_COLOR,
+    hover_color=PINK_BUTTON_HOVER,
+    text_color=PINK_TEXT_COLOR)
             b.pack(pady=6, padx=8, fill="x")
 
     def insert_func_from_popup(self, s: str, win):
@@ -341,6 +395,7 @@ class EngCalculator(ctk.CTk):
                 self.history_index = len(self.history)
         except Exception:
             traceback.print_exc()
+            print(Exception)
 
     # ---------------- Arrow Navigation ----------------
     def load_prev(self, event=None):
@@ -371,6 +426,36 @@ class EngCalculator(ctk.CTk):
     def enter(self, event=None):
         self.evaluate()
         return "break"
+        
+    def toggle_theme(self):
+        """Switch between dark and light UI, keep buttons pink."""
+        new_mode = self.theme_switch.get()
+        ctk.set_appearance_mode(new_mode)
+
+        if new_mode == "light":
+            # LIGHT UI COLORS
+            bg = "white"
+            frame_color = "#f0f0f0"
+            text_color = "black"
+            entry_color = "#f2f2f2"
+            self.theme_switch.configure(text="Light Mode")
+        else:
+            # DARK UI COLORS
+            bg = "#272727"
+            frame_color = "#1e1e1e"
+            text_color = "white"
+            entry_color = "#1f1f1f"
+            self.theme_switch.configure(text="Dark Mode")
+
+        # Update labels 
+        self.keypad_frame.configure(fg_color=frame_color)
+        self.main_frame.configure(fg_color=bg)
+        self.history_box.configure(fg_color=frame_color, text_color=text_color)
+        self.history_box.master.configure(fg_color=frame_color)  # history_frame
+
+
+
+
 
 
 # ---------------- Run ----------------

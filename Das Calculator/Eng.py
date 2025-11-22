@@ -45,15 +45,21 @@ def deg_wrap(fn):
 
 # ---------------- Input/Output ----------------
 def Eng_Num_IN(expr: str) -> str:
-    pat = re.compile(r'(?<![A-Za-z0-9_.])([0-9]*\.?[0-9]+)\s*([TGMkmunpf])(?![A-Za-z0-9_\.])')
+    # Match a number with optional scientific notation:  1, 1.23, 1e3, 2.5E-6
+    sci = r'[0-9]*\.?[0-9]+(?:[eE][+-]?[0-9]+)?'
+
+    # Full pattern: number + optional engineering prefix
+    pat = re.compile(
+        rf'(?<![A-Za-z0-9_.])({sci})\s*([TGMkmunpf])(?![A-Za-z0-9_])'
+    )
+
     def repl(m):
-        try:
-            number = float(m.group(1))
-            prefix = m.group(2)
-            return str(number * ENG_PREFIXES[prefix])
-        except Exception:
-            return m.group(0)
+        number = float(m.group(1))      # already supports scientific notation
+        prefix = m.group(2)
+        return str(number * ENG_PREFIXES[prefix])
+
     return pat.sub(repl, expr)
+
 
 def Eng_Num_OUT(value: float) -> str:
     if value == 0:
@@ -73,19 +79,45 @@ def Input_Clean(expr: str) -> str:
     expr = expr.strip()
     expr = expr.replace("×", "*").replace("÷", "/")
     expr = expr.replace("^", "**")
+
+    # --- complex number i ---
     expr = re.sub(r'(?<![a-zA-Z0-9_])i(?![a-zA-Z0-9_])', '1*j', expr)
     expr = re.sub(r'(\d+)i', r'\1*j', expr)
-    return expr
+    # ---- Preserve scientific notation ----
+    # Convert scientific: ONLY match digits + 'e' + optional sign + digits
+    # Example: 1e2, 3.5e-4, 10e+6
+    sci_pattern = re.compile(r'(?i)(\d+(\.\d+)?)[eE][+-]?\d+')
 
-def insert_implicit_multiplication(expr: str):
+    def mark(match):
+        return f"__SCI__{match.group(0)}__"
+
+    # Temporarily mark scientific notations
+    expr = sci_pattern.sub(mark, expr)
+
+    # Normal implicit multiplication and cleaning rules
     expr = re.sub(r'(\d|\))\s*\(', r'\1*(', expr)
     expr = re.sub(r'\)\s*(\d|[a-zA-Z])', r')*\1', expr)
-    expr = re.sub(r'(\d)\s*([a-zA-Z])', r'\1*\2', expr)
-    expr = expr.replace("pi", "*pi") if re.search(r'\dpi', expr) else expr
-    expr = expr.replace("e", "*e") if re.search(r'\de', expr) else expr
-    expr = expr.replace("*pi", "pi", 1) if expr.startswith("*pi") else expr
-    expr = expr.replace("*e", "e", 1) if expr.startswith("*e") else expr
+    # Insert implicit multiplication only before letters EXCEPT e and j
+    expr = re.sub(r'(\d)\s*([a-df-zA-DF-Z])', r'\1*\2', expr)
+
+
+    # Restore scientific notation
+    expr = re.sub(r'__SCI__(.*?)__', r'\1', expr)
+
     return expr
+
+def insert_implicit_multiplication(expr: str) -> str:
+    # number or ) before ( → multiply
+    expr = re.sub(r'(\d|\))\s*\(', r'\1*(', expr)
+
+    # ) before number or letter (except e, j) → multiply
+    expr = re.sub(r'\)\s*(\d|[a-df-zA-DF-Z])', r')*\1', expr)
+
+    # digit before letter, but exclude e (scientific) and j (complex)
+    expr = re.sub(r'(\d)\s*([a-df-zA-DF-Z])', r'\1*\2', expr)
+
+    return expr
+
 
 # ---------------- Environment ----------------
 def engineering_prepare_env(local_env):
