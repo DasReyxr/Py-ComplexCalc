@@ -17,13 +17,13 @@ from ComplexCalc import FasorCalculatorCore
 import os
 from PIL import Image
 import sys
+import webbrowser
 
 
 def resource_path(relative):
-    if hasattr(sys, '_MEIPASS'):           # Running from PyInstaller
-        return os.path.join(sys._MEIPASS, relative)
-    return os.path.join(os.getcwd(), relative)   # Running normally
-
+    # Use PyInstaller temp folder when frozen, otherwise use folder where this file lives
+    base_path = getattr(sys, "_MEIPASS", os.path.dirname(__file__))
+    return os.path.join(base_path, relative)
 
 PINK_PATH_PHOTO = resource_path("HK.jpg")
 IE_PATH_PHOTO = resource_path("IE.png")
@@ -36,7 +36,7 @@ class FasorCalculator(ctk.CTk):
         super().__init__()
         
         self.title("Complex Calc v2.7")
-        self.geometry("1200x700")
+        self.geometry("1200x780")
         
         self.size = 3
         self.history = []  # session history list of tuples (A, b, x, timestamp)
@@ -62,13 +62,40 @@ class FasorCalculator(ctk.CTk):
         # --- Dark/Light Mode Switch ---
         self.mode_switch = ctk.CTkSwitch(
             self,
-            text="Modo Darks",
+            text="Dark Mode",
             command=self.toggle_mode,
             onvalue="dark",
             offvalue="light",
         )
         self.mode_switch.select()  # start in dark mode
-        self.mode_switch.pack(pady=(10, 15))
+        self.mode_switch.pack(pady=(10, 6))
+
+        # Header area: big title, smaller names header, and small IE image to the right
+        header_frame = ctk.CTkFrame(self, fg_color="transparent")
+        header_frame.pack(fill="x", pady=(0, 10), padx=12)
+
+        # Main title (left)
+        self.header_title = ctk.CTkLabel(header_frame, text="Complex Calc 2.7", font=("Helvetica", 28, "bold"))
+        self.header_title.pack(side="left", padx=(0, 12))
+
+        # Smaller names subtitle (next to title)
+        names_text = "Das Reyes  •  Iker Garcia  •  Roberto Lopez  •  Kevin Lara"
+        self.header_names = ctk.CTkLabel(header_frame, text=names_text, font=("Helvetica", 17))
+        self.header_names.pack(side="left", padx=(0, 8), pady=(8,0))
+
+        # IE image (small) to the right of the names
+        try:
+            ie_small = ctk.CTkImage(
+                light_image=Image.open(IE_PATH_PHOTO),
+                dark_image=Image.open(IE_PATH_PHOTO),
+                size=(75, 75)
+            )
+            self.ie_label = ctk.CTkLabel(header_frame, image=ie_small, text="", fg_color="transparent")
+            self.ie_label.image = ie_small
+            self.ie_label.pack(side="left", padx=(6,0))
+        except Exception:
+            # if image missing, keep the header layout without it
+            pass
 
         
     
@@ -92,75 +119,53 @@ class FasorCalculator(ctk.CTk):
         text_frame = ctk.CTkFrame(info_frame)
         text_frame.pack(side="left", padx=10)
 
-        modestos = (
-            "Complex Calc v2.:\n"
-            "Hecha por:\n"
-            "--------  Das Reyes   --------\n"
-            "--------  Iker Garcia --------\n"
-            "------- Roberto Lopez  -------\n"
-            "--------  Kevin Lara  --------\n"
-        )
+   
         instrucciones_texto = (
-            "Cómo ingresar valores:\n"
-            "Puedes escribir valores como complejos o fasores.\n"
-            "Complejos: 3+4j, -2j, 5, 1.2-3j\n"
-            "Fasores: 10L30°, 5L-90, 3L0°, 2.5L45\n"
-            "Ángulo siempre en grados. Máximo tamaño: 10x10."
+            "For and By Electronics Engineers\n\n\n"
+            "How to enter values:\n"
+            "You can type values as complex numbers or phasors.\n"
+            "Complex: 3+4j, -j2, 5, 1.2-3j\n"
+            "Phasors: 10L30°, 5L-90, 3L0°, 2.5L45\n"
+            "Angle in degrees. Max size: 10x10."
         )
-        ctk.CTkLabel(text_frame, text=modestos, justify="center", anchor="w").pack(pady=1)
         ctk.CTkLabel(text_frame, text=instrucciones_texto, justify="left", anchor="w").pack(pady=5)
 
-        # IMAGE COLUMN
-        image_frame = ctk.CTkFrame(info_frame)
-        image_frame.pack(side="left", padx=10)
-
-        try:
-            hk_image = ctk.CTkImage(light_image=Image.open(IE_PATH_PHOTO),
-                                     dark_image=Image.open(IE_PATH_PHOTO),
-                                     size=(200, 200))
-            image_label = ctk.CTkLabel(image_frame, image=hk_image, text="")
-            image_label.image = hk_image  # Keep a reference
-            image_label.pack()
-        except Exception as e:
-            ctk.CTkLabel(image_frame, text="⚠️ Imagen no encontrada").pack()
-            print(f"Error loading image: {e}")
-
         # keep references so we can re-style them on mode toggle
-        self.btn_change_size = ctk.CTkButton(left, text="Cambiar tamaño", command=self.change_size)
+        self.btn_change_size = ctk.CTkButton(left, text="Change size", command=self.change_size)
         self.btn_change_size.pack(pady=5)
-        self.btn_load_example = ctk.CTkButton(left, text="Cargar ejemplo", command=self.load_default_example)
+        self.btn_load_example = ctk.CTkButton(left, text="Load example", command=self.load_default_example)
         self.btn_load_example.pack(pady=5)
 
         self.frame_matrix = ctk.CTkFrame(left)
         self.frame_matrix.pack(pady=10)
 
+        # Build main matrix area and buttons (unchanged)...
         self.build_matrix()
-
-        self.btn_solve = ctk.CTkButton(left, text="Resolver", command=self.solve)
+        self.btn_solve = ctk.CTkButton(left, text="Solve", command=self.solve)
         self.btn_solve.pack(pady=10)
 
         # Buttons for save/load
         btn_frame = ctk.CTkFrame(left)
         btn_frame.pack(pady=5)
 
-        self.btn_load_saved = ctk.CTkButton(btn_frame, text="Cargar sistema guardado", command=self.load_saved_menu_popup)
+        self.btn_load_saved = ctk.CTkButton(btn_frame, text="Load saved system", command=self.load_saved_menu_popup)
         self.btn_load_saved.grid(row=0, column=0, padx=5)
-        self.btn_import = ctk.CTkButton(btn_frame, text="Importar desde archivo...", command=self.import_from_file)
+        self.btn_import = ctk.CTkButton(btn_frame, text="Import from file...", command=self.import_from_file)
         self.btn_import.grid(row=0, column=1, padx=5)
-        self.btn_refresh_saved = ctk.CTkButton(btn_frame, text="Refrescar lista guardada", command=self.load_saved_systems)
+        self.btn_refresh_saved = ctk.CTkButton(btn_frame, text="Refresh saved list", command=self.load_saved_systems)
         self.btn_refresh_saved.grid(row=0, column=2, padx=5)
 
         # RIGHT COLUMN
         right = ctk.CTkFrame(main_frame)
         right.pack(side="right", padx=10, pady=10)
 
-        ctk.CTkLabel(right, text="Historial de soluciones:").pack()
+        ctk.CTkLabel(right, text="Solution history:").pack()
         self.history_box = ctk.CTkTextbox(right, width=720, height=450)
         self.history_box.pack(pady=10)
-
+ 
         # Saved systems dropdown
-        ctk.CTkLabel(right, text="Sistemas guardados:").pack()
-        self.saved_menu = ctk.CTkOptionMenu(right, values=["(vacío)"], command=self.load_saved_option)
+        ctk.CTkLabel(right, text="Saved systems:").pack()
+        self.saved_menu = ctk.CTkOptionMenu(right, values=["(empty)"], command=self.load_saved_option)
         self.saved_menu.pack(pady=5)
 
         # Load saved systems on start
@@ -170,11 +175,16 @@ class FasorCalculator(ctk.CTk):
         # Apply initial dark mode styling
         self.apply_dark_mode_colors()
 
+      
+
+       
+       
+
     def apply_dark_mode_colors(self):
         """Apply dark mode colors to all widgets on startup."""
         self.configure(fg_color=self.current_colors["bg"])
         self.mode_switch.configure(
-            text="Modo Darks",
+            text="Dark Mode" if self.current_mode == "dark" else "Light Mode",
             fg_color=self.current_colors["frame"],
             text_color=self.current_colors["text"],
             button_color=self.current_colors["button"],
@@ -193,8 +203,8 @@ class FasorCalculator(ctk.CTk):
             elif isinstance(widget, ctk.CTkButton):
                 widget.configure(
                     fg_color=self.current_colors["button"],
-                    text_color="#FFFFFF",
-                    hover_color=self.current_colors["button_hover"]
+                    text_color=self.current_colors.get("button_text", "#FFFFFF"),
+                     hover_color=self.current_colors["button_hover"]
                 )
             elif isinstance(widget, ctk.CTkEntry):
                 widget.configure(
@@ -203,11 +213,45 @@ class FasorCalculator(ctk.CTk):
                     border_color=self.current_colors["border"]
                 )
             elif isinstance(widget, ctk.CTkOptionMenu):
+                # Use palette-driven label color (don't force white)
                 widget.configure(
                     fg_color=self.current_colors["button"],
-                    text_color="#FFFFFF",
+                    text_color=self.current_colors.get("label_text", self.current_colors.get("text", "#000000")),
                     button_color=self.current_colors["button_hover"]
                 )
+                # Try to style the underlying tk.Menu used by CTkOptionMenu
+                tkmenu = getattr(widget, "_menu", None)
+                if tkmenu is not None:
+                    try:
+                        tkmenu.configure(
+                            background=self.current_colors["frame"],
+                            foreground=self.current_colors["label_text"],
+                            activebackground=self.current_colors["button"],
+                            activeforeground=self.current_colors.get("button_text", "#FFFFFF")
+                        )
+                        # style each entry if supported
+                        end = tkmenu.index("end")
+                        if end is not None:
+                            for i in range(end + 1):
+                                try:
+                                    tkmenu.entryconfigure(i,
+                                                          background=self.current_colors["frame"],
+                                                          foreground=self.current_colors["label_text"],
+                                                          activebackground=self.current_colors["button"],
+                                                          activeforeground=self.current_colors.get("button_text", "#FFFFFF"))
+                                except Exception:
+                                    pass
+                    except Exception:
+                        pass
+                # Ensure the optionmenu's displayed label/button also uses the palette
+                try:
+                    for child in widget.winfo_children():
+                        if isinstance(child, ctk.CTkLabel):
+                            child.configure(text_color=self.current_colors["label_text"])
+                        if isinstance(child, ctk.CTkButton):
+                            child.configure(text_color=self.current_colors.get("button_text", "#FFFFFF"))
+                except Exception:
+                    pass
             elif isinstance(widget, ctk.CTkTextbox):
                 widget.configure(
                     fg_color=self.current_colors["textbox"],
@@ -218,48 +262,68 @@ class FasorCalculator(ctk.CTk):
             if hasattr(self, btn):
                 getattr(self, btn).configure(
                     fg_color=self.current_colors["button"],
-                    text_color="#FFFFFF",
-                    hover_color=self.current_colors["button_hover"]
+                    text_color=self.current_colors.get("button_text", "#FFFFFF"),
+                     hover_color=self.current_colors["button_hover"]
                 )
         # Ensure option menu dropdown (tk.Menu) matches theme if available
-        if hasattr(self, "saved_menu") and getattr(self.saved_menu, "_menu", None) is not None:
+        if hasattr(self, "saved_menu"):
+            # set visible optionmenu colors
             try:
-                # tk.Menu expects different option names
-                self.saved_menu._menu.configure(background=self.current_colors["frame"], foreground=self.current_colors["label_text"], activebackground=self.current_colors["button"], activeforeground="#FFFFFF")
+                self.saved_menu.configure(fg_color=self.current_colors["button"], text_color=self.current_colors.get("label_text", "#222222"), button_color=self.current_colors["button_hover"])
+            except Exception:
+                pass
+        if getattr(self.saved_menu, "_menu", None) is not None:
+            try:
+                self.saved_menu._menu.configure(background=self.current_colors["frame"], foreground=self.current_colors["label_text"], activebackground=self.current_colors["button"], activeforeground=self.current_colors.get("button_text", "#FFFFFF"))
             except Exception:
                 pass
 
     def setup_colors(self):
             """Define all color variables for easy customization."""
-            # Dark Mode Colors (Dark Pink Theme)
+            # Dark Mode Colors (Gray / White)
             self.colors_dark = {
-                "bg": "#1a1a1a",           # Dark gray background
-                "frame": "#2d2d2d",        # Medium dark gray frames
-                "text": "#FFFFFF",         # White text
-                "button": "#FF69B4",       # Blue buttons
-                "button_hover": "#FF1493", # Darker blue hover
-                "entry": "#333333",        # Dark gray entry boxes
-                "entry_text": "#FFFFFF",   # White entry text
-                "border": "#555555",       # Gray borders
-                "textbox": "#252525",      # Very dark gray textbox
-                "label_text": "#FFFFFF",   # White labels
+                "bg": "#0f0f10",           # deep dark background
+                "frame": "#1f1f20",        # frame dark gray
+                "text": "#FFFFFF",         # primary text white
+                "button": "#3a3a3a",       # button gray
+                "button_hover": "#4a4a4a", # button hover
+                "entry": "#191919",        # entry bg
+                "entry_text": "#FFFFFF",   # entry text
+                "border": "#333333",       # borders
+                "textbox": "#141414",      # textbox bg
+                "label_text": "#FFFFFF",   # labels
+                "button_text": "#FFFFFF",  # button label color (dark theme)
             }
 
-        
-            
-            # Light Mode Colors (Light Pink Theme)
+            # Light Mode Colors (Light Gray / White)
             self.colors_light = {
-                "bg": "#FFE4F0",           # Light pink background
-                "frame": "#FFF0F5",        # Very light pink frames
-                "text": "#8B4789",         # Dark purple-pink text
-                "button": "#FF69B4",       # Hot pink buttons
-                "button_hover": "#FF1493", # Deep pink hover
-                "entry": "#FFFFFF",        # White entry boxes
-                "entry_text": "#8B4789",   # Dark purple-pink entry text
-                "border": "#FFB6D9",       # Light pink borders
-                "textbox": "#FFFFFF",      # White textbox
-                "label_text": "#8B4789",   # Dark purple-pink labels
+                "bg": "#f7f7f8",           # light background
+                "frame": "#ffffff",        # frame white
+                "text": "#222222",         # dark text
+                "button": "#e0e0e0",       # light button
+                "button_hover": "#cccccc", # button hover
+                "entry": "#ffffff",        # entry bg
+                "entry_text": "#222222",   # entry text
+                "border": "#dddddd",       # borders
+                "textbox": "#ffffff",      # textbox bg
+                "label_text": "#222222",   # labels
+                "button_text": "#222222",  # button label color (light theme: dark text)
             }
+
+            # preserved previous pink palette (kept commented for reference)
+            # self.colors_pink = {
+            #     "bg": "#FFE4F0",
+            #     "frame": "#FFF0F5",
+            #     "text": "#8B4789",
+            #     "button": "#FF69B4",
+            #     "button_hover": "#FF1493",
+            #     "entry": "#FFFFFF",
+            #     "entry_text": "#8B4789",
+            #     "border": "#FFB6D9",
+            #     "textbox": "#FFFFFF",
+            #     "label_text": "#8B4789",
+            #     "button_text": "#FFFFFF",
+            # }
             
     def toggle_mode(self):
         """Switch between dark mode and pink mode with full color changes."""
@@ -301,7 +365,7 @@ class FasorCalculator(ctk.CTk):
             
             # Update switch with pink colors
             self.mode_switch.configure(
-                text="Modo Rosa",
+                text="Light Mode",
                 fg_color=self.current_colors["button"],  # Pink background for switch
                 text_color=self.current_colors["text"],  # Dark text
                 button_color=self.current_colors["button_hover"],  # Deep pink dot
@@ -320,7 +384,7 @@ class FasorCalculator(ctk.CTk):
             
             # Update switch with dark colors
             self.mode_switch.configure(
-                text="Modo Darks",
+                text="Dark Mode",
                 fg_color=self.current_colors["frame"],  # Dark gray background
                 text_color=self.current_colors["text"],  # White text
                 button_color=self.current_colors["button"],  # Pink dot for contrast
@@ -342,8 +406,8 @@ class FasorCalculator(ctk.CTk):
             elif isinstance(widget, ctk.CTkButton):
                 widget.configure(
                     fg_color=self.current_colors["button"],
-                    text_color="#FFFFFF",
-                    hover_color=self.current_colors["button_hover"]
+                    text_color=self.current_colors.get("button_text", "#FFFFFF"),
+                     hover_color=self.current_colors["button_hover"]
                 )
             elif isinstance(widget, ctk.CTkEntry):
                 widget.configure(
@@ -367,14 +431,15 @@ class FasorCalculator(ctk.CTk):
             if hasattr(self, btn):
                 getattr(self, btn).configure(
                     fg_color=self.current_colors["button"],
-                    text_color="#FFFFFF",
-                    hover_color=self.current_colors["button_hover"]
+                    text_color=self.current_colors.get("button_text", "#FFFFFF"),
+                     hover_color=self.current_colors["button_hover"]
                 )
         if hasattr(self, "saved_menu"):
-            self.saved_menu.configure(fg_color=self.current_colors["button"], text_color="#FFFFFF", button_color=self.current_colors["button_hover"])
-            if getattr(self.saved_menu, "_menu", None) is not None:
+            self.saved_menu.configure(fg_color=self.current_colors["button"], text_color=self.current_colors.get("label_text", "#222222"), button_color=self.current_colors["button_hover"])
+            tkmenu = getattr(self.saved_menu, "_menu", None)
+            if tkmenu is not None:
                 try:
-                    self.saved_menu._menu.configure(background=self.current_colors["frame"], foreground=self.current_colors["label_text"], activebackground=self.current_colors["button"], activeforeground="#FFFFFF")
+                    tkmenu.configure(background=self.current_colors["frame"], foreground=self.current_colors["label_text"], activebackground=self.current_colors["button"], activeforeground=self.current_colors.get("button_text", "#FFFFFF"))
                 except Exception:
                     pass
 
@@ -408,7 +473,7 @@ class FasorCalculator(ctk.CTk):
                     # older customtkinter versions may not support some options
                     pass
                 e.grid(row=i, column=j, padx=3, pady=3)
-                e.insert(0, "1c0")
+                e.insert(0, "1L0")
                 row.append(e)
             self.entries_A.append(row)
 
@@ -526,15 +591,15 @@ class FasorCalculator(ctk.CTk):
                 print(f" x{i+1} = {complex(val)}")
             """
         except Exception as e:
-            messagebox.showerror("Error", f"Entrada inválida o matriz singular.\n\n{e}")
+            messagebox.showerror("Error", f"Invalid input or singular matrix.\n\n{e}")
 
     def update_history_menu_session(self):
         # Also update saved systems option menu? No: session history separate from saved files
         pass
 
     def add_to_history_view(self, A_f, b_f, x_f, A_r, b_r, x_r, timestamp):
-        self.history_box.insert("end", "\n=== SOLUCIÓN ===\n")
-        self.history_box.insert("end", f"Guardado: {timestamp}\n\n")
+        self.history_box.insert("end", "\n=== SOLUTION ===\n")
+        self.history_box.insert("end", f"Saved: {timestamp}\n\n")
         '''
         # A matrix: row by row with side-by-side polar | rect
         self.history_box.insert("end", "A:\n")
@@ -548,7 +613,7 @@ class FasorCalculator(ctk.CTk):
         for i in range(self.size):
             self.history_box.insert("end", f"  {b_f[i]}   |   {b_r[i]}\n")
         '''
-        self.history_box.insert("end", "\nSolución:\n")
+        self.history_box.insert("end", "\nSolution:\n")
         for i in range(self.size):
             self.history_box.insert("end", f"  x{i+1} = {x_f[i]}   |   {x_r[i]}\n")
 
@@ -572,7 +637,7 @@ class FasorCalculator(ctk.CTk):
         try:
             self.core.save_system(result)
         except Exception as e:
-            messagebox.showwarning("Advertencia", f"No se pudo guardar el sistema.\n\n{e}")
+            messagebox.showwarning("Warning", f"Could not save the system.\n\n{e}")
 
         # reload saved list for UI
         self.load_saved_systems()
@@ -591,19 +656,19 @@ class FasorCalculator(ctk.CTk):
         try:
             self.saved_items = self.core.load_saved_items()
             if not self.saved_items:
-                self.saved_menu.configure(values=["(vacío)"])
-                self.saved_menu.set("(vacío)")
+                self.saved_menu.configure(values=["(empty)"])
+                self.saved_menu.set("(empty)")
                 return
             labels = []
             for i, obj in enumerate(self.saved_items, start=1):
                 ts = obj.get("timestamp", "unknown time")
-                labels.append(f"Sistema guardado #{i} — {ts}")
+                labels.append(f"Saved system #{i} — {ts}")
             self.saved_menu.configure(values=labels)
             self.saved_menu.set(labels[-1])
         except Exception as e:
-            messagebox.showwarning("Advertencia", f"No se pudo leer {self.saved_filename}.\n\n{e}")
-            self.saved_menu.configure(values=["(vacío)"])
-            self.saved_menu.set("(vacío)")
+            messagebox.showwarning("Warning", f"Could not read {self.saved_filename}.\n\n{e}")
+            self.saved_menu.configure(values=["(empty)"])
+            self.saved_menu.set("(empty)")
 
     def load_saved_option(self, option_text):
         """Callback when the user selects an item in saved_menu."""
@@ -613,17 +678,17 @@ class FasorCalculator(ctk.CTk):
             idx = int(option_text.split("#")[1].split(" ")[0]) - 1
             self._load_saved_by_index(idx)
         except Exception as e:
-            messagebox.showerror("Error", f"No se pudo cargar el sistema seleccionado.\n\n{e}")
+            messagebox.showerror("Error", f"Could not load the selected system.\n\n{e}")
 
     def _load_saved_by_index(self, idx):
         if idx < 0 or idx >= len(self.saved_items):
-            messagebox.showerror("Error", "Índice de sistema guardado inválido.")
+            messagebox.showerror("Error", "Invalid saved system index.")
             return
 
         obj = self.saved_items[idx]
         size = obj.get("size", None)
         if not size:
-            messagebox.showerror("Error", "El sistema guardado no contiene información de tamaño.")
+            messagebox.showerror("Error", "The saved system does not contain size information.")
             return
 
         self.size = size
@@ -633,7 +698,7 @@ class FasorCalculator(ctk.CTk):
         A_p = obj.get("A_polar", None)
         b_p = obj.get("b_polar", None)
         if A_p is None or b_p is None:
-            messagebox.showerror("Error", "El sistema guardado no contiene A_polar/b_polar.")
+            messagebox.showerror("Error", "The saved system does not contain A_polar/b_polar.")
             return
 
         for i in range(self.size):
@@ -652,34 +717,34 @@ class FasorCalculator(ctk.CTk):
             except Exception:
                 pass
 
-        messagebox.showinfo("Listo", f"Sistema guardado #{idx+1} cargado en la GUI.")
+        messagebox.showinfo("Done", f"Saved system #{idx+1} loaded into the GUI.")
 
     def load_saved_menu_popup(self):
         """Alternative popup listing (just to re-open the menu if needed)."""
         # The saved_menu OptionMenu is visible; this function simply refreshes and focuses it.
         self.load_saved_systems()
-        messagebox.showinfo("Info", "Lista de sistemas guardados actualizada. Usa el menú desplegable 'Sistemas guardados' para seleccionar uno.")
+        messagebox.showinfo("Info", "Saved systems list updated. Use the 'Saved systems' dropdown to select one.")
 
     def import_from_file(self):
         """Allow user to pick a different saved file and load its entries into the saved menu."""
-        file_path = filedialog.askopenfilename(title="Selecciona archivo de sistemas guardados", filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
+        file_path = filedialog.askopenfilename(title="Select saved systems file", filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
         if not file_path:
             return
         try:
             imported = self.core.import_from_file(file_path)
             if not imported:
-                messagebox.showwarning("Advertencia", "No se encontraron entradas válidas en el archivo.")
+                messagebox.showwarning("Warning", "No valid entries found in the file.")
                 return
             self.saved_items = imported
             labels = []
             for i, obj in enumerate(self.saved_items, start=1):
                 ts = obj.get("timestamp", "unknown time")
-                labels.append(f"Sistema guardado #{i} — {ts}")
+                labels.append(f"Saved system #{i} — {ts}")
             self.saved_menu.configure(values=labels)
             self.saved_menu.set(labels[-1])
-            messagebox.showinfo("Importado", f"Se importaron {len(self.saved_items)} sistemas desde {file_path}")
+            messagebox.showinfo("Imported", f"Imported {len(self.saved_items)} systems from {file_path}")
         except Exception as e:
-            messagebox.showerror("Error", f"No se pudo importar el archivo.\n\n{e}")
+            messagebox.showerror("Error", f"Could not import the file.\n\n{e}")
 
     # ============================
     # SIZE MODIFIER
@@ -696,9 +761,9 @@ class FasorCalculator(ctk.CTk):
                 self.build_matrix()
                 self.dynamic_window_resize()
             else:
-                messagebox.showwarning("Advertencia", "El tamaño debe estar entre 1 y 10.")
+                messagebox.showwarning("Warning", "Size must be between 1 and 10.")
         except ValueError:
-            messagebox.showerror("Error", "Por favor ingresa un número válido.")
+            messagebox.showerror("Error", "Please enter a valid number.")
 
     def _themed_size_dialog(self, current=None):
         """Create a modal CTkToplevel input dialog using current theme colors.
@@ -721,7 +786,7 @@ class FasorCalculator(ctk.CTk):
         dlg.configure(fg_color=frame_color)
 
         # Content
-        ctk.CTkLabel(dlg, text="Ingresa el tamaño (máx 10):", text_color=label_color).pack(padx=12, pady=(12,6))
+        ctk.CTkLabel(dlg, text="Enter size (max 10):", text_color=label_color).pack(padx=12, pady=(12,6))
 
         entry = ctk.CTkEntry(dlg, width=120)
         try:
