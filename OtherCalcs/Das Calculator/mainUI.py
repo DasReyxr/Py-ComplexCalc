@@ -3,10 +3,7 @@
 --------- Auf Das ---------
 ------ Das Calculator ------
 -------- 15/11/2025 --------
-Improvements
-rec to pol and vice versa
-polar notation L instead of ∠
-when i insert / it appears in a format as 
+Improvement
 NUM
 ---
 DEN
@@ -55,6 +52,11 @@ class EngCalculator(ctk.CTk):
         self.geometry("900x700")
         self.resizable(False, False)
 
+        # ------ THEME SETUP ---------
+        self.setup_colors()
+        self.current_mode = "dark"
+        self.current_colors = self.colors_dark.copy()
+
         # ------ HISTORY ---------
         self.history = []  # list of (expr, result)
         self.history_index = None
@@ -92,6 +94,17 @@ class EngCalculator(ctk.CTk):
         self.output_label = ctk.CTkLabel(self, text="", font=("Arial", 18))
         self.output_label.pack(pady=5)
 
+        # ------ THEME TOGGLE ---------
+        self.mode_switch = ctk.CTkSwitch(
+            self,
+            text="Dark Mode",
+            command=self.toggle_theme,
+            onvalue="dark",
+            offvalue="pink"
+        )
+        self.mode_switch.select()
+        self.mode_switch.pack(pady=(10, 6))
+
         # ------ MODE INDICATOR (always visible above keypad) ---------
         self.mode_indicator = ctk.CTkLabel(self, text="Mode: Degrees", font=("Arial", 14))
         self.mode_indicator.pack(pady=2)
@@ -124,6 +137,7 @@ class EngCalculator(ctk.CTk):
         self.mode_btn.pack(pady=5)
 
         self.build_keypad_for_mode(self.calc_mode)
+        self.apply_dark_mode_colors()
 
     def configure_tab_grid(self, cell_chars=6, max_cells=40):
         try:
@@ -135,6 +149,98 @@ class EngCalculator(ctk.CTk):
             self.display.configure(tabs=stops)
         except Exception:
             pass
+
+    # ---------------- Theme Management ----------------
+    def setup_colors(self):
+        """Define color palettes for dark and pink modes."""
+        self.colors_dark = {
+            "bg": "#0f0f10",
+            "frame": "#1f1f20",
+            "text": "#FFFFFF",
+            "button": "#3a3a3a",
+            "button_hover": "#4a4a4a",
+            "entry": "#191919",
+            "entry_text": "#FFFFFF",
+            "border": "#333333",
+            "textbox": "#141414",
+            "label_text": "#FFFFFF",
+            "button_text": "#FFFFFF",
+        }
+
+        self.colors_pink = {
+            "bg": "#FFE4F0",
+            "frame": "#FFF0F5",
+            "text": "#8B4789",
+            "button": "#FF69B4",
+            "button_hover": "#FF1493",
+            "entry": "#FFFFFF",
+            "entry_text": "#8B4789",
+            "border": "#FFB6D9",
+            "textbox": "#FFFFFF",
+            "label_text": "#8B4789",
+            "button_text": "#FFFFFF",
+        }
+
+    def toggle_theme(self):
+        """Switch between dark and pink modes."""
+        # If switch text says "Dark Mode", user just switched OFF (to pink)
+        # If switch text says "Pink Mode", user just switched ON (to dark)
+        if self.current_mode == "dark":
+            self.current_mode = "pink"
+            self.current_colors = self.colors_pink.copy()
+            self.mode_switch.configure(text="Pink Mode")
+        else:
+            self.current_mode = "dark"
+            self.current_colors = self.colors_dark.copy()
+            self.mode_switch.configure(text="Dark Mode")
+
+        self.apply_dark_mode_colors()
+
+    def apply_dark_mode_colors(self):
+        """Apply current color scheme to all widgets."""
+        self.configure(fg_color=self.current_colors["bg"])
+        self.mode_switch.configure(
+            text="Dark Mode" if self.current_mode == "dark" else "Pink Mode",
+            fg_color=self.current_colors["frame"],
+            text_color=self.current_colors["text"],
+            button_color=self.current_colors["button"],
+            progress_color=self.current_colors["button"]
+        )
+
+        # Apply colors to all widgets recursively
+        for widget in self._get_all_widgets(self):
+            if isinstance(widget, ctk.CTkFrame):
+                widget.configure(fg_color=self.current_colors["frame"])
+            elif isinstance(widget, ctk.CTkLabel):
+                widget.configure(
+                    fg_color="transparent",
+                    text_color=self.current_colors["label_text"]
+                )
+            elif isinstance(widget, ctk.CTkButton):
+                widget.configure(
+                    fg_color=self.current_colors["button"],
+                    text_color=self.current_colors.get("button_text", "#FFFFFF"),
+                    hover_color=self.current_colors["button_hover"]
+                )
+            elif isinstance(widget, ctk.CTkEntry):
+                widget.configure(
+                    fg_color=self.current_colors["entry"],
+                    text_color=self.current_colors["entry_text"],
+                    border_color=self.current_colors["border"]
+                )
+            elif isinstance(widget, ctk.CTkTextbox):
+                widget.configure(
+                    fg_color=self.current_colors["textbox"],
+                    text_color=self.current_colors["text"]
+                )
+
+    def _get_all_widgets(self, parent):
+        """Recursively get all widgets from parent."""
+        widgets = []
+        for widget in parent.winfo_children():
+            widgets.append(widget)
+            widgets.extend(self._get_all_widgets(widget))
+        return widgets
 
     # ---------------- Mode Management ----------------
     def open_modes_popup(self):
@@ -545,12 +651,9 @@ class EngCalculator(ctk.CTk):
         i = 0
         while i < len(lines):
             if i + 2 < len(lines) and "-----" in lines[i+1]:
-                # Expand tabs to fixed spaces to align columns deterministically
-                def expand_tabs(s: str, n: int = 6) -> str:
-                    return s.replace("\t", " " * n)
-                top = expand_tabs(lines[i])
-                mid = expand_tabs(lines[i+1])
-                bot = expand_tabs(lines[i+2])
+                top = lines[i]
+                mid = lines[i+1]
+                bot = lines[i+2]
                 # Normalize lengths
                 maxlen = max(len(top), len(mid), len(bot))
                 top = top.ljust(maxlen)
@@ -565,46 +668,23 @@ class EngCalculator(ctk.CTk):
                     if prefix_text:
                         expr.append(prefix_text)
                 while j < maxlen:
-                    # Find any run of 5 or more dashes as a fraction bar
-                    if len(mid) - j >= 5 and set(mid[j:j+5]) == {'-'}:
-                        # extend to full run
+                    if mid.startswith("-----", j):
                         start = j
-                        k = j + 5
-                        while k < maxlen and mid[k] == '-':
-                            k += 1
-                        end = k
-                        # Extract numerator: token immediately before the dashes on top line
-                        # Extract denominator: token immediately after dashes on bottom line
-                        def get_num(s, dash_idx):
-                            # Back up from dash_idx, skipping spaces, grab the token
-                            k = dash_idx - 1
-                            while k >= 0 and s[k] == ' ':
-                                k -= 1
-                            if k < 0:
-                                return ""
-                            # k now points to last char of a potential token; collect backward
-                            t = []
-                            while k >= 0 and s[k] != ' ':
-                                t.insert(0, s[k])
-                                k -= 1
-                            return ''.join(t)
-
-                        def get_den(s, dash_idx):
-                            # After the dashes, skip spaces, grab the token
-                            k = dash_idx
+                        end = j + 5
+                        # Extract numerator and denominator tokens starting at 'start'
+                        def read_token(s, idx):
+                            k = idx
+                            # Skip spaces
                             while k < len(s) and s[k] == ' ':
                                 k += 1
-                            if k >= len(s):
-                                return ""
-                            # k now points to first char of a potential token; collect forward
                             t = []
                             while k < len(s) and s[k] != ' ':
                                 t.append(s[k])
                                 k += 1
                             return ''.join(t)
 
-                        num = get_num(top, start)
-                        den = get_den(bot, start + 5)  # start + 5 to skip the dashes
+                        num = read_token(top, start)
+                        den = read_token(bot, start)
                         if not num:
                             num = "0"
                         if not den:
@@ -613,8 +693,7 @@ class EngCalculator(ctk.CTk):
                         j = end
                     else:
                         ch = mid[j]
-                        # Only propagate real operators; ignore stray single '-' that are part of spacing
-                        if not ch.isspace() and ch not in '-':
+                        if not ch.isspace():
                             expr.append(ch)
                         j += 1
                 out_parts.append(''.join(expr))
