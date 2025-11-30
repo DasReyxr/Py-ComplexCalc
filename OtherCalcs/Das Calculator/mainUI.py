@@ -43,7 +43,7 @@ MODULES = {
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
 
-
+DIVISIONLINE = "----"
 # ---------------- The Calculator GUI ----------------
 class EngCalculator(ctk.CTk):
     def __init__(self):
@@ -73,7 +73,7 @@ class EngCalculator(ctk.CTk):
         self.display.bind("<Up>", self.on_up)
         self.display.bind("<Down>", self.on_down)
         self.display.bind("<Return>", self.enter)
-        # Fraction template on '/'
+        # Fraction template on DIVISIONLINE[0]
         self.display.bind("/", self.on_slash)
         # Literal inline division: Ctrl + /
         self.display.bind("<Control-Key-/>", self.on_ctrl_slash)
@@ -351,7 +351,9 @@ class EngCalculator(ctk.CTk):
 
         # Preprocess ENG-specific syntaxes: fraction blocks and polar literals
         if self.calc_mode == "ENG":
+            print(f"DEBUG raw_expr:\n{repr(raw_expr)}")
             expr_for_history = self.replace_fraction_blocks(raw_expr)
+            print(f"DEBUG after replace_fraction_blocks: {repr(expr_for_history)}")
             expr_for_history = polar_literal_to_func(expr_for_history)
             expr = expr_for_history
         else:
@@ -450,7 +452,7 @@ class EngCalculator(ctk.CTk):
     # ---------------- Fractions UX ----------------
     def on_slash(self, event=None):
         if self.calc_mode != "ENG":
-            return  # let normal '/' in DIG
+            return  # let normal DIVISIONLINE[0] in DIG
         try:
             pos = self.display.index(tk.INSERT)
             line_s, col_s = pos.split(".")
@@ -462,14 +464,27 @@ class EngCalculator(ctk.CTk):
             next_line_text = self.display.get(f"{line+1}.0", f"{line+1}.end")
 
             import re as _re
+            
+            # Check if we're on a numerator line (next line has DIVISIONLINE)
+            on_numerator_line = DIVISIONLINE in next_line_text
+            
+            # Check if we're on a denominator line (previous line has DIVISIONLINE)
+            on_denominator_line = DIVISIONLINE in prev_line_text
+            
+            # If on numerator or denominator line, just insert "/" inline (no new block)
+            if on_numerator_line or on_denominator_line:
+                self.display.insert(pos, "/")
+                self.display.mark_set(tk.INSERT, f"{line}.{col+1}")
+                return "break"
+            
             # Selection takes priority for numerator
             numerator_sel = None
             if self.display.tag_ranges("sel"):
                 numerator_sel = self.display.get("sel.first", "sel.last")
                 self.display.delete("sel.first", "sel.last")
 
-            # Detect if we're on a dash line (contains '-----' anywhere)
-            on_dash_line = ("-----" in cur_line_text)
+            # Detect if we're on a division line (contains DIVISIONLINE anywhere)
+            on_dash_line = (DIVISIONLINE in cur_line_text)
 
             if on_dash_line and line > 1:
                 # Inline add another fraction at current column
@@ -478,15 +493,16 @@ class EngCalculator(ctk.CTk):
                     numerator = numerator_sel
                 else:
                     left_segment = self.display.get(f"{line}.0", pos)
-                    m = _re.search(r"([+\-]?\d+(?:\.\d+)?(?:[eE][+\-]?\d+)?i?)$", left_segment)
+                    # Only capture the number (not the operator before it)
+                    m = _re.search(r"(\d+(?:\.\d+)?(?:[eE][+\-]?\d+)?i?)$", left_segment)
                     if m and m.group(1):
                         numerator = m.group(1)
-                        start_col = len(left_segment) - len(m.group(1))
+                        start_col = len(left_segment) - len(numerator)
                         # remove that token from current (dash) line
                         self.display.delete(f"{line}.{start_col}", pos)
                         col = start_col  # align to token start
                     else:
-                        numerator = "NUM"
+                        numerator = "1"
 
                 # Ensure above and below lines long enough; align by tabs so each term sits in its cell
                 def ensure_col(line_no: int, col_no: int):
@@ -515,8 +531,8 @@ class EngCalculator(ctk.CTk):
 
                 # Insert components aligned at column
                 self.display.insert(f"{line-1}.{col}", numerator)
-                self.display.insert(f"{line}.{col}", "-----")
-                self.display.insert(f"{line+1}.{col}", "DEN")
+                self.display.insert(f"{line}.{col}", DIVISIONLINE)
+                self.display.insert(f"{line+1}.{col}", "D")
                 # Move caret to denominator position to keep typing
                 self.display.mark_set(tk.INSERT, f"{line+1}.{col}")
                 return "break"
@@ -526,24 +542,36 @@ class EngCalculator(ctk.CTk):
                 if txt is None:
                     # Try to capture numeric token immediately before caret on the same line
                     left_segment = self.display.get(f"{line}.0", pos)
-                    m = _re.search(r"([+\-]?\d+(?:\.\d+)?(?:[eE][+\-]?\d+)?i?)$", left_segment)
+                    # Only capture the number (not the operator before it)
+                    # Use \d to start, so -5 after 2 becomes just 5, leaving "2-" 
+                    m = _re.search(r"(\d+(?:\.\d+)?(?:[eE][+\-]?\d+)?i?)$", left_segment)
                     if m:
                         numerator = m.group(1)
                         start_col = len(left_segment) - len(m.group(1))
                         self.display.delete(f"{line}.{start_col}", pos)
                     else:
-                        numerator = "NUM"
+                        # Check for standalone negative number at start of line
+                        m2 = _re.search(r"^([+\-]?\d+(?:\.\d+)?(?:[eE][+\-]?\d+)?i?)$", left_segment)
+                        if m2:
+                            numerator = m2.group(1)
+                            start_col = 0
+                            self.display.delete(f"{line}.{start_col}", pos)
+                        else:
+                            numerator = "N"
                 else:
                     numerator = txt
                     self.display.delete("sel.first", "sel.last")
 
                 insert_at = self.display.index(tk.INSERT)
-                # Indent dash/den lines to current column so the dashes align under the numerator,
+                # Indent dash/D lines to current column so the dashes align under the numerator,
                 # keeping any left-side terms (e.g., '2-') outside the fraction but parseable.
-                indent = " " * col
-                block = f"{numerator}\n{indent}-----\n{indent}DEN"
+                if col>4:
+                    indent = " " * (col)
+                else:
+                    indent = ""
+                block = f"{numerator}\n{indent}{DIVISIONLINE}\n{indent}D"
                 self.display.insert(insert_at, block)
-                # place cursor at start of DEN line at same column
+                # place cursor at start of D line at same column
                 line2, col2 = map(int, insert_at.split("."))
                 den_line_index = f"{line2+2}.{col}"
                 self.display.mark_set(tk.INSERT, den_line_index)
@@ -566,7 +594,7 @@ class EngCalculator(ctk.CTk):
         return None
 
     def on_ctrl_slash(self, event=None):
-        # Insert a literal '/': allows inline divisions like 1/2/3/4
+        # Insert a literal DIVISIONLINE[0]: allows inline divisions like 1/2/3/4
         try:
             pos = self.display.index(tk.INSERT)
             self.display.insert(pos, "/")
@@ -582,9 +610,9 @@ class EngCalculator(ctk.CTk):
             pos = self.display.index(tk.INSERT)
             line = int(pos.split(".")[0])
             cur_line = self.display.get(f"{line}.0", f"{line}.end")
-            # denominator line if previous line starts with '-----'
+            # denominator line if previous line starts with '////'
             prev_line = self.display.get(f"{line-1}.0", f"{line-1}.end") if line > 1 else ""
-            if prev_line.lstrip().startswith("-----"):
+            if prev_line.lstrip().startswith(DIVISIONLINE):
                 # at end?
                 line_end = self.display.index(f"{line}.end")
                 if pos == line_end:
@@ -611,18 +639,18 @@ class EngCalculator(ctk.CTk):
             below = self.display.get(f"{line+1}.0", f"{line+1}.end")
 
             # If on middle line '---', jump accordingly
-            if cur.lstrip().startswith("-----"):
+            if cur.lstrip().startswith(DIVISIONLINE):
                 target_line = line-1 if direction == "up" else line+1
                 self.display.mark_set(tk.INSERT, f"{target_line}.end")
                 return True
 
             # If on numerator with next line '---' and going down
-            if below.lstrip().startswith("-----") and direction == "down":
+            if below.lstrip().startswith(DIVISIONLINE) and direction == "down":
                 self.display.mark_set(tk.INSERT, f"{line+2}.end")
                 return True
 
             # If on denominator with previous line '---' and going up
-            if above.lstrip().startswith("-----") and direction == "up":
+            if above.lstrip().startswith(DIVISIONLINE) and direction == "up":
                 self.display.mark_set(tk.INSERT, f"{line-2}.end")
                 return True
         except Exception:
@@ -639,18 +667,19 @@ class EngCalculator(ctk.CTk):
 
     def replace_fraction_blocks(self, text: str) -> str:
         """Parse multi-line fractions possibly placed side-by-side.
-        For any triplet of lines where the middle contains '-----', scan left-to-right and
-        reconstruct an expression by converting each '-----' column span into (NUM)/(DEN),
+        For any triplet of lines where the middle contains DIVISIONLINE, scan left-to-right and
+        reconstruct an expression by converting each DIVISIONLINE column span into (NUM)/(DEN),
         where NUM and DEN are the contiguous non-space tokens starting at the same column
         on the lines above and below.
-        Non-fraction operators/tokens are taken from the middle (dashes) line.
-        Other lines without '-----' are appended as-is.
+        Non-fraction operators/tokens are taken from the middle line.
+        Other lines without DIVISIONLINE are appended as-is.
         """
         lines = text.splitlines()
         out_parts = []
         i = 0
+        divlen = len(DIVISIONLINE)  # Length of the division marker
         while i < len(lines):
-            if i + 2 < len(lines) and "-----" in lines[i+1]:
+            if i + 2 < len(lines) and DIVISIONLINE in lines[i+1]:
                 top = lines[i]
                 mid = lines[i+1]
                 bot = lines[i+2]
@@ -661,30 +690,29 @@ class EngCalculator(ctk.CTk):
                 bot = bot.ljust(maxlen)
                 j = 0
                 expr = []
-                # Preserve any prefix text that appears on the top line before the first dash span
-                first_dash = mid.find("-----")
-                if first_dash > 0:
-                    prefix_text = top[:first_dash].strip()
-                    if prefix_text:
-                        expr.append(prefix_text)
                 while j < maxlen:
-                    if mid.startswith("-----", j):
+                    if mid.startswith(DIVISIONLINE, j):
                         start = j
-                        end = j + 5
-                        # Extract numerator and denominator tokens starting at 'start'
-                        def read_token(s, idx):
-                            k = idx
-                            # Skip spaces
-                            while k < len(s) and s[k] == ' ':
-                                k += 1
-                            t = []
-                            while k < len(s) and s[k] != ' ':
-                                t.append(s[k])
-                                k += 1
-                            return ''.join(t)
-
-                        num = read_token(top, start)
-                        den = read_token(bot, start)
+                        end = j + divlen
+                        
+                        # Read token that overlaps with the division line region
+                        # The token could start before 'start' and extend into/past the ---- region
+                        def read_token_around(s, div_start, div_end):
+                            # Find the token that covers the division line area
+                            # Look backwards from div_start to find token start
+                            token_start = div_start
+                            while token_start > 0 and s[token_start - 1] != ' ':
+                                token_start -= 1
+                            # Look forwards from div_start to find token end
+                            token_end = div_start
+                            while token_end < len(s) and s[token_end] != ' ':
+                                token_end += 1
+                            token = s[token_start:token_end].strip()
+                            return token
+                        
+                        num = read_token_around(top, start, end)
+                        den = read_token_around(bot, start, end)
+                            
                         if not num:
                             num = "0"
                         if not den:
@@ -693,7 +721,8 @@ class EngCalculator(ctk.CTk):
                         j = end
                     else:
                         ch = mid[j]
-                        if not ch.isspace():
+                        # Skip the division line characters, only add non-space operators
+                        if not ch.isspace() and ch != '/':
                             expr.append(ch)
                         j += 1
                 out_parts.append(''.join(expr))
@@ -713,17 +742,17 @@ class EngCalculator(ctk.CTk):
             if col == 0:
                 return None
             left_char = self.display.get(f"{line}.{col-1}", f"{line}.{col}")
-            if left_char == '-':
-                # Identify entire run of dashes around this point
+            if left_char == DIVISIONLINE[0]:
+                # Identify entire run of slashes around this point
                 full_line = self.display.get(f"{line}.0", f"{line}.end")
-                if '-----' in full_line:
+                if DIVISIONLINE in full_line:
                     start = col-1
-                    while start > 0 and full_line[start-1] == '-':
+                    while start > 0 and full_line[start-1] == DIVISIONLINE[0]:
                         start -= 1
                     end = col
-                    while end < len(full_line) and full_line[end] == '-':
+                    while end < len(full_line) and full_line[end] == DIVISIONLINE[0]:
                         end += 1
-                    if end - start >= 5:
+                    if end - start >= len(DIVISIONLINE):
                         # Also remove numerator and denominator tokens aligned at 'start'
                         def token_span(s, idx):
                             # Expand tabs to spaces like parser
@@ -759,16 +788,16 @@ class EngCalculator(ctk.CTk):
             line = int(pos.split(".")[0])
             col = int(pos.split(".")[1])
             cur_char = self.display.get(f"{line}.{col}", f"{line}.{col+1}")
-            if cur_char == '-':
+            if cur_char == DIVISIONLINE[0]:
                 full_line = self.display.get(f"{line}.0", f"{line}.end")
-                if '-----' in full_line:
+                if DIVISIONLINE in full_line:
                     start = col
-                    while start > 0 and full_line[start-1] == '-':
+                    while start > 0 and full_line[start-1] == DIVISIONLINE[0]:
                         start -= 1
                     end = col
-                    while end < len(full_line) and full_line[end] == '-':
+                    while end < len(full_line) and full_line[end] == DIVISIONLINE[0]:
                         end += 1
-                    if end - start >= 5:
+                    if end - start >= len(DIVISIONLINE):
                         # Remove aligned numerator/denominator too
                         def token_span(s, idx):
                             s2 = s.replace('\t', '      ')
@@ -804,7 +833,7 @@ class EngCalculator(ctk.CTk):
             line = int(pos.split(".")[0])
             col = int(pos.split(".")[1])
             cur_line = self.display.get(f"{line}.0", f"{line}.end")
-            if "-----" in cur_line and line > 1:
+            if DIVISIONLINE in cur_line and line > 1:
                 # Ensure top and bottom lines padded to this column
                 def ensure_col(line_no: int, col_no: int):
                     end_idx = self.display.index(f"{line_no}.end")
