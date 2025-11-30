@@ -80,15 +80,24 @@ class EngCalculator(ctk.CTk):
         self.display.bind("<KP_Divide>", self.on_ctrl_slash)
         # Exit denominator with Right arrow
         self.display.bind("<Right>", self.on_right)
-        # Align '+' on dash line between fractions
-        self.display.bind("+", self.on_plus)
-        self.display.bind("<KP_Add>", self.on_plus)
+        # Operators on dash line between fractions
+        self.display.bind("+", self.on_operator)
+        self.display.bind("<KP_Add>", self.on_operator)
+        self.display.bind("-", self.on_operator)
+        self.display.bind("<KP_Subtract>", self.on_operator)
+        self.display.bind("*", self.on_operator)
+        self.display.bind("<KP_Multiply>", self.on_operator)
         # Delete entire fraction when deleting a dash
         self.display.bind("<BackSpace>", self.on_backspace)
         self.display.bind("<Delete>", self.on_delete_key)
         # History with Shift + arrows
         self.display.bind("<Shift-Up>", self.load_prev)
         self.display.bind("<Shift-Down>", self.load_next)
+        # Shift operators (keyboard < and > insert << and >>)
+        self.display.bind("<less>", self.on_less_than)
+        self.display.bind("<greater>", self.on_greater_than)
+        # Auto-expand division line when typing in numerator
+        self.display.bind("<KeyRelease>", self.on_key_release)
 
         # ------ OUTPUT LABEL ---------
         self.output_label = ctk.CTkLabel(self, text="", font=("Arial", 18))
@@ -604,6 +613,57 @@ class EngCalculator(ctk.CTk):
         except Exception:
             return "break"
 
+    def on_less_than(self, event=None):
+        # Insert << when user types <
+        if self.calc_mode == "DIG":
+            self.display.insert(tk.INSERT, "<<")
+            return "break"
+        return None  # Allow normal < in ENG mode
+
+    def on_greater_than(self, event=None):
+        # Insert >> when user types >
+        if self.calc_mode == "DIG":
+            self.display.insert(tk.INSERT, ">>")
+            return "break"
+        return None  # Allow normal > in ENG mode
+
+    def on_key_release(self, event=None):
+        """Auto-expand division line to match numerator width when typing in numerator."""
+        if self.calc_mode != "ENG":
+            return None
+        try:
+            pos = self.display.index(tk.INSERT)
+            line = int(pos.split(".")[0])
+            
+            # Check if next line has division line (we're on numerator)
+            next_line_text = self.display.get(f"{line+1}.0", f"{line+1}.end")
+            if DIVISIONLINE in next_line_text:
+                cur_line_text = self.display.get(f"{line}.0", f"{line}.end")
+                num_len = len(cur_line_text.rstrip())
+                
+                # Find current division line start and dash count
+                div_line = line + 1
+                div_text = self.display.get(f"{div_line}.0", f"{div_line}.end")
+                
+                # Find where dashes start and end
+                dash_start = div_text.find('-')
+                if dash_start == -1:
+                    return None
+                dash_end = dash_start
+                while dash_end < len(div_text) and div_text[dash_end] == '-':
+                    dash_end += 1
+                
+                current_dash_len = dash_end - dash_start
+                needed_dash_len = max(4, num_len)  # At least 4 dashes
+                
+                if needed_dash_len > current_dash_len:
+                    # Expand the division line
+                    extra_dashes = '-' * (needed_dash_len - current_dash_len)
+                    self.display.insert(f"{div_line}.{dash_end}", extra_dashes)
+        except Exception:
+            pass
+        return None
+
     def on_right(self, event=None):
         # If caret is at end of a denominator line, jump to dash line end
         try:
@@ -718,11 +778,13 @@ class EngCalculator(ctk.CTk):
                         if not den:
                             den = "1"
                         expr.append(f"({num})/({den})")
-                        j = end
+                        # Skip ALL consecutive dashes (not just divlen)
+                        while j < maxlen and mid[j] == '-':
+                            j += 1
                     else:
                         ch = mid[j]
-                        # Skip the division line characters, only add non-space operators
-                        if not ch.isspace() and ch != '/':
+                        # Skip dash characters and spaces, only add operators
+                        if ch != '-' and not ch.isspace() and ch != '/':
                             expr.append(ch)
                         j += 1
                 out_parts.append(''.join(expr))
@@ -825,23 +887,81 @@ class EngCalculator(ctk.CTk):
             pass
         return None
 
-    def on_plus(self, event=None):
+    def on_operator(self, event=None):
+        """Handle +, -, * operators - place them on the division line when in a fraction context."""
         if self.calc_mode != "ENG":
             return None
+        
+        # Get the operator character from the event
+        op = event.char if event and event.char else "+"
+        
         try:
             pos = self.display.index(tk.INSERT)
             line = int(pos.split(".")[0])
             col = int(pos.split(".")[1])
+            
             cur_line = self.display.get(f"{line}.0", f"{line}.end")
-            if DIVISIONLINE in cur_line and line > 1:
-                # Ensure top and bottom lines padded to this column
+            prev_line = self.display.get(f"{line-1}.0", f"{line-1}.end") if line > 1 else ""
+            next_line = self.display.get(f"{line+1}.0", f"{line+1}.end")
+            
+            # Check if we're on numerator line (next line has ----)
+            if DIVISIONLINE in next_line:
+                # Move to the division line and insert operator there
+                div_line = line + 1
+                div_line_text = self.display.get(f"{div_line}.0", f"{div_line}.end")
+                # Pad numerator, division, and denominator lines
+                new_col = max(col, len(cur_line)) + 1
+                
                 def ensure_col(line_no: int, col_no: int):
                     end_idx = self.display.index(f"{line_no}.end")
                     cur_col = int(end_idx.split(".")[1])
                     if cur_col < col_no:
                         self.display.insert(end_idx, " " * (col_no - cur_col))
-                ensure_col(line-1, col)
-                ensure_col(line+1, col)
+                
+                ensure_col(line, new_col)      # numerator
+                ensure_col(div_line, new_col)  # division line
+                ensure_col(line + 2, new_col)  # denominator
+                
+                # Insert operator on division line
+                self.display.insert(f"{div_line}.{new_col}", op)
+                self.display.mark_set(tk.INSERT, f"{div_line}.{new_col + 1}")
+                return "break"
+            
+            # Check if we're on denominator line (prev line has ----)
+            elif DIVISIONLINE in prev_line:
+                # Move to the division line and insert operator there
+                div_line = line - 1
+                # Pad all three lines
+                new_col = max(col, len(cur_line)) + 1
+                
+                def ensure_col(line_no: int, col_no: int):
+                    end_idx = self.display.index(f"{line_no}.end")
+                    cur_col = int(end_idx.split(".")[1])
+                    if cur_col < col_no:
+                        self.display.insert(end_idx, " " * (col_no - cur_col))
+                
+                ensure_col(line - 2, new_col)  # numerator
+                ensure_col(div_line, new_col)  # division line
+                ensure_col(line, new_col)      # denominator
+                
+                # Insert operator on division line
+                self.display.insert(f"{div_line}.{new_col}", op)
+                self.display.mark_set(tk.INSERT, f"{div_line}.{new_col + 1}")
+                return "break"
+            
+            # Check if we're already on division line
+            elif DIVISIONLINE in cur_line:
+                # Pad numerator and denominator
+                def ensure_col(line_no: int, col_no: int):
+                    end_idx = self.display.index(f"{line_no}.end")
+                    cur_col = int(end_idx.split(".")[1])
+                    if cur_col < col_no:
+                        self.display.insert(end_idx, " " * (col_no - cur_col))
+                ensure_col(line - 1, col)
+                ensure_col(line + 1, col)
+                # Let normal insertion happen
+                return None
+                
         except Exception:
             pass
         # Default insertion of '+' continues
@@ -952,6 +1072,84 @@ class EngCalculator(ctk.CTk):
     def enter(self, event=None):
         self.evaluate()
         return "break"
+
+    # ---------------- LaTeX Export ----------------
+    def expr_to_latex(self, expr: str) -> str:
+        """Convert a math expression to LaTeX format."""
+        import re as _re
+        
+        # Convert fractions like (num)/(den) to \frac{num}{den}
+        def replace_frac(m):
+            num = m.group(1)
+            den = m.group(2)
+            return f"\\frac{{{num}}}{{{den}}}"
+        
+        latex = expr
+        # Match (...)/(...)
+        latex = _re.sub(r'\(([^()]+)\)/\(([^()]+)\)', replace_frac, latex)
+        
+        # Convert simple a/b fractions
+        latex = _re.sub(r'(\d+(?:\.\d+)?)/(\d+(?:\.\d+)?)', r'\\frac{\1}{\2}', latex)
+        
+        # Convert functions
+        latex = latex.replace('sqrt(', '\\sqrt{').replace('sin(', '\\sin(').replace('cos(', '\\cos(').replace('tan(', '\\tan(')
+        latex = latex.replace('log(', '\\log(').replace('exp(', '\\exp(')
+        
+        # Convert sqrt closing ) to }
+        latex = _re.sub(r'\\sqrt\{([^}]+)\)', r'\\sqrt{\1}', latex)
+        
+        # Convert pi and e
+        latex = latex.replace('pi', '\\pi').replace(' e ', ' e ')
+        
+        # Convert multiplication
+        latex = latex.replace('*', ' \\cdot ')
+        
+        # Convert angle notation (L angle)
+        latex = _re.sub(r'(\d+(?:\.\d+)?(?:[munpkMG])?)\s*L\s*(-?\d+(?:\.\d+)?)', r'\1 \\angle \2^\\circ', latex)
+        
+        return latex
+
+    def export_latex(self):
+        """Export history to LaTeX and copy to clipboard."""
+        if not self.history:
+            self.output_label.configure(text="No history to export")
+            return
+        
+        latex_lines = ["\\begin{align*}"]
+        for expr, result in self.history:
+            # Convert multi-line fraction to single line first
+            expr_single = self.replace_fraction_blocks(expr)
+            latex_expr = self.expr_to_latex(expr_single)
+            
+            # Parse result - take first line (Rect value)
+            result_first = result.split('\n')[0] if '\n' in result else result
+            result_first = result_first.replace('Rect:', '').strip()
+            
+            latex_lines.append(f"  {latex_expr} &= {result_first} \\\\")
+        
+        latex_lines.append("\\end{align*}")
+        latex_output = "\n".join(latex_lines)
+        
+        # Copy to clipboard
+        self.clipboard_clear()
+        self.clipboard_append(latex_output)
+        
+        # Show confirmation
+        self.output_label.configure(text="LaTeX copied to clipboard!")
+        
+        # Also show in a popup
+        win = ctk.CTkToplevel(self)
+        win.title("LaTeX Export")
+        win.geometry("500x400")
+        win.transient(self)
+        
+        ctk.CTkLabel(win, text="LaTeX Output (copied to clipboard):", font=("Arial", 12)).pack(pady=5)
+        
+        text_box = ctk.CTkTextbox(win, width=460, height=320, font=("Consolas", 11))
+        text_box.pack(padx=10, pady=5)
+        text_box.insert("1.0", latex_output)
+        
+        ctk.CTkButton(win, text="Close", command=win.destroy).pack(pady=5)
 
 
 # ---------------- Run ----------------
