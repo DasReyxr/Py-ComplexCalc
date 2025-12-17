@@ -1,0 +1,4 @@
+../Core/Src/HALConfig.c:14:6:SystemClock_Config	3
+../Core/Src/HALConfig.c:56:6:MX_SPI1_Init	2
+../Core/Src/HALConfig.c:94:6:MX_GPIO_Init	1
+../Core/Src/HALConfig.c:147:6:Error_Handler	1

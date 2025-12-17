@@ -22,7 +22,8 @@ uint8_t matSize;
 
 // Buffer 
 #define BUFFER_SIZE 16
-uint8_t index = 0;
+uint8_t index_var = 0;
+uint8_t level = 0 ;
 char buffer[BUFFER_SIZE];
 
 /* USER CODE BEGIN PV */
@@ -54,7 +55,6 @@ int main(void)
   init();
   ST7735_FillScreen(ST7735_BLACK);
 
-  uint8_t level = 0 ;
   char *keypress = NULL;
   char *endptr;           
   while (1){
@@ -128,8 +128,8 @@ uint8_t readPad(void){
         level--;
       return 1;
     default:
-      if((index < BUFFER_SIZE))
-        buffer[index++] = (char)keypress;
+      if((index_var < BUFFER_SIZE))
+        buffer[index_var++] = (char)keypress;
       return 0;
     }
 }
