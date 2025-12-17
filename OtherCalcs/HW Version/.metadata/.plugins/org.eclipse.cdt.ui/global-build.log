@@ -873,3 +873,541 @@ Finished building: default.size.stdout
  
 Finished building: ComplexCalcProject.list
  
+11:00:15 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26852	    504	   2208	  29564	   737c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+11:00:48 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26852	    504	   2208	  29564	   737c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+11:17:58 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/0main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/0main.d" -MT"Core/Src/0main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/0main.o"
+arm-none-eabi-gcc "../Core/Src/HALTecMat4x4.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/HALTecMat4x4.d" -MT"Core/Src/HALTecMat4x4.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/HALTecMat4x4.o"
+../Core/Src/0main.c: In function 'main':
+../Core/Src/0main.c:170:29: warning: unused variable 'jaloone' [-Wunused-variable]
+  170 |                         int jaloone = solve_complex_system(matSize, A, b, x);
+      |                             ^~~~~~~
+../Core/Src/0main.c: At top level:
+../Core/Src/0main.c:34:23: warning: 'TestImage' defined but not used [-Wunused-const-variable=]
+   34 | static const uint16_t TestImage [] ={
+      |                       ^~~~~~~~~
+arm-none-eabi-gcc -o "ComplexCalcProject.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\dasre\Documents\Knowledge-db\ghFiles\pycodes\ComplexCalc\Py-ComplexCalc\OtherCalcs\HW Version\ComplexCalcProject\STM32F411CEUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ComplexCalcProject.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: ComplexCalcProject.elf
+ 
+arm-none-eabi-size  ComplexCalcProject.elf 
+arm-none-eabi-objdump -h -S ComplexCalcProject.elf  > "ComplexCalcProject.list"
+   text	   data	    bss	    dec	    hex	filename
+  27012	    616	   2216	  29844	   7494	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+Finished building: ComplexCalcProject.list
+ 
+11:23:52 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/HALTecMat4x4.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/HALTecMat4x4.d" -MT"Core/Src/HALTecMat4x4.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/HALTecMat4x4.o"
+arm-none-eabi-gcc -o "ComplexCalcProject.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\dasre\Documents\Knowledge-db\ghFiles\pycodes\ComplexCalc\Py-ComplexCalc\OtherCalcs\HW Version\ComplexCalcProject\STM32F411CEUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ComplexCalcProject.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: ComplexCalcProject.elf
+ 
+arm-none-eabi-size  ComplexCalcProject.elf 
+arm-none-eabi-objdump -h -S ComplexCalcProject.elf  > "ComplexCalcProject.list"
+   text	   data	    bss	    dec	    hex	filename
+  27012	    616	   2216	  29844	   7494	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+Finished building: ComplexCalcProject.list
+ 
+11:30:32 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  27012	    616	   2216	  29844	   7494	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+11:32:11 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  27012	    616	   2216	  29844	   7494	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+11:32:53 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  27012	    616	   2216	  29844	   7494	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+11:37:04 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/HALTecMat4x4.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/HALTecMat4x4.d" -MT"Core/Src/HALTecMat4x4.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/HALTecMat4x4.o"
+arm-none-eabi-gcc -o "ComplexCalcProject.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\dasre\Documents\Knowledge-db\ghFiles\pycodes\ComplexCalc\Py-ComplexCalc\OtherCalcs\HW Version\ComplexCalcProject\STM32F411CEUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ComplexCalcProject.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: ComplexCalcProject.elf
+ 
+arm-none-eabi-size  ComplexCalcProject.elf 
+arm-none-eabi-objdump -h -S ComplexCalcProject.elf  > "ComplexCalcProject.list"
+   text	   data	    bss	    dec	    hex	filename
+  26988	    616	   2216	  29820	   747c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+Finished building: ComplexCalcProject.list
+ 
+11:37:29 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26988	    616	   2216	  29820	   747c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+11:38:14 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26988	    616	   2216	  29820	   747c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+11:43:11 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/HALTecMat4x4.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/HALTecMat4x4.d" -MT"Core/Src/HALTecMat4x4.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/HALTecMat4x4.o"
+arm-none-eabi-gcc -o "ComplexCalcProject.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\dasre\Documents\Knowledge-db\ghFiles\pycodes\ComplexCalc\Py-ComplexCalc\OtherCalcs\HW Version\ComplexCalcProject\STM32F411CEUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ComplexCalcProject.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: ComplexCalcProject.elf
+ 
+arm-none-eabi-size  ComplexCalcProject.elf 
+arm-none-eabi-objdump -h -S ComplexCalcProject.elf  > "ComplexCalcProject.list"
+   text	   data	    bss	    dec	    hex	filename
+  26988	    616	   2216	  29820	   747c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+Finished building: ComplexCalcProject.list
+ 
+11:43:40 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26988	    616	   2216	  29820	   747c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+11:52:48 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/HALTecMat4x4.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/HALTecMat4x4.d" -MT"Core/Src/HALTecMat4x4.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/HALTecMat4x4.o"
+arm-none-eabi-gcc -o "ComplexCalcProject.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\dasre\Documents\Knowledge-db\ghFiles\pycodes\ComplexCalc\Py-ComplexCalc\OtherCalcs\HW Version\ComplexCalcProject\STM32F411CEUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ComplexCalcProject.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: ComplexCalcProject.elf
+ 
+arm-none-eabi-size  ComplexCalcProject.elf 
+arm-none-eabi-objdump -h -S ComplexCalcProject.elf  > "ComplexCalcProject.list"
+   text	   data	    bss	    dec	    hex	filename
+  26972	    616	   2216	  29804	   746c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+Finished building: ComplexCalcProject.list
+ 
+11:53:04 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26972	    616	   2216	  29804	   746c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+11:54:22 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26972	    616	   2216	  29804	   746c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+11:57:24 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26972	    616	   2216	  29804	   746c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+12:06:34 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/HALTecMat4x4.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/HALTecMat4x4.d" -MT"Core/Src/HALTecMat4x4.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/HALTecMat4x4.o"
+../Core/Src/HALTecMat4x4.c: In function 'gotKey':
+../Core/Src/HALTecMat4x4.c:41:49: warning: suggest parentheses around '-' inside '<<' [-Wparentheses]
+   41 |                 GPIOB->ODR = (GPIOB->ODR & (0xF0<<COL_INIT-4)) | (rowPins[i]<<ROW_INIT);
+      |                                                 ^~
+../Core/Src/HALTecMat4x4.c:45:50: warning: suggest parentheses around '-' inside '<<' [-Wparentheses]
+   45 |                 uint16_t key = GPIOB->IDR & (0xF0<<COL_INIT-4);
+      |                                                  ^~
+../Core/Src/HALTecMat4x4.c:47:32: warning: suggest parentheses around '-' inside '<<' [-Wparentheses]
+   47 |                 if(key != (0xF0<<COL_INIT-4)){
+      |                                ^~
+arm-none-eabi-gcc -o "ComplexCalcProject.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\dasre\Documents\Knowledge-db\ghFiles\pycodes\ComplexCalc\Py-ComplexCalc\OtherCalcs\HW Version\ComplexCalcProject\STM32F411CEUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ComplexCalcProject.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: ComplexCalcProject.elf
+ 
+arm-none-eabi-size  ComplexCalcProject.elf 
+arm-none-eabi-objdump -h -S ComplexCalcProject.elf  > "ComplexCalcProject.list"
+   text	   data	    bss	    dec	    hex	filename
+  26988	    616	   2216	  29820	   747c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+Finished building: ComplexCalcProject.list
+ 
+12:07:42 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26988	    616	   2216	  29820	   747c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+12:07:47 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26988	    616	   2216	  29820	   747c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+12:08:29 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/HALTecMat4x4.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/HALTecMat4x4.d" -MT"Core/Src/HALTecMat4x4.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/HALTecMat4x4.o"
+arm-none-eabi-gcc -o "ComplexCalcProject.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\dasre\Documents\Knowledge-db\ghFiles\pycodes\ComplexCalc\Py-ComplexCalc\OtherCalcs\HW Version\ComplexCalcProject\STM32F411CEUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ComplexCalcProject.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: ComplexCalcProject.elf
+ 
+arm-none-eabi-size  ComplexCalcProject.elf 
+arm-none-eabi-objdump -h -S ComplexCalcProject.elf  > "ComplexCalcProject.list"
+   text	   data	    bss	    dec	    hex	filename
+  26988	    616	   2216	  29820	   747c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+Finished building: ComplexCalcProject.list
+ 
+12:08:36 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26988	    616	   2216	  29820	   747c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+12:23:47 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26988	    616	   2216	  29820	   747c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+12:29:13 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26988	    616	   2216	  29820	   747c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+12:32:30 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/HALTecMat4x4.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/HALTecMat4x4.d" -MT"Core/Src/HALTecMat4x4.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/HALTecMat4x4.o"
+arm-none-eabi-gcc -o "ComplexCalcProject.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\dasre\Documents\Knowledge-db\ghFiles\pycodes\ComplexCalc\Py-ComplexCalc\OtherCalcs\HW Version\ComplexCalcProject\STM32F411CEUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ComplexCalcProject.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: ComplexCalcProject.elf
+ 
+arm-none-eabi-size  ComplexCalcProject.elf 
+arm-none-eabi-objdump -h -S ComplexCalcProject.elf  > "ComplexCalcProject.list"
+   text	   data	    bss	    dec	    hex	filename
+  26972	    616	   2216	  29804	   746c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+Finished building: ComplexCalcProject.list
+ 
+12:32:33 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26972	    616	   2216	  29804	   746c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+12:32:35 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26972	    616	   2216	  29804	   746c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+12:35:14 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/HALTecMat4x4.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/HALTecMat4x4.d" -MT"Core/Src/HALTecMat4x4.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/HALTecMat4x4.o"
+arm-none-eabi-gcc -o "ComplexCalcProject.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\dasre\Documents\Knowledge-db\ghFiles\pycodes\ComplexCalc\Py-ComplexCalc\OtherCalcs\HW Version\ComplexCalcProject\STM32F411CEUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ComplexCalcProject.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: ComplexCalcProject.elf
+ 
+arm-none-eabi-size  ComplexCalcProject.elf 
+arm-none-eabi-objdump -h -S ComplexCalcProject.elf  > "ComplexCalcProject.list"
+   text	   data	    bss	    dec	    hex	filename
+  26972	    616	   2216	  29804	   746c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+Finished building: ComplexCalcProject.list
+ 
+12:35:27 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26972	    616	   2216	  29804	   746c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+12:36:21 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/HALTecMat4x4.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/HALTecMat4x4.d" -MT"Core/Src/HALTecMat4x4.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/HALTecMat4x4.o"
+arm-none-eabi-gcc -o "ComplexCalcProject.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\dasre\Documents\Knowledge-db\ghFiles\pycodes\ComplexCalc\Py-ComplexCalc\OtherCalcs\HW Version\ComplexCalcProject\STM32F411CEUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ComplexCalcProject.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: ComplexCalcProject.elf
+ 
+arm-none-eabi-size  ComplexCalcProject.elf 
+arm-none-eabi-objdump -h -S ComplexCalcProject.elf  > "ComplexCalcProject.list"
+   text	   data	    bss	    dec	    hex	filename
+  26980	    616	   2216	  29812	   7474	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+Finished building: ComplexCalcProject.list
+ 
+12:36:53 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26980	    616	   2216	  29812	   7474	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+12:41:03 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/HALTecMat4x4.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/HALTecMat4x4.d" -MT"Core/Src/HALTecMat4x4.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/HALTecMat4x4.o"
+arm-none-eabi-gcc -o "ComplexCalcProject.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\dasre\Documents\Knowledge-db\ghFiles\pycodes\ComplexCalc\Py-ComplexCalc\OtherCalcs\HW Version\ComplexCalcProject\STM32F411CEUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ComplexCalcProject.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: ComplexCalcProject.elf
+ 
+arm-none-eabi-size  ComplexCalcProject.elf 
+arm-none-eabi-objdump -h -S ComplexCalcProject.elf  > "ComplexCalcProject.list"
+   text	   data	    bss	    dec	    hex	filename
+  26988	    616	   2216	  29820	   747c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+Finished building: ComplexCalcProject.list
+ 
+12:41:11 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26988	    616	   2216	  29820	   747c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+12:41:15 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26988	    616	   2216	  29820	   747c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+12:43:29 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/HALTecMat4x4.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/HALTecMat4x4.d" -MT"Core/Src/HALTecMat4x4.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/HALTecMat4x4.o"
+../Core/Src/HALTecMat4x4.c: In function 'gotKey':
+../Core/Src/HALTecMat4x4.c:41:51: error: 'COL_END' undeclared (first use in this function)
+   41 |                 GPIOB->ODR = (GPIOB->ODR & (0xF0<<COL_END)) | (rowPins[i]<<ROW_INIT);
+      |                                                   ^~~~~~~
+../Core/Src/HALTecMat4x4.c:41:51: note: each undeclared identifier is reported only once for each function it appears in
+make: *** [Core/Src/subdir.mk:49: Core/Src/HALTecMat4x4.o] Error 1
+"make -j8 all" terminated with exit code 2. Build might be incomplete.
+12:43:43 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/HALTecMat4x4.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/HALTecMat4x4.d" -MT"Core/Src/HALTecMat4x4.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/HALTecMat4x4.o"
+arm-none-eabi-gcc -o "ComplexCalcProject.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\dasre\Documents\Knowledge-db\ghFiles\pycodes\ComplexCalc\Py-ComplexCalc\OtherCalcs\HW Version\ComplexCalcProject\STM32F411CEUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ComplexCalcProject.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: ComplexCalcProject.elf
+ 
+arm-none-eabi-size  ComplexCalcProject.elf 
+arm-none-eabi-objdump -h -S ComplexCalcProject.elf  > "ComplexCalcProject.list"
+   text	   data	    bss	    dec	    hex	filename
+  26988	    616	   2216	  29820	   747c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+Finished building: ComplexCalcProject.list
+ 
+12:49:15 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26988	    616	   2216	  29820	   747c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+12:54:37 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26988	    616	   2216	  29820	   747c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+12:54:52 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26988	    616	   2216	  29820	   747c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+12:56:20 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26988	    616	   2216	  29820	   747c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+13:01:20 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26988	    616	   2216	  29820	   747c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+13:05:45 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26988	    616	   2216	  29820	   747c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+13:06:52 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26988	    616	   2216	  29820	   747c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+13:07:09 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26988	    616	   2216	  29820	   747c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+13:07:15 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26988	    616	   2216	  29820	   747c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+13:10:15 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/HALTecMat4x4.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/HALTecMat4x4.d" -MT"Core/Src/HALTecMat4x4.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/HALTecMat4x4.o"
+arm-none-eabi-gcc -o "ComplexCalcProject.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\dasre\Documents\Knowledge-db\ghFiles\pycodes\ComplexCalc\Py-ComplexCalc\OtherCalcs\HW Version\ComplexCalcProject\STM32F411CEUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ComplexCalcProject.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: ComplexCalcProject.elf
+ 
+arm-none-eabi-size  ComplexCalcProject.elf 
+arm-none-eabi-objdump -h -S ComplexCalcProject.elf  > "ComplexCalcProject.list"
+   text	   data	    bss	    dec	    hex	filename
+  27020	    616	   2216	  29852	   749c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+Finished building: ComplexCalcProject.list
+ 
+13:13:11 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  27020	    616	   2216	  29852	   749c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+13:18:10 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/0main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/0main.d" -MT"Core/Src/0main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/0main.o"
+../Core/Src/0main.c: In function 'main':
+../Core/Src/0main.c:170:29: warning: unused variable 'jaloone' [-Wunused-variable]
+  170 |                         int jaloone = solve_complex_system(matSize, A, b, x);
+      |                             ^~~~~~~
+../Core/Src/0main.c: In function 'readPad':
+../Core/Src/0main.c:188:19: warning: multi-character character constant [-Wmultichar]
+  188 |   if(*keypress == 'ñ')
+      |                   ^~~
+../Core/Src/0main.c: At top level:
+../Core/Src/0main.c:34:23: warning: 'TestImage' defined but not used [-Wunused-const-variable=]
+   34 | static const uint16_t TestImage [] ={
+      |                       ^~~~~~~~~
+arm-none-eabi-gcc -o "ComplexCalcProject.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\dasre\Documents\Knowledge-db\ghFiles\pycodes\ComplexCalc\Py-ComplexCalc\OtherCalcs\HW Version\ComplexCalcProject\STM32F411CEUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ComplexCalcProject.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: ComplexCalcProject.elf
+ 
+arm-none-eabi-size  ComplexCalcProject.elf 
+arm-none-eabi-objdump -h -S ComplexCalcProject.elf  > "ComplexCalcProject.list"
+   text	   data	    bss	    dec	    hex	filename
+  27004	    616	   2216	  29836	   748c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+Finished building: ComplexCalcProject.list
+ 
+13:21:07 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  27004	    616	   2216	  29836	   748c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+13:21:57 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  27004	    616	   2216	  29836	   748c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+13:22:04 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  27004	    616	   2216	  29836	   748c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+13:22:25 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  27004	    616	   2216	  29836	   748c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+13:23:10 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  27004	    616	   2216	  29836	   748c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+13:23:13 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  27004	    616	   2216	  29836	   748c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+13:23:32 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  27004	    616	   2216	  29836	   748c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+13:26:53 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  27004	    616	   2216	  29836	   748c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+13:27:03 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  27004	    616	   2216	  29836	   748c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+13:28:00 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  27004	    616	   2216	  29836	   748c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 
+13:28:16 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+make -j8 all 
+arm-none-eabi-size  ComplexCalcProject.elf 
+   text	   data	    bss	    dec	    hex	filename
+  27004	    616	   2216	  29836	   748c	ComplexCalcProject.elf
+Finished building: default.size.stdout
+ 

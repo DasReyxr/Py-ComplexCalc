@@ -1,25 +1,10 @@
-08:46:48 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+13:28:16 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
 make -j8 all 
-arm-none-eabi-gcc "../Core/Src/0main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/0main.d" -MT"Core/Src/0main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/0main.o"
-../Core/Src/0main.c: In function 'main':
-../Core/Src/0main.c:168:29: warning: unused variable 'jaloone' [-Wunused-variable]
-  168 |                         int jaloone = solve_complex_system(matSize, A, b, x);
-      |                             ^~~~~~~
-../Core/Src/0main.c: At top level:
-../Core/Src/0main.c:32:23: warning: 'TestImage' defined but not used [-Wunused-const-variable=]
-   32 | static const uint16_t TestImage [] ={
-      |                       ^~~~~~~~~
-arm-none-eabi-gcc -o "ComplexCalcProject.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\dasre\Documents\Knowledge-db\ghFiles\pycodes\ComplexCalc\Py-ComplexCalc\OtherCalcs\HW Version\ComplexCalcProject\STM32F411CEUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ComplexCalcProject.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: ComplexCalcProject.elf
- 
 arm-none-eabi-size  ComplexCalcProject.elf 
-arm-none-eabi-objdump -h -S ComplexCalcProject.elf  > "ComplexCalcProject.list"
    text	   data	    bss	    dec	    hex	filename
-  26852	    504	   2208	  29564	   737c	ComplexCalcProject.elf
+  27004	    616	   2216	  29836	   748c	ComplexCalcProject.elf
 Finished building: default.size.stdout
  
-Finished building: ComplexCalcProject.list
- 
 
-08:46:49 Build Finished. 0 errors, 2 warnings. (took 1s.242ms)
+13:28:16 Build Finished. 0 errors, 0 warnings. (took 455ms)
 

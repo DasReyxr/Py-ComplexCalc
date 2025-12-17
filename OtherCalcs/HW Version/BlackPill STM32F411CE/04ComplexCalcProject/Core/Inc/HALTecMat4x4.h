@@ -10,6 +10,7 @@
 
 #include <stm32f4xx.h>
 extern char* gotKey(void);
+extern char* toggleAlternateMode(void);
 extern void config4x4(void);
 
 

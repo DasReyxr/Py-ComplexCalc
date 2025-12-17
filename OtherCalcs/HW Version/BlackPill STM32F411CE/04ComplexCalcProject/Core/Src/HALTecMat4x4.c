@@ -1,11 +1,21 @@
 #include "HALTecMat4x4.h"
 #define ROWS 4
 #define COLS 4
-uint8_t keyHexa[ROWS][COLS]={
-{'0','1','2','3'},
-{'4','5','5','7'},
-{'8','9','A','B'},
-{'C','D','E','F'},
+#define ROW_INIT 6
+#define COL_END 8
+uint8_t toggle_Altern = 0;
+
+char *keyHexa[ROWS][COLS]={
+{"7","8","9","D"},
+{"4","5","6","-"},
+{"1","2","3","T"},
+{"#","0",".","="},
+};
+char *keyHexaAltern[ROWS][COLS]={
+{" ","W"," ","I"},
+{"L"," ","R"," "},
+{" ","B"," "," "},
+{" "," "," "," "},
 };
 
 uint8_t keyPolling[ROWS][COLS]={
@@ -22,27 +32,50 @@ uint8_t rowPins[ROWS] = {0XE,0XD,0XB,0X7};
 char* gotKey(void){
 	for(uint8_t i = 0; i<ROWS; i++){
 		//limpia de lo que nos interesa
-		GPIOD->ODR = (GPIOD->ODR & 0XF0) | rowPins[i];
-		//LIMPIAMOS LAS COLUMNAS
-		uint8_t key = GPIOD->IDR & 0XF0;
-		for(uint8_t j = 0; j<COLS; j++){
-		if(key != 0xF0){
-			key |= (GPIOD->ODR & 0X0F);
-		}
-		for(uint8_t j = 0; j<COLS; j++){
-		if(key == keyPolling[i][j])
-			return keyHexa[i][j];
-		}
+		/*0x272727
+		B15 B14 B13 B12 | B11 B10 B9 B8 | B7 B6 B5 B4 | B3 B2 B1 B0
+		 1   1   1   1  |  0  0  0  0 |  X  X  X  X | X  X  X  X 
+		 0   0   0   0  |  0  0  1  1 |  1  1  0  0 | 0  0  0  0
+		 */
+		
+		GPIOB->ODR = (GPIOB->ODR & (0xF0<<COL_END)) | (rowPins[i]<<ROW_INIT);
+		// Debounce
+		
+		//Checamos la presion de alguna columna 
+		uint16_t key = GPIOB->IDR & (0xF0<<COL_END);
+		// Checa si se detecto una columna 
+		if(key != (0xF0<<COL_END)){
+			key |= ((GPIOB->ODR & (0x0F<<ROW_INIT)) << 2);
+			key=key>>8;
+			// Si se presiono la funcion alterna 
+			if((key ==0XE7)){
+				toggle_Altern ^= 1;
+				return "F";
 			}
+			
+			//Busca si existe la presion 
+				for(uint8_t j = 0; j<COLS; j++){
+					if(key == keyPolling[i][j])	{
+						if(toggle_Altern == 0)
+							return keyHexa[i][j];
+						if(toggle_Altern == 1){
+							//toggle_Altern = 0;
+							return keyHexaAltern[i][j];
+							}
+						}
+					}
+				}
 	}
-		return 0x88;
+	return "ñ";
 }
+
+
 
 extern void config4x4(void){
 	/*PB[6-9] Scan
-	PB[10-13] Read*/
+	PB[COL_INIT-15] Read*/
 	RCC->AHB1ENR |= (1<<1); // Enable GPIOB clock
 	GPIOB->MODER |= (0X55 << 6*2);//SCAN
-	GPIOB->PUPDR |= (0X55<<10*2);//READ
+	GPIOB->PUPDR |= (0X55 << 12*2);//READ
 
 }
