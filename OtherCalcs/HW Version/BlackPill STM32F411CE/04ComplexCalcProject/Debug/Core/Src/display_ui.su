@@ -1,0 +1,4 @@
+../Core/Src/display_ui.c:26:6:drawLevel0	48	static
+../Core/Src/display_ui.c:50:6:drawLevel1	200	static
+../Core/Src/display_ui.c:185:6:drawLevel2	136	static
+../Core/Src/display_ui.c:237:6:updateBufferDisplay	32	static

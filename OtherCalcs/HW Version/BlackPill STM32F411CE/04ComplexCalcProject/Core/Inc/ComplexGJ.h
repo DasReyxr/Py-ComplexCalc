@@ -22,6 +22,7 @@ static inline cplx c_div(cplx a, cplx b) {
 }
 
 /* Solver function prototype */
+void cplx_to_str(cplx num, char* buffer, int* index);
 int solve_complex_system(int n, cplx A[N_MAX][N_MAX], cplx b[N_MAX], cplx x[N_MAX]);
 
 void itoa_simple(int, char*, int*);

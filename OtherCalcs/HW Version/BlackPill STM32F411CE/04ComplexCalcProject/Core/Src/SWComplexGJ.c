@@ -1,5 +1,21 @@
 #include "ComplexGJ.h"
 
+void cplx_to_str(cplx num, char* buffer, int* index) {
+    // Parte real
+    ftoa_for_oled(num.r, buffer, index, 2);
+    
+    // Signo de la parte imaginaria
+    if(num.i >= 0) {
+        buffer[(*index)++] = '+';
+    }
+    
+    // Parte imaginaria
+    ftoa_for_oled(num.i, buffer, index, 2);
+    buffer[(*index)++] = 'i';
+    buffer[(*index)] = '\0';
+}
+
+
 static void swap_rows(cplx A[N_MAX][N_MAX], cplx b[N_MAX], int n, int r1, int r2) {
     for (int j = 0; j < n; j++) {
         cplx tmp = A[r1][j];

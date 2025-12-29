@@ -2,6 +2,7 @@
 #ifndef __ST7735_H__
 #define __ST7735_H__
 
+#include "stm32f4xx_hal.h"
 #include "fonts.h"
 #include <stdbool.h>
 
@@ -248,6 +249,10 @@ extern "C" {
 void ST7735_Unselect();
 
 void ST7735_Init(void);
+
+void draw_bracket_left(uint16_t x, uint16_t y, uint16_t height, uint16_t color);
+
+void draw_bracket_right(uint16_t x, uint16_t y, uint16_t height, uint16_t color);
 void ST7735_DrawPixel(uint16_t x, uint16_t y, uint16_t color);
 void ST7735_WriteString(uint16_t x, uint16_t y, const char* str, FontDef font, uint16_t color, uint16_t bgcolor);
 void ST7735_FillRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color);

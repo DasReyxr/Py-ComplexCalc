@@ -60,8 +60,8 @@ all: main-build
 main-build: ComplexCalcProject.elf secondary-outputs
 
 # Tool invocations
-ComplexCalcProject.elf ComplexCalcProject.map: $(OBJS) $(USER_OBJS) C:\Users\dasre\Documents\Knowledge-db\ghFiles\pycodes\ComplexCalc\Py-ComplexCalc\OtherCalcs\HW\ Version\ComplexCalcProject\STM32F411CEUX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "ComplexCalcProject.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\dasre\Documents\Knowledge-db\ghFiles\pycodes\ComplexCalc\Py-ComplexCalc\OtherCalcs\HW Version\ComplexCalcProject\STM32F411CEUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ComplexCalcProject.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+ComplexCalcProject.elf ComplexCalcProject.map: $(OBJS) $(USER_OBJS) C:\Users\dasre\Documents\Knowledge-db\ghFiles\pycodes\ComplexCalc\Py-ComplexCalc\OtherCalcs\HW\ Version\BlackPill\ STM32F411CE\04ComplexCalcProject\STM32F411CEUX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "ComplexCalcProject.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\dasre\Documents\Knowledge-db\ghFiles\pycodes\ComplexCalc\Py-ComplexCalc\OtherCalcs\HW Version\BlackPill STM32F411CE\04ComplexCalcProject\STM32F411CEUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ComplexCalcProject.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

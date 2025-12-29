@@ -85,6 +85,8 @@ static const uint8_t
     ST7735_DISPON ,    DELAY, //  4: Main screen turn on, no args w/delay
       100 };                  //     100 ms delay
 
+
+      
 static void ST7735_Select() {
     HAL_GPIO_WritePin(ST7735_CS_GPIO_Port, ST7735_CS_Pin, GPIO_PIN_RESET);
 }
@@ -282,6 +284,7 @@ void ST7735_FillScreen(uint16_t color) {
     ST7735_FillRectangle(0, 0, ST7735_WIDTH, ST7735_HEIGHT, color);
 }
 
+
 void ST7735_FillScreenFast(uint16_t color) {
     ST7735_FillRectangleFast(0, 0, ST7735_WIDTH, ST7735_HEIGHT, color);
 }
@@ -310,3 +313,4 @@ void ST7735_SetGamma(GammaDef gamma)
 	ST7735_WriteData((uint8_t *) &gamma, sizeof(gamma));
 	ST7735_Unselect();
 }
+

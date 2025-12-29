@@ -1,0 +1,214 @@
+// display_ui.c
+#include "st7735.h"
+#include "fonts.h"
+#include "ComplexGJ.h"
+#include <string.h>
+#include <stdio.h>
+
+// Colores personalizados
+#define COLOR_CYAN    ST7735_CYAN
+#define COLOR_YELLOW  ST7735_YELLOW
+#define COLOR_GREEN   ST7735_GREEN
+#define COLOR_BLUE    0x4A9F  // Azul claro
+#define COLOR_MAGENTA 0xF81F
+#define COLOR_GRAY    0x7BEF
+
+// Variables externas
+extern uint8_t matSize;
+extern cplx A[N_MAX][N_MAX];
+extern cplx b[N_MAX];
+extern cplx x[N_MAX];
+extern char buffer[16];
+extern uint8_t index_Var;
+
+// ==================== LEVEL 0: Ingreso de tamaño ====================
+void drawLevel0(void) {
+    ST7735_FillScreenFast(ST7735_BLACK);
+    
+    // Título
+    ST7735_WriteString(20, 10, "INGRESE TAMANO", Font_7x10, COLOR_CYAN, ST7735_BLACK);
+    
+    // Mostrar buffer con cursor
+    char displayStr[20];
+    if(index_Var == 0) {
+        sprintf(displayStr, "Sistema: _");
+    } else {
+        sprintf(displayStr, "Sistema: %s", buffer);
+    }
+    ST7735_WriteString(15, 40, displayStr, Font_7x10, ST7735_WHITE, ST7735_BLACK);
+    
+    // Rango válido
+    ST7735_WriteString(25, 70, "Rango: 2-4", Font_7x10, COLOR_GRAY, ST7735_BLACK);
+    
+    // Instrucciones
+    ST7735_WriteString(15, 100, "[0-9] Numero", Font_7x10, COLOR_GRAY, ST7735_BLACK);
+    ST7735_WriteString(15, 112, "[ = ] Confirmar", Font_7x10, COLOR_GREEN, ST7735_BLACK);
+}
+
+// ==================== LEVEL 1: Ingreso de coeficientes ====================
+void drawLevel1(uint8_t colMat, uint8_t rowMat, uint8_t navigating) {
+    ST7735_FillScreenFast(ST7735_BLACK);
+    
+    // Título
+    char title[24];
+    sprintf(title, "DATOS %dx%d", matSize, matSize);
+    ST7735_WriteString(10, 2, title, Font_7x10, COLOR_CYAN, ST7735_BLACK);
+    
+    // Calcular espaciado
+    int cellWidth = 22;
+    int startX = 8;
+    int startY = 16;
+    int rowHeight = 12;
+    
+    // Dibujar matriz aumentada [A|b]
+    for(uint8_t i = 0; i < matSize; i++) {
+        int y = startY + i * rowHeight;
+        
+        // Coeficientes de A
+        for(uint8_t j = 0; j < matSize; j++) {
+            int x = startX + j * cellWidth;
+            
+            // Determinar si esta celda está seleccionada
+            uint8_t isSelected = (i == colMat && j == rowMat);
+            uint16_t color = isSelected ? COLOR_YELLOW : COLOR_BLUE;
+            uint16_t bgColor = isSelected ? 0x2104 : ST7735_BLACK; // Fondo oscuro si seleccionado
+            
+            // Convertir número a string (solo parte real para matriz compacta)
+            char numStr[8];
+            int idx = 0;
+            ftoa_for_oled(A[i][j].r, numStr, &idx, 1);
+            numStr[idx] = '\0';
+            
+            // Dibujar rectángulo de selección
+            if(isSelected) {
+                ST7735_FillRectangle(x-1, y-1, cellWidth-2, 11, bgColor);
+            }
+            
+            ST7735_WriteString(x, y, numStr, Font_7x10, color, bgColor);
+        }
+        
+        // Separador |
+        int sepX = startX + matSize * cellWidth;
+        ST7735_WriteString(sepX, y, "|", Font_7x10, COLOR_GRAY, ST7735_BLACK);
+        
+        // Vector b (constantes)
+        int bX = sepX + 10;
+        uint8_t isConstSelected = (i == colMat && rowMat == matSize);
+        uint16_t bColor = isConstSelected ? COLOR_YELLOW : COLOR_GREEN;
+        uint16_t bBgColor = isConstSelected ? 0x2104 : ST7735_BLACK;
+        
+        char bStr[8];
+        int idx = 0;
+        ftoa_for_oled(b[i].r, bStr, &idx, 1);
+        bStr[idx] = '\0';
+        
+        if(isConstSelected) {
+            ST7735_FillRectangle(bX-1, y-1, cellWidth-2, 11, bBgColor);
+        }
+        
+        ST7735_WriteString(bX, y, bStr, Font_7x10, bColor, bBgColor);
+    }
+    
+    // Panel de edición en la parte inferior
+    int panelY = startY + matSize * rowHeight + 8;
+    
+    // Línea separadora
+    ST7735_FillRectangle(0, panelY - 2, 128, 1, COLOR_GRAY);
+    
+    // Mostrar posición actual
+    char posStr[24];
+
+    if(rowMat < matSize) {
+        sprintf(posStr, "A[%d][%d]", colMat + 1, rowMat + 1);
+    } else {
+        sprintf(posStr, "b[%d]", colMat + 1);
+    }
+    ST7735_WriteString(8, panelY, posStr, Font_7x10, COLOR_CYAN, ST7735_BLACK);
+    
+    // Mostrar qué parte se está editando
+    panelY += 12;
+    char realStr[16];
+    char imagStr[16];
+    
+    if(navigating){
+    sprintf(realStr, "Real %.2f", A[colMat][rowMat].r);
+    sprintf(imagStr, "Imag %.2f", A[colMat][rowMat].i);
+    ST7735_WriteString(80, panelY, "NVG", Font_7x10, ST7735_MAGENTA, ST7735_BLACK);
+    }
+    else{
+    sprintf(realStr, "Real %s", buffer);
+    sprintf(imagStr, "Imag %s", buffer);
+    }
+    ST7735_WriteString(0, panelY, realStr, Font_7x10, COLOR_YELLOW, ST7735_BLACK);
+    ST7735_WriteString(0, panelY+10, imagStr, Font_7x10, COLOR_YELLOW, ST7735_BLACK);
+
+    
+    
+    // Controles en la parte más baja
+    panelY += 24;
+    ST7735_WriteString(2, panelY, "[WASD]Mov [I]Real [=]OK", Font_7x10, 0x5ACF, ST7735_BLACK);
+}
+
+// ==================== LEVEL 2: Resultados ====================
+void drawLevel2(uint8_t success) {
+    ST7735_FillScreenFast(ST7735_BLACK);
+    
+    if(success) {
+        // Título
+        ST7735_WriteString(30, 5, "SOLUCION:", Font_7x10, COLOR_GREEN, ST7735_BLACK);
+        
+        int startY = 20;
+        int rowHeight = 16;
+        
+        // Mostrar cada solución
+        for(uint8_t i = 0; i < matSize; i++) {
+            int y = startY + i * rowHeight;
+            
+            // Variable (xi =)
+            char varStr[6];
+            sprintf(varStr, "x%d = ", i + 1);
+            ST7735_WriteString(8, y, varStr, Font_7x10, 0xFBE0, ST7735_BLACK); // Naranja
+            
+            // Valor (parte real)
+            char realStr[12];
+            int idx = 0;
+            ftoa_for_oled(x[i].r, realStr, &idx, 3);
+            realStr[idx] = '\0';
+            ST7735_WriteString(35, y, realStr, Font_7x10, COLOR_YELLOW, ST7735_BLACK);
+            
+            // Parte imaginaria
+            if(x[i].i != 0.0f) {
+                char imagStr[12];
+                idx = 0;
+                if(x[i].i > 0) {
+                    imagStr[idx++] = '+';
+                }
+                ftoa_for_oled(x[i].i, imagStr, &idx, 2);
+                imagStr[idx++] = 'i';
+                imagStr[idx] = '\0';
+                ST7735_WriteString(75, y, imagStr, Font_7x10, COLOR_MAGENTA, ST7735_BLACK);
+            }
+        }
+        
+        // Instrucciones
+        int instrY = startY + matSize * rowHeight + 10;
+        ST7735_WriteString(10, instrY, "Presione [T]", Font_7x10, COLOR_GRAY, ST7735_BLACK);
+        ST7735_WriteString(10, instrY + 10, "para nuevo sistema", Font_7x10, COLOR_GRAY, ST7735_BLACK);
+        
+    } else {
+        // Error: sistema sin solución
+        ST7735_WriteString(20, 40, "SISTEMA SIN", Font_7x10, ST7735_RED, ST7735_BLACK);
+        ST7735_WriteString(25, 55, "SOLUCION", Font_7x10, ST7735_RED, ST7735_BLACK);
+        ST7735_WriteString(15, 80, "Matriz singular", Font_7x10, COLOR_GRAY, ST7735_BLACK);
+        ST7735_WriteString(10, 100, "Presione [T]", Font_7x10, COLOR_GRAY, ST7735_BLACK);
+        ST7735_WriteString(10, 110, "para reintentar", Font_7x10, COLOR_GRAY, ST7735_BLACK);
+    }
+}
+
+// Función auxiliar: Limpiar solo el área del buffer (actualización parcial)
+void updateBufferDisplay(const char* buffer) {
+    // Borrar área anterior
+    ST7735_FillRectangle(60, 90, 60, 10, ST7735_BLACK);
+    // Escribir nuevo buffer
+    ST7735_WriteString(60, 90, buffer, Font_7x10, COLOR_YELLOW, ST7735_BLACK);
+}

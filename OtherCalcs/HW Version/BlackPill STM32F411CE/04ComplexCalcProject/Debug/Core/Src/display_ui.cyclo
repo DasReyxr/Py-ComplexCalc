@@ -1,0 +1,4 @@
+../Core/Src/display_ui.c:26:6:drawLevel0	2
+../Core/Src/display_ui.c:50:6:drawLevel1	19
+../Core/Src/display_ui.c:185:6:drawLevel2	5
+../Core/Src/display_ui.c:237:6:updateBufferDisplay	1
