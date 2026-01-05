@@ -1,0 +1,10 @@
+11:18:11 **** Incremental Build of configuration Debug for project 2MPU6050_BlackPill ****
+make -j8 all 
+arm-none-eabi-size  2MPU6050_BlackPill.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26236	    468	   2052	  28756	   7054	2MPU6050_BlackPill.elf
+Finished building: default.size.stdout
+ 
+
+11:18:11 Build Finished. 0 errors, 0 warnings. (took 324ms)
+

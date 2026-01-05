@@ -13,9 +13,9 @@ char *keyHexa[ROWS][COLS]={
 };
 char *keyHexaAltern[ROWS][COLS]={
 {" ","W"," ","I"},
-{"L"," ","R"," "},
+{"L"," ","R","P"},
 {" ","B"," "," "},
-{" "," "," "," "},
+{" "," "," ","S"},
 };
 
 uint8_t keyPolling[ROWS][COLS]={

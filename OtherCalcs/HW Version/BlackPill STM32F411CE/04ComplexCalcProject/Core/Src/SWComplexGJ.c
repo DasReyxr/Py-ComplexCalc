@@ -30,31 +30,45 @@ static void swap_rows(cplx A[N_MAX][N_MAX], cplx b[N_MAX], int n, int r1, int r2
 int solve_complex_system(int n, cplx A[N_MAX][N_MAX], cplx b[N_MAX], cplx x[N_MAX]) {
     if (n <= 0 || n > N_MAX) return 1;
 
+    // Create local copies to avoid modifying originals
+    cplx A_copy[N_MAX][N_MAX];
+    cplx b_copy[N_MAX];
+    
+    // Copy A matrix
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            A_copy[i][j] = A[i][j];
+        }
+        b_copy[i] = b[i];
+    }
+
+    // Gaussian elimination with partial pivoting
     for (int k = 0; k < n; k++) {
         int p = k;
-        float maxv = fabsf(A[k][k].r) + fabsf(A[k][k].i);
+        float maxv = fabsf(A_copy[k][k].r) + fabsf(A_copy[k][k].i);
         for (int i = k + 1; i < n; i++) {
-            float v = fabsf(A[i][k].r) + fabsf(A[i][k].i);
+            float v = fabsf(A_copy[i][k].r) + fabsf(A_copy[i][k].i);
             if (v > maxv) { maxv = v; p = i; }
         }
         if (maxv < 1e-7f) return 1;
 
-        if (p != k) swap_rows(A, b, n, k, p);
+        if (p != k) swap_rows(A_copy, b_copy, n, k, p);
 
-        cplx pivot = A[k][k];
+        cplx pivot = A_copy[k][k];
         for (int i = k + 1; i < n; i++) {
-            cplx m = c_div(A[i][k], pivot);
+            cplx m = c_div(A_copy[i][k], pivot);
             for (int j = k; j < n; j++)
-                A[i][j] = c_sub(A[i][j], c_mul(m, A[k][j]));
-            b[i] = c_sub(b[i], c_mul(m, b[k]));
+                A_copy[i][j] = c_sub(A_copy[i][j], c_mul(m, A_copy[k][j]));
+            b_copy[i] = c_sub(b_copy[i], c_mul(m, b_copy[k]));
         }
     }
 
+    // Back substitution
     for (int i = n - 1; i >= 0; i--) {
         cplx sum = {0,0};
         for (int j = i + 1; j < n; j++)
-            sum = c_add(sum, c_mul(A[i][j], x[j]));
-        x[i] = c_div(c_sub(b[i], sum), A[i][i]);
+            sum = c_add(sum, c_mul(A_copy[i][j], x[j]));
+        x[i] = c_div(c_sub(b_copy[i], sum), A_copy[i][i]);
     }
     return 0;
 }

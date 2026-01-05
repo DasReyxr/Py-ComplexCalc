@@ -25,7 +25,8 @@ Core/Src/display_ui.o: ../Core/Src/display_ui.c ../Core/Inc/st7735.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h \
- ../Core/Inc/fonts.h ../Core/Inc/fonts.h ../Core/Inc/ComplexGJ.h
+ ../Core/Inc/fonts.h ../Core/Inc/fonts.h ../Core/Inc/display_ui.h \
+ ../Core/Inc/testimg.h ../Core/Inc/ComplexGJ.h
 ../Core/Inc/st7735.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
@@ -55,4 +56,6 @@ Core/Src/display_ui.o: ../Core/Src/display_ui.c ../Core/Inc/st7735.h \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h:
 ../Core/Inc/fonts.h:
 ../Core/Inc/fonts.h:
+../Core/Inc/display_ui.h:
+../Core/Inc/testimg.h:
 ../Core/Inc/ComplexGJ.h:

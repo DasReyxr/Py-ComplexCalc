@@ -26,6 +26,8 @@ Pinout LCD ST7735:
 
 // --------- Function ---------
 uint8_t readPad(char *);
+void initTheme(void);
+void toggleTheme(void);
 
 // -------- Variables --------
 
@@ -53,14 +55,14 @@ uint8_t editingReal = 1; // 1 = editando real, 0 = editando imaginario
 double real = 0.0, imag = 0.0;
 // ----------- Main -----------
 
-
 void init() {
 	HAL_Init();
 	SystemClock_Config();
 	MX_GPIO_Init();
 	MX_SPI1_Init();
 	ST7735_Init();
-	ST7735_FillScreen(ST7735_BLACK);
+	initTheme();  // Initialize color theme
+//s	ST7735_FillScreen(ST7735_BLACK);
 
 	config4x4();
 
@@ -105,13 +107,15 @@ int main(void)
         if ((endptr == buffer) || (matSize == 0)) {
             level = 0;
             needsRedraw = 1;
-        } else if(matSize > N_MAX) {
-            matSize = N_MAX;
         }
-        
+        else if(matSize > N_MAX ) matSize = N_MAX;
+        else if(matSize<2) matSize = 2;
+
         if(matSize >= 2 && matSize <= N_MAX) {
         	drawLevel0();
-            memset(buffer, 0, sizeof(buffer));
+
+
+        	memset(buffer, 0, sizeof(buffer));
             index_Var = 0;
             colMat = 0;
             rowMat = 0;
@@ -119,11 +123,12 @@ int main(void)
             level = 1;
             needsRedraw = 1;
         }
+
         break;
 
     case 1:
         if(needsRedraw) {
-            drawLevel1(colMat, rowMat, navigating);
+            drawLevel1(colMat, rowMat);
             needsRedraw = 0;
         }
         
@@ -166,19 +171,24 @@ int main(void)
             if(*keypress == '=') {
                 if(editingReal) {
                     // Termina ingreso de parte real, pasa a imaginario
-                    real = strtod(buffer, &endptr);
+                    if(index_Var > 0) {
+                        // Solo guardar si hay datos en el buffer
+                        real = strtod(buffer, &endptr);
+                        if(rowMat < matSize) A[colMat][rowMat].r = real;
+                        else b[colMat].r = real;
+                    }
                     memset(buffer, 0, sizeof(buffer));
                     index_Var = 0;
                     editingReal = 0;
                     needsRedraw = 1;
-                    if(rowMat < matSize) A[colMat][rowMat].r = real;
-					else b[colMat].r = real;
                 } else {
                     // Termina ingreso de parte imaginaria, guarda y avanza
-                    imag = strtod(buffer, &endptr);
-                    // Guardar en matriz
-                    if(rowMat < matSize) A[colMat][rowMat].i = imag;
-					else b[colMat].i =imag;
+                    if(index_Var > 0) {
+                        // Solo guardar si hay datos en el buffer
+                        imag = strtod(buffer, &endptr);
+                        if(rowMat < matSize) A[colMat][rowMat].i = imag;
+                        else b[colMat].i = imag;
+                    }
                     // Reset y avanzar
                     memset(buffer, 0, sizeof(buffer));
                     index_Var = 0;
@@ -197,13 +207,19 @@ int main(void)
                     }
                     needsRedraw = 1;
                 }
-            } else if(*keypress == 'I' && editingReal) {
-                // Alternativa: si usas 'I' para terminar real (opcional)
-                real = strtod(buffer, &endptr);
-                memset(buffer, 0, sizeof(buffer));
-                index_Var = 0;
-                editingReal = 0;
-                needsRedraw = 1;
+            } else if(*keypress == 'I') {
+                // Tecla I: terminar parte real y pasar a imaginaria
+                if(editingReal) {
+                    if(index_Var > 0) {
+                        real = strtod(buffer, &endptr);
+                        if(rowMat < matSize) A[colMat][rowMat].r = real;
+                        else b[colMat].r = real;
+                    }
+                    memset(buffer, 0, sizeof(buffer));
+                    index_Var = 0;
+                    editingReal = 0;
+                    needsRedraw = 1;
+                }
             }
         }
         break;
@@ -220,10 +236,17 @@ int main(void)
             messageReady = readPad(keypress);
         }
         
-        // Reset para nuevo sistema
+        // // Reset para nuevo sistema - limpiar matrices
+        // memset(A, 0, sizeof(A));
+        // memset(b, 0, sizeof(b));
+        // memset(x, 0, sizeof(x));
         level = 0;
+         matSize = 0;
+        colMat = 0;  // Reset matrix position
+        rowMat = 0;  // Reset matrix position
         memset(buffer, 0, sizeof(buffer));
         index_Var = 0;
+        editingReal = 1;
         needsRedraw = 1;
         break;
 
@@ -256,7 +279,7 @@ uint8_t readPad(char *keypress){
         if (level > 0) level--;
         memset(buffer, 0, sizeof(buffer));
         index_Var = 0;
-        return 1;
+        return 2;
     }
     if (key == 'D') {
         if (index_Var > 0) {
@@ -272,6 +295,15 @@ uint8_t readPad(char *keypress){
         navigating ^= 1;
         return 2;
     }
+    if (key == 'S'){
+        level = 2;
+        return 2;
+    }
+    if (key == 'P') {
+        toggleTheme();
+        needsRedraw = 1;
+        return 2;
+    }
 
     // Handle numbers and dot
     if ((key >= '0' && key <= '9') || key == '.') {
@@ -283,4 +315,4 @@ uint8_t readPad(char *keypress){
 
     // Unknown key
     return 0;
-}
+					}

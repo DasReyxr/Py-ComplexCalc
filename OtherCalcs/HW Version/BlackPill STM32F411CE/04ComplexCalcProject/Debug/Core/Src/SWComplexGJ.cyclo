@@ -4,6 +4,6 @@
 ../Core/Inc/ComplexGJ.h:19:20:c_div	1
 ../Core/Src/SWComplexGJ.c:3:6:cplx_to_str	2
 ../Core/Src/SWComplexGJ.c:19:13:swap_rows	2
-../Core/Src/SWComplexGJ.c:30:5:solve_complex_system	12
-../Core/Src/SWComplexGJ.c:62:6:itoa_simple	5
-../Core/Src/SWComplexGJ.c:71:6:ftoa_for_oled	3
+../Core/Src/SWComplexGJ.c:30:5:solve_complex_system	14
+../Core/Src/SWComplexGJ.c:76:6:itoa_simple	5
+../Core/Src/SWComplexGJ.c:85:6:ftoa_for_oled	3

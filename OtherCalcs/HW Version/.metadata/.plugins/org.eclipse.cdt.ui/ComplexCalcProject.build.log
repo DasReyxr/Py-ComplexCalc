@@ -1,68 +1,10 @@
-23:14:27 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
+10:45:40 **** Incremental Build of configuration Debug for project ComplexCalcProject ****
 make -j8 all 
-arm-none-eabi-gcc "../Core/Src/display_ui.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/display_ui.d" -MT"Core/Src/display_ui.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/display_ui.o"
-../Core/Src/display_ui.c: In function 'drawLevel1':
-../Core/Src/display_ui.c:150:40: warning: format '%f' expects argument of type 'double', but argument 3 has type 'int' [-Wformat=]
-  150 |             sprintf(imagStr, "Imag j%.4f", 0);
-      |                                     ~~~^   ~
-      |                                        |   |
-      |                                        |   int
-      |                                        double
-      |                                     %.4d
-../Core/Src/display_ui.c:156:40: warning: format '%f' expects argument of type 'double', but argument 3 has type 'int' [-Wformat=]
-  156 |             sprintf(imagStr, "Imag j%.4f", 0);
-      |                                     ~~~^   ~
-      |                                        |   |
-      |                                        |   int
-      |                                        double
-      |                                     %.4d
-../Core/Src/display_ui.c: In function 'drawLevel2':
-../Core/Src/display_ui.c:204:17: warning: unused variable 'idx' [-Wunused-variable]
-  204 |             int idx = 0;
-      |                 ^~~
-../Core/Src/display_ui.c:203:18: warning: unused variable 'realStr' [-Wunused-variable]
-  203 |             char realStr[20];
-      |                  ^~~~~~~
-../Core/Src/display_ui.c:200:21: warning: unused variable 'posy' [-Wunused-variable]
-  200 |             uint8_t posy = 8;
-      |                     ^~~~
-../Core/Src/display_ui.c: In function 'drawLevel0':
-../Core/Src/display_ui.c:37:39: warning: '%s' directive writing up to 15 bytes into a region of size 11 [-Wformat-overflow=]
-   37 |         sprintf(displayStr, "Sistema: %s", buffer);
-      |                                       ^~   ~~~~~~
-../Core/Src/display_ui.c:37:9: note: 'sprintf' output between 10 and 25 bytes into a destination of size 20
-   37 |         sprintf(displayStr, "Sistema: %s", buffer);
-      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-../Core/Src/display_ui.c: In function 'drawLevel1':
-../Core/Src/display_ui.c:166:37: warning: '%s' directive writing up to 15 bytes into a region of size 10 [-Wformat-overflow=]
-  166 |             sprintf(imagStr, "Imag j%s", buffer);
-      |                                     ^~   ~~~~~~
-../Core/Src/display_ui.c:166:13: note: 'sprintf' output between 7 and 22 bytes into a destination of size 16
-  166 |             sprintf(imagStr, "Imag j%s", buffer);
-      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-../Core/Src/display_ui.c:160:37: warning: '%s' directive writing up to 15 bytes into a region of size 10 [-Wformat-overflow=]
-  160 |             sprintf(imagStr, "Imag j%s", buffer);
-      |                                     ^~   ~~~~~~
-../Core/Src/display_ui.c:160:13: note: 'sprintf' output between 7 and 22 bytes into a destination of size 16
-  160 |             sprintf(imagStr, "Imag j%s", buffer);
-      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-../Core/Src/display_ui.c:153:36: warning: '%s' directive writing up to 15 bytes into a region of size 11 [-Wformat-overflow=]
-  153 |             sprintf(realStr, "Real %s", buffer);
-      |                                    ^~   ~~~~~~
-../Core/Src/display_ui.c:153:13: note: 'sprintf' output between 6 and 21 bytes into a destination of size 16
-  153 |             sprintf(realStr, "Real %s", buffer);
-      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-arm-none-eabi-gcc -o "ComplexCalcProject.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\dasre\Documents\Knowledge-db\ghFiles\pycodes\ComplexCalc\Py-ComplexCalc\OtherCalcs\HW Version\BlackPill STM32F411CE\04ComplexCalcProject\STM32F411CEUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ComplexCalcProject.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: ComplexCalcProject.elf
- 
 arm-none-eabi-size  ComplexCalcProject.elf 
-arm-none-eabi-objdump -h -S ComplexCalcProject.elf  > "ComplexCalcProject.list"
    text	   data	    bss	    dec	    hex	filename
   39192	    628	   2212	  42032	   a430	ComplexCalcProject.elf
 Finished building: default.size.stdout
  
-Finished building: ComplexCalcProject.list
- 
 
-23:14:28 Build Finished. 0 errors, 9 warnings. (took 1s.486ms)
+10:45:40 Build Finished. 0 errors, 0 warnings. (took 360ms)
 

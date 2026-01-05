@@ -1,4 +1,6 @@
-../Core/Src/display_ui.c:26:6:drawLevel0	48	static
-../Core/Src/display_ui.c:50:6:drawLevel1	200	static
-../Core/Src/display_ui.c:185:6:drawLevel2	136	static
-../Core/Src/display_ui.c:237:6:updateBufferDisplay	32	static
+../Core/Src/display_ui.c:66:6:toggleTheme	12	static
+../Core/Src/display_ui.c:72:6:initTheme	12	static
+../Core/Src/display_ui.c:87:6:drawLevel0	48	static
+../Core/Src/display_ui.c:116:6:drawLevel1	200	static
+../Core/Src/display_ui.c:253:6:drawLevel2	136	static
+../Core/Src/display_ui.c:309:6:updateBufferDisplay	32	static
