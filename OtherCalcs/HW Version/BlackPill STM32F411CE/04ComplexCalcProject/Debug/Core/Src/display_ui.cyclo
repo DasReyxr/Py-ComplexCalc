@@ -1,6 +1,6 @@
 ../Core/Src/display_ui.c:66:6:toggleTheme	2
 ../Core/Src/display_ui.c:72:6:initTheme	1
-../Core/Src/display_ui.c:87:6:drawLevel0	3
-../Core/Src/display_ui.c:116:6:drawLevel1	24
-../Core/Src/display_ui.c:253:6:drawLevel2	5
-../Core/Src/display_ui.c:309:6:updateBufferDisplay	1
+../Core/Src/display_ui.c:88:6:drawLevel0	3
+../Core/Src/display_ui.c:117:6:drawLevel1	24
+../Core/Src/display_ui.c:254:6:drawLevel2	5
+../Core/Src/display_ui.c:310:6:updateBufferDisplay	1

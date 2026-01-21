@@ -60,7 +60,7 @@ const ColorTheme THEME_PINK = {
 
 // Current theme pointer
 ColorTheme currentTheme;        
-uint8_t isPinkMode = 1;
+uint8_t isPinkMode = 0;
 
 // Function to switch theme
 void toggleTheme(void) {
@@ -70,9 +70,10 @@ void toggleTheme(void) {
 
 // Initialize with normal theme
 void initTheme(void) {
-    currentTheme = THEME_PINK;
-    			   //THEME_NORMAL;
-    isPinkMode = 1;
+    currentTheme = //THEME_PINK;
+    			   THEME_NORMAL;
+    isPinkMode = //1;
+    			 0;
 }
 // Variables externas
 extern uint8_t matSize;

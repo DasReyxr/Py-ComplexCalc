@@ -3850,7 +3850,7 @@ LOAD C:/ST/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.ext
 .rel.dyn        0x0800ace8        0x0
  .rel.iplt      0x0800ace8        0x0 C:/ST/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/thumb/v7e-m+fp/hard/crtbegin.o
 
-.data           0x20000000      0x278 load address 0x0800ace8
+.data           0x20000000      0x274 load address 0x0800ace8
                 0x20000000                        . = ALIGN (0x4)
                 0x20000000                        _sdata = .
  *(.data)
@@ -3875,75 +3875,75 @@ LOAD C:/ST/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.ext
  .data.Font_7x10
                 0x20000098        0x8 ./Core/Src/SWfonts.o
                 0x20000098                Font_7x10
- .data.isPinkMode
-                0x200000a0        0x1 ./Core/Src/display_ui.o
-                0x200000a0                isPinkMode
- *fill*         0x200000a1        0x3 
  .data.SystemCoreClock
-                0x200000a4        0x4 ./Core/Src/system_stm32f4xx.o
-                0x200000a4                SystemCoreClock
+                0x200000a0        0x4 ./Core/Src/system_stm32f4xx.o
+                0x200000a0                SystemCoreClock
  .data.uwTickPrio
-                0x200000a8        0x4 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o
-                0x200000a8                uwTickPrio
+                0x200000a4        0x4 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o
+                0x200000a4                uwTickPrio
  .data.uwTickFreq
-                0x200000ac        0x1 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o
-                0x200000ac                uwTickFreq
- *fill*         0x200000ad        0x3 
- .data.__sglue  0x200000b0        0xc C:/ST/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-findfp.o)
-                0x200000b0                __sglue
+                0x200000a8        0x1 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o
+                0x200000a8                uwTickFreq
+ *fill*         0x200000a9        0x3 
+ .data.__sglue  0x200000ac        0xc C:/ST/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-findfp.o)
+                0x200000ac                __sglue
  .data.__global_locale
-                0x200000bc      0x16c C:/ST/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-locale.o)
-                0x200000bc                __global_locale
+                0x200000b8      0x16c C:/ST/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-locale.o)
+                0x200000b8                __global_locale
  .data._impure_ptr
-                0x20000228        0x4 C:/ST/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-impure.o)
-                0x20000228                _impure_ptr
+                0x20000224        0x4 C:/ST/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-impure.o)
+                0x20000224                _impure_ptr
  .data._impure_data
-                0x2000022c       0x4c C:/ST/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-impure.o)
-                0x2000022c                _impure_data
+                0x20000228       0x4c C:/ST/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-impure.o)
+                0x20000228                _impure_data
  *(.RamFunc)
  *(.RamFunc*)
-                0x20000278                        . = ALIGN (0x4)
-                0x20000278                        _edata = .
+                0x20000274                        . = ALIGN (0x4)
+                0x20000274                        _edata = .
 
-.igot.plt       0x20000278        0x0 load address 0x0800af60
- .igot.plt      0x20000278        0x0 C:/ST/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/thumb/v7e-m+fp/hard/crtbegin.o
-                0x20000278                        . = ALIGN (0x4)
+.igot.plt       0x20000274        0x0 load address 0x0800af5c
+ .igot.plt      0x20000274        0x0 C:/ST/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/thumb/v7e-m+fp/hard/crtbegin.o
+                0x20000274                        . = ALIGN (0x4)
 
-.bss            0x20000278      0x2b8 load address 0x0800af60
-                0x20000278                        _sbss = .
-                0x20000278                        __bss_start__ = _sbss
+.bss            0x20000274      0x2bc load address 0x0800af5c
+                0x20000274                        _sbss = .
+                0x20000274                        __bss_start__ = _sbss
  *(.bss)
- .bss           0x20000278       0x1c C:/ST/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/thumb/v7e-m+fp/hard/crtbegin.o
+ .bss           0x20000274       0x1c C:/ST/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/thumb/v7e-m+fp/hard/crtbegin.o
  *(.bss*)
- .bss.level     0x20000294        0x1 ./Core/Src/0main.o
-                0x20000294                level
+ .bss.level     0x20000290        0x1 ./Core/Src/0main.o
+                0x20000290                level
  .bss.index_Var
-                0x20000295        0x1 ./Core/Src/0main.o
-                0x20000295                index_Var
- *fill*         0x20000296        0x2 
- .bss.buffer    0x20000298       0x10 ./Core/Src/0main.o
-                0x20000298                buffer
+                0x20000291        0x1 ./Core/Src/0main.o
+                0x20000291                index_Var
+ *fill*         0x20000292        0x2 
+ .bss.buffer    0x20000294       0x10 ./Core/Src/0main.o
+                0x20000294                buffer
  .bss.navigating
-                0x200002a8        0x1 ./Core/Src/0main.o
-                0x200002a8                navigating
- .bss.matSize   0x200002a9        0x1 ./Core/Src/0main.o
-                0x200002a9                matSize
- *fill*         0x200002aa        0x2 
- .bss.A         0x200002ac       0x80 ./Core/Src/0main.o
-                0x200002ac                A
- .bss.b         0x2000032c       0x20 ./Core/Src/0main.o
-                0x2000032c                b
- .bss.x         0x2000034c       0x20 ./Core/Src/0main.o
-                0x2000034c                x
- .bss.hspi1     0x2000036c       0x58 ./Core/Src/HALConfig.o
-                0x2000036c                hspi1
+                0x200002a4        0x1 ./Core/Src/0main.o
+                0x200002a4                navigating
+ .bss.matSize   0x200002a5        0x1 ./Core/Src/0main.o
+                0x200002a5                matSize
+ *fill*         0x200002a6        0x2 
+ .bss.A         0x200002a8       0x80 ./Core/Src/0main.o
+                0x200002a8                A
+ .bss.b         0x20000328       0x20 ./Core/Src/0main.o
+                0x20000328                b
+ .bss.x         0x20000348       0x20 ./Core/Src/0main.o
+                0x20000348                x
+ .bss.hspi1     0x20000368       0x58 ./Core/Src/HALConfig.o
+                0x20000368                hspi1
  .bss.toggle_Altern
-                0x200003c4        0x1 ./Core/Src/HALTecMat4x4.o
-                0x200003c4                toggle_Altern
- *fill*         0x200003c5        0x3 
+                0x200003c0        0x1 ./Core/Src/HALTecMat4x4.o
+                0x200003c0                toggle_Altern
+ *fill*         0x200003c1        0x3 
  .bss.currentTheme
-                0x200003c8       0x14 ./Core/Src/display_ui.o
-                0x200003c8                currentTheme
+                0x200003c4       0x14 ./Core/Src/display_ui.o
+                0x200003c4                currentTheme
+ .bss.isPinkMode
+                0x200003d8        0x1 ./Core/Src/display_ui.o
+                0x200003d8                isPinkMode
+ *fill*         0x200003d9        0x3 
  .bss.__sbrk_heap_end
                 0x200003dc        0x4 ./Core/Src/sysmem.o
  .bss.uwTick    0x200003e0        0x4 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o
@@ -3974,7 +3974,7 @@ LOAD C:/ST/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.ext
                 0x20000530                        __bss_end__ = _ebss
 
 ._user_heap_stack
-                0x20000530      0x600 load address 0x0800af60
+                0x20000530      0x600 load address 0x0800af5c
                 0x20000530                        . = ALIGN (0x8)
                 [!provide]                        PROVIDE (end = .)
                 0x20000530                        PROVIDE (_end = .)
