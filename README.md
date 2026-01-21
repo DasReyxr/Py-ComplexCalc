@@ -29,7 +29,7 @@ Py-ComplexCalc/
 │
 ├── OtherCalcs/                # Alternative implementations
 ├── LICENSE                    # MIT License
-└── README_GENERAL.md          # This file
+└── README.md          # This file
 ```
 
 ---
