@@ -35,7 +35,7 @@ class FasorCalculator(ctk.CTk):
     def __init__(self):
         super().__init__()
         
-        self.title("Complex Calc v2.7")
+        self.title("Complex Calc v3.00")
         self.geometry("1400x850")  # Adjusted size to show calculator
         
         self.size = 3
@@ -78,7 +78,7 @@ class FasorCalculator(ctk.CTk):
         header_frame.pack(fill="x", pady=(0, 10), padx=12)
 
         # Main title (left)
-        self.header_title = ctk.CTkLabel(header_frame, text="Complex Calc 2.7", font=("Helvetica", 28, "bold"))
+        self.header_title = ctk.CTkLabel(header_frame, text="Complex Calc 3.00", font=("Helvetica", 28, "bold"))
         self.header_title.pack(side="left", padx=(0, 12))
 
         # Smaller names subtitle (next to title)
