@@ -13,7 +13,7 @@ python -m PyInstaller --onefile --windowed UI_ComplexCalc.py  --add-data "HK.jpg
 import numpy as np
 import customtkinter as ctk
 from tkinter import messagebox, simpledialog, filedialog
-from ComplexCalc import FasorCalculatorCore
+from ComplexCalc import FasorCalculatorCore, complejo_rect, complejo_a_fasor
 import os
 from PIL import Image
 import sys
@@ -36,7 +36,7 @@ class FasorCalculator(ctk.CTk):
         super().__init__()
         
         self.title("Complex Calc v2.7")
-        self.geometry("1200x780")
+        self.geometry("1400x850")  # Adjusted size to show calculator
         
         self.size = 3
         self.history = []  # session history list of tuples (A, b, x, timestamp)
@@ -58,17 +58,20 @@ class FasorCalculator(ctk.CTk):
         #ctk.set_appearance_mode("dark")
         #ctk.ThemeManager.load_theme(DPINK_PATH_THEME)
         
+        # --- Theme Selector Frame ---
+        theme_frame = ctk.CTkFrame(self, fg_color="transparent")
+        theme_frame.pack(pady=(10, 6))
         
-        # --- Dark/Light Mode Switch ---
-        self.mode_switch = ctk.CTkSwitch(
-            self,
-            text="Dark Mode",
-            command=self.toggle_mode,
-            onvalue="dark",
-            offvalue="light",
+        ctk.CTkLabel(theme_frame, text="Theme:", font=("Helvetica", 11)).pack(side="left", padx=(0, 5))
+        
+        self.theme_selector = ctk.CTkOptionMenu(
+            theme_frame,
+            values=["Dark", "Light", "Pink", "Mint", "Purple", "Ocean"],
+            command=self.change_theme,
+            width=120
         )
-        self.mode_switch.select()  # start in dark mode
-        self.mode_switch.pack(pady=(10, 6))
+        self.theme_selector.set("Dark")
+        self.theme_selector.pack(side="left")
 
         # Header area: big title, smaller names header, and small IE image to the right
         header_frame = ctk.CTkFrame(self, fg_color="transparent")
@@ -157,16 +160,72 @@ class FasorCalculator(ctk.CTk):
 
         # RIGHT COLUMN
         right = ctk.CTkFrame(main_frame)
-        right.pack(side="right", padx=10, pady=10)
+        right.pack(side="right", padx=10, pady=10, fill="both", expand=True)
 
         ctk.CTkLabel(right, text="Solution history:").pack()
-        self.history_box = ctk.CTkTextbox(right, width=720, height=450)
-        self.history_box.pack(pady=10)
+        self.history_box = ctk.CTkTextbox(right, width=720, height=280)
+        self.history_box.pack(pady=5)
  
         # Saved systems dropdown
         ctk.CTkLabel(right, text="Saved systems:").pack()
         self.saved_menu = ctk.CTkOptionMenu(right, values=["(empty)"], command=self.load_saved_option)
         self.saved_menu.pack(pady=5)
+
+        # ============================
+        # CALCULATOR SECTION
+        # ============================
+        calc_frame = ctk.CTkFrame(right, border_width=1, border_color="#444444", width=300, height=280)
+        calc_frame.pack(pady=5, padx=10)
+        calc_frame.pack_propagate(False)  # Prevent frame from resizing to content
+        
+        ctk.CTkLabel(calc_frame, text="🧮 Calculadora:", font=("Helvetica", 12, "bold")).pack(pady=2)
+        
+        # Calculator display - shows what you're typing
+        self.calc_display = ctk.CTkEntry(
+            calc_frame, 
+            width=260, 
+            height=40, 
+            font=("Courier New", 14, "bold"),
+            justify="right"
+        )
+        self.calc_display.pack(pady=3, padx=8)
+        self.calc_display.insert(0, "0")
+        
+        # Calculator state
+        self.calc_memory = 0
+        self.calc_current = ""
+        self.calc_operation = None
+        self.calc_first_operand = None
+        
+        # Button grid
+        button_frame = ctk.CTkFrame(calc_frame)
+        button_frame.pack(pady=3, padx=8)
+        
+        # Calculator buttons layout
+        buttons = [
+            ['7', '8', '9', '/', 'C'],
+            ['4', '5', '6', '*', '('],
+            ['1', '2', '3', '-', ')'],
+            ['0', '.', 'j', '+', '='],
+            ['M+', 'MR', 'MC', '√', '^']
+        ]
+        
+        self.calc_buttons = []
+        for i, row in enumerate(buttons):
+            for j, btn_text in enumerate(row):
+                btn = ctk.CTkButton(
+                    button_frame,
+                    text=btn_text,
+                    width=42,
+                    height=32,
+                    font=("Helvetica", 11, "bold"),
+                    command=lambda t=btn_text: self.calc_button_click(t)
+                )
+                btn.grid(row=i, column=j, padx=1, pady=1)
+                self.calc_buttons.append(btn)
+        
+        # Add small margin at bottom
+        ctk.CTkLabel(calc_frame, text="").pack(pady=2)
 
         # Load saved systems on start
         self.load_saved_systems()
@@ -181,15 +240,16 @@ class FasorCalculator(ctk.CTk):
        
 
     def apply_dark_mode_colors(self):
-        """Apply dark mode colors to all widgets on startup."""
+        """Apply current theme colors to all widgets on startup."""
         self.configure(fg_color=self.current_colors["bg"])
-        self.mode_switch.configure(
-            text="Dark Mode" if self.current_mode == "dark" else "Light Mode",
-            fg_color=self.current_colors["frame"],
-            text_color=self.current_colors["text"],
-            button_color=self.current_colors["button"],
-            progress_color=self.current_colors["button"]
-        )
+        
+        # Update theme selector colors
+        if hasattr(self, 'theme_selector'):
+            self.theme_selector.configure(
+                fg_color=self.current_colors["button"],
+                text_color=self.current_colors.get("label_text", "#FFFFFF"),
+                button_color=self.current_colors["button_hover"]
+            )
         
         # Apply colors to all widgets
         for widget in self._get_all_widgets(self):
@@ -265,6 +325,24 @@ class FasorCalculator(ctk.CTk):
                     text_color=self.current_colors.get("button_text", "#FFFFFF"),
                      hover_color=self.current_colors["button_hover"]
                 )
+        
+        # Style calculator buttons if they exist
+        if hasattr(self, "calc_buttons"):
+            for btn in self.calc_buttons:
+                btn.configure(
+                    fg_color=self.current_colors["button"],
+                    text_color=self.current_colors.get("button_text", "#FFFFFF"),
+                    hover_color=self.current_colors["button_hover"]
+                )
+        
+        # Style calculator display
+        if hasattr(self, "calc_display"):
+            self.calc_display.configure(
+                fg_color=self.current_colors["entry"],
+                text_color=self.current_colors["entry_text"],
+                border_color=self.current_colors["border"]
+            )
+        
         # Ensure option menu dropdown (tk.Menu) matches theme if available
         if hasattr(self, "saved_menu"):
             # set visible optionmenu colors
@@ -310,94 +388,88 @@ class FasorCalculator(ctk.CTk):
                 "button_text": "#222222",  # button label color (light theme: dark text)
             }
 
-            # preserved previous pink palette (kept commented for reference)
-            # self.colors_pink = {
-            #     "bg": "#FFE4F0",
-            #     "frame": "#FFF0F5",
-            #     "text": "#8B4789",
-            #     "button": "#FF69B4",
-            #     "button_hover": "#FF1493",
-            #     "entry": "#FFFFFF",
-            #     "entry_text": "#8B4789",
-            #     "border": "#FFB6D9",
-            #     "textbox": "#FFFFFF",
-            #     "label_text": "#8B4789",
-            #     "button_text": "#FFFFFF",
-            # }
+            # Pink Mode Colors
+            self.colors_pink = {
+                "bg": "#FFE4F0",           # light pink background
+                "frame": "#FFF0F5",        # lavender blush
+                "text": "#8B4789",         # purple text
+                "button": "#FF69B4",       # hot pink
+                "button_hover": "#FF1493", # deep pink
+                "entry": "#FFFFFF",        # white entry
+                "entry_text": "#8B4789",   # purple text
+                "border": "#FFB6D9",       # light pink border
+                "textbox": "#FFFFFF",      # white textbox
+                "label_text": "#8B4789",   # purple labels
+                "button_text": "#FFFFFF",  # white button text
+            }
             
-    def toggle_mode(self):
-        """Switch between dark mode and pink mode with full color changes."""
-        new_mode = self.mode_switch.get()
+            # Mint Mode Colors
+            self.colors_mint = {
+                "bg": "#E8F8F5",           # mint cream background
+                "frame": "#D5F4E6",        # light mint
+                "text": "#154734",         # dark green text
+                "button": "#52BE80",       # emerald green
+                "button_hover": "#45B571", # darker emerald
+                "entry": "#FFFFFF",        # white entry
+                "entry_text": "#154734",   # dark green text
+                "border": "#A3E4D7",       # mint border
+                "textbox": "#FFFFFF",      # white textbox
+                "label_text": "#154734",   # dark green labels
+                "button_text": "#FFFFFF",  # white button text
+            }
+            
+            # Purple Mode Colors
+            self.colors_purple = {
+                "bg": "#F4ECF7",           # light lavender background
+                "frame": "#E8DAEF",        # lavender
+                "text": "#4A235A",         # dark purple text
+                "button": "#9B59B6",       # amethyst purple
+                "button_hover": "#8E44AD", # darker purple
+                "entry": "#FFFFFF",        # white entry
+                "entry_text": "#4A235A",   # dark purple text
+                "border": "#D7BDE2",       # light purple border
+                "textbox": "#FFFFFF",      # white textbox
+                "label_text": "#4A235A",   # dark purple labels
+                "button_text": "#FFFFFF",  # white button text
+            }
+            
+            # Ocean Mode Colors
+            self.colors_ocean = {
+                "bg": "#EBF5FB",           # light sky blue background
+                "frame": "#D6EAF8",        # pale blue
+                "text": "#1B4F72",         # navy blue text
+                "button": "#3498DB",       # blue
+                "button_hover": "#2E86C1", # darker blue
+                "entry": "#FFFFFF",        # white entry
+                "entry_text": "#1B4F72",   # navy text
+                "border": "#AED6F1",       # light blue border
+                "textbox": "#FFFFFF",      # white textbox
+                "label_text": "#1B4F72",   # navy labels
+                "button_text": "#FFFFFF",  # white button text
+            }
+            
+    def change_theme(self, theme_name):
+        """Change the application theme based on selection."""
         ctk.set_appearance_mode("dark")  # Always use dark appearance for CustomTkinter
-        self.current_mode = new_mode
-
-        if new_mode == "light":
-            # PINK MODE - Set HK image as background with transparent frames
-            self.current_colors = self.colors_light.copy()
-            '''
-            try:
-                # Get window dimensions
-                self.update_idletasks()
-                width = self.winfo_width()
-                height = self.winfo_height()
-                
-                hk_bg_image = ctk.CTkImage(
-                    light_image=Image.open(PINK_PATH_PHOTO),
-                    dark_image=Image.open(PINK_PATH_PHOTO),
-                    size=(width, height)
-                )
-                
-                # Set main window background to light pink
-                self.configure(fg_color=self.current_colors["bg"])
-                
-                # Create background label that fills entire window
-                if hasattr(self, 'bg_label'):
-                    self.bg_label.destroy()
-                
-                self.bg_label = ctk.CTkLabel(self, image=hk_bg_image, text="", fg_color=self.current_colors["bg"])
-                self.bg_label.image = hk_bg_image
-                self.bg_label.place(x=0, y=0, relwidth=1, relheight=1)
-                self.bg_label.lower()  # Send to back
-            except Exception as e:
-                print(f"Error setting background image: {e}")
-            '''
-            self.configure(fg_color=self.current_colors["bg"])
-            
-            # Update switch with pink colors
-            self.mode_switch.configure(
-                text="Light Mode",
-                fg_color=self.current_colors["button"],  # Pink background for switch
-                text_color=self.current_colors["text"],  # Dark text
-                button_color=self.current_colors["button_hover"],  # Deep pink dot
-                progress_color=self.current_colors["button"]  # Pink progress bar
-            )
-
-        else:
-            # DARK MODE - Clean dark theme
-            self.current_colors = self.colors_dark.copy()
-            
-            # Remove background image if it exists
-            if hasattr(self, 'bg_label'):
-                self.bg_label.destroy()
-            
-            self.configure(fg_color=self.current_colors["bg"])
-            
-            # Update switch with dark colors
-            self.mode_switch.configure(
-                text="Dark Mode",
-                fg_color=self.current_colors["frame"],  # Dark gray background
-                text_color=self.current_colors["text"],  # White text
-                button_color=self.current_colors["button"],  # Pink dot for contrast
-                progress_color=self.current_colors["button"]  # Pink progress
-            )
-            
+        
+        # Map theme names to color palettes
+        theme_map = {
+            "Dark": self.colors_dark,
+            "Light": self.colors_light,
+            "Pink": self.colors_pink,
+            "Mint": self.colors_mint,
+            "Purple": self.colors_purple,
+            "Ocean": self.colors_ocean
+        }
+        
+        self.current_colors = theme_map.get(theme_name, self.colors_dark).copy()
+        self.current_mode = theme_name.lower()
+        self.configure(fg_color=self.current_colors["bg"])
+        
         # Apply colors to all widgets
         for widget in self._get_all_widgets(self):
             if isinstance(widget, ctk.CTkFrame):
-                if new_mode == "light":
-                    widget.configure(fg_color="transparent")  # Transparent frames in pink mode
-                else:
-                    widget.configure(fg_color=self.current_colors["frame"])
+                widget.configure(fg_color=self.current_colors["frame"])
             elif isinstance(widget, ctk.CTkLabel):
                 widget.configure(
                     fg_color="transparent",
@@ -407,7 +479,7 @@ class FasorCalculator(ctk.CTk):
                 widget.configure(
                     fg_color=self.current_colors["button"],
                     text_color=self.current_colors.get("button_text", "#FFFFFF"),
-                     hover_color=self.current_colors["button_hover"]
+                    hover_color=self.current_colors["button_hover"]
                 )
             elif isinstance(widget, ctk.CTkEntry):
                 widget.configure(
@@ -418,7 +490,7 @@ class FasorCalculator(ctk.CTk):
             elif isinstance(widget, ctk.CTkOptionMenu):
                 widget.configure(
                     fg_color=self.current_colors["button"],
-                    text_color="#FFFFFF",
+                    text_color=self.current_colors.get("label_text", "#222222"),
                     button_color=self.current_colors["button_hover"]
                 )
             elif isinstance(widget, ctk.CTkTextbox):
@@ -426,20 +498,54 @@ class FasorCalculator(ctk.CTk):
                     fg_color=self.current_colors["textbox"],
                     text_color=self.current_colors["text"]
                 )
-        # Re-style referenced buttons/menus to ensure visual consistency
+        
+        # Re-style referenced buttons/menus
         for btn in ("btn_change_size", "btn_load_example", "btn_solve", "btn_load_saved", "btn_import", "btn_refresh_saved"):
             if hasattr(self, btn):
                 getattr(self, btn).configure(
                     fg_color=self.current_colors["button"],
                     text_color=self.current_colors.get("button_text", "#FFFFFF"),
-                     hover_color=self.current_colors["button_hover"]
+                    hover_color=self.current_colors["button_hover"]
                 )
+        
+        # Style calculator components
+        if hasattr(self, "calc_buttons"):
+            for calc_btn in self.calc_buttons:
+                calc_btn.configure(
+                    fg_color=self.current_colors["button"],
+                    text_color=self.current_colors.get("button_text", "#FFFFFF"),
+                    hover_color=self.current_colors["button_hover"]
+                )
+        if hasattr(self, "calc_display"):
+            self.calc_display.configure(
+                fg_color=self.current_colors["entry"],
+                text_color=self.current_colors["entry_text"],
+                border_color=self.current_colors["border"]
+            )
+        
+        # Style theme selector
+        if hasattr(self, "theme_selector"):
+            self.theme_selector.configure(
+                fg_color=self.current_colors["button"],
+                text_color=self.current_colors.get("label_text", "#222222"),
+                button_color=self.current_colors["button_hover"]
+            )
+        
         if hasattr(self, "saved_menu"):
-            self.saved_menu.configure(fg_color=self.current_colors["button"], text_color=self.current_colors.get("label_text", "#222222"), button_color=self.current_colors["button_hover"])
+            self.saved_menu.configure(
+                fg_color=self.current_colors["button"],
+                text_color=self.current_colors.get("label_text", "#222222"),
+                button_color=self.current_colors["button_hover"]
+            )
             tkmenu = getattr(self.saved_menu, "_menu", None)
             if tkmenu is not None:
                 try:
-                    tkmenu.configure(background=self.current_colors["frame"], foreground=self.current_colors["label_text"], activebackground=self.current_colors["button"], activeforeground=self.current_colors.get("button_text", "#FFFFFF"))
+                    tkmenu.configure(
+                        background=self.current_colors["frame"],
+                        foreground=self.current_colors["label_text"],
+                        activebackground=self.current_colors["button"],
+                        activeforeground=self.current_colors.get("button_text", "#FFFFFF")
+                    )
                 except Exception:
                     pass
 
@@ -507,6 +613,9 @@ class FasorCalculator(ctk.CTk):
         except Exception:
             # fallback: ignore if apply function misbehaves
             pass
+        
+        # Resize window to fit new matrix size after a short delay
+        self.after(100, self.dynamic_window_resize)
     def load_default_example(self):
         """Fill the matrix entries with a helpful default example.
         The example demonstrates rectangular notation with 'i' as imaginary unit.
@@ -772,8 +881,7 @@ class FasorCalculator(ctk.CTk):
         dlg = ctk.CTkToplevel(self)
         dlg.title("Nuevo tamaño")
         dlg.transient(self)
-        dlg.grab_set()
-
+        
         # Ensure dialog uses current theme colors
         frame_color = self.current_colors.get("frame", "#2d2d2d")
         label_color = self.current_colors.get("label_text", "#FFFFFF")
@@ -841,6 +949,10 @@ class FasorCalculator(ctk.CTk):
         x = px + (pw // 2) - (w // 2)
         y = py + (ph // 2) - (h // 2)
         dlg.geometry(f"+{x}+{y}")
+        
+        # Set grab after window is positioned and visible
+        dlg.update()
+        dlg.grab_set()
 
         dlg.wait_window()
         return res["value"]
@@ -850,19 +962,44 @@ class FasorCalculator(ctk.CTk):
         # Force update of all widgets
         self.update_idletasks()
         
-        # Get the required size from the main frame
-        main_frame = self.winfo_children()[1]  # Assuming main_frame is the second child (after mode_switch)
+        # Calculate matrix dimensions based on size
+        # Each entry is approximately 130px wide + padding
+        matrix_width = (self.size * 130) + ((self.size + 2) * 130) + 100  # A matrix + separator + b vector + padding
         
-        # Calculate required dimensions with some padding
-        req_width = main_frame.winfo_reqwidth() + 40  # Add padding
-        req_height = main_frame.winfo_reqheight() + 100  # Add padding for mode switch and margins
+        # Left panel width (matrix + instructions + buttons)
+        left_panel_width = max(matrix_width, 450)  # Minimum for instructions text
         
-        # Set minimum dimensions
-        min_width = 1000
-        min_height = 600
+        # Right panel width (history + saved systems + calculator)
+        right_panel_width = 750  # Fixed, enough for history and calculator
         
-        new_width = max(req_width, min_width)
-        new_height = max(req_height, min_height)
+        # Calculate total width needed
+        total_content_width = left_panel_width + right_panel_width + 60  # 60 for padding
+        
+        # Calculate height based on matrix rows
+        matrix_height = (self.size * 35) + 200  # 35px per row + space for buttons and instructions
+        
+        # Right panel needs space for history (450px) + calculator (250px) + controls
+        right_panel_height = 850
+        
+        total_content_height = max(matrix_height + 300, right_panel_height)  # 300 for header and other controls
+        
+        # Set bounds
+        min_width = 1200
+        max_width = 1800
+        min_height = 700
+        max_height = 1080
+        
+        # Constrain dimensions
+        new_width = max(min_width, min(total_content_width, max_width))
+        new_height = max(min_height, min(total_content_height, max_height))
+        
+        # Get current screen dimensions
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+        
+        # Don't exceed 90% of screen size
+        new_width = min(new_width, int(screen_width * 0.9))
+        new_height = min(new_height, int(screen_height * 0.9))
         
         # Apply new geometry
         self.geometry(f"{new_width}x{new_height}")
@@ -875,9 +1012,177 @@ class FasorCalculator(ctk.CTk):
         self.update_idletasks()
         width = self.winfo_width()
         height = self.winfo_height()
-        x = (self.winfo_screenwidth() // 2) - (width // 2)
-        y = (self.winfo_screenheight() // 2) - (height // 2)
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+        x = (screen_width // 2) - (width // 2)
+        y = (screen_height // 2) - (height // 2)
+        
+        # Ensure window stays on screen
+        x = max(0, min(x, screen_width - width))
+        y = max(0, min(y, screen_height - height))
+        
         self.geometry(f"{width}x{height}+{x}+{y}")
+
+    # ============================
+    # CALCULATOR METHODS
+    # ============================
+    def calc_button_click(self, btn_text):
+        """Handle calculator button clicks."""
+        current = self.calc_display.get()
+        
+        try:
+            if btn_text == 'C':
+                # Clear
+                self.calc_display.delete(0, "end")
+                self.calc_display.insert(0, "0")
+                self.calc_current = ""
+                self.calc_operation = None
+                self.calc_first_operand = None
+                
+            elif btn_text == '=':
+                # Evaluate expression
+                try:
+                    # First try to evaluate as a mathematical expression
+                    result = self._evaluate_expression(current)
+                    
+                    # Format result based on whether it's complex or real
+                    if isinstance(result, complex):
+                        if abs(result.imag) < 1e-10:
+                            # Real number
+                            display_result = f"{result.real:.6g}"
+                        else:
+                            # Complex number - show rectangular form
+                            display_result = complejo_rect(result)
+                    else:
+                        display_result = f"{result:.6g}"
+                    
+                    self.calc_display.delete(0, "end")
+                    self.calc_display.insert(0, display_result)
+                    self.calc_operation = None
+                    self.calc_first_operand = None
+                except Exception as e:
+                    messagebox.showerror("Error", f"Expresión inválida:\n{current}\n\n{str(e)}")
+                        
+            elif btn_text in ['+', '-', '*', '/', '^']:
+                # Just add the operator to the display
+                if current and current != "0":
+                    # If operator is ^ convert to **
+                    operator = '**' if btn_text == '^' else btn_text
+                    self.calc_display.insert("end", operator)
+                    
+            elif btn_text == '√':
+                # Square root of current expression
+                try:
+                    result = self._evaluate_expression(current)
+                    result = np.sqrt(result)
+                    if isinstance(result, complex):
+                        if abs(result.imag) < 1e-10:
+                            display_result = f"{result.real:.6g}"
+                        else:
+                            display_result = complejo_rect(result)
+                    else:
+                        display_result = f"{result:.6g}"
+                    self.calc_display.delete(0, "end")
+                    self.calc_display.insert(0, display_result)
+                except Exception as e:
+                    messagebox.showerror("Error", f"Error: {e}")
+                    
+            elif btn_text == 'M+':
+                # Memory add
+                try:
+                    val = self._evaluate_expression(current)
+                    self.calc_memory = val
+                    messagebox.showinfo("Memoria", f"Guardado: {current}")
+                except Exception as e:
+                    messagebox.showerror("Error", f"Error: {e}")
+                    
+            elif btn_text == 'MR':
+                # Memory recall
+                if self.calc_memory != 0:
+                    if isinstance(self.calc_memory, complex):
+                        if abs(self.calc_memory.imag) < 1e-10:
+                            display_result = f"{self.calc_memory.real:.6g}"
+                        else:
+                            display_result = complejo_rect(self.calc_memory)
+                    else:
+                        display_result = f"{self.calc_memory:.6g}"
+                    self.calc_display.delete(0, "end")
+                    self.calc_display.insert(0, display_result)
+                else:
+                    messagebox.showinfo("Memoria", "Memoria vacía")
+                    
+            elif btn_text == 'MC':
+                # Memory clear
+                self.calc_memory = 0
+                messagebox.showinfo("Memoria", "Memoria borrada")
+                
+            elif btn_text in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', 'j', '(', ')']:
+                # Number or symbol input - show what you're typing
+                if current == "0" and btn_text != '.':
+                    self.calc_display.delete(0, "end")
+                    self.calc_display.insert(0, btn_text)
+                else:
+                    self.calc_display.insert("end", btn_text)
+                    
+        except Exception as e:
+            messagebox.showerror("Error", f"Error en calculadora: {e}")
+    
+    def _evaluate_expression(self, expr):
+        """Safely evaluate a mathematical expression.
+        Handles both real and complex numbers, including phasor notation.
+        """
+        expr = expr.strip()
+        if not expr or expr == "0":
+            return 0
+        
+        # Check if it contains phasor notation (L for angle)
+        if 'L' in expr.upper():
+            # Try to parse as phasor or expression with phasors
+            return self.parse_value(expr)
+        
+        # Replace 'j' with 'J' temporarily to avoid conflicts
+        expr_eval = expr.replace('j', 'J')
+        
+        # Check if it's a complex number expression (contains J)
+        if 'J' in expr_eval:
+            # Replace J back to j and parse as complex
+            expr_eval = expr_eval.replace('J', 'j')
+            # Try to evaluate as Python expression with complex numbers
+            try:
+                # Safe evaluation - only allow numbers, operators, and j
+                safe_dict = {'__builtins__': {}, 'j': 1j}
+                result = eval(expr_eval, safe_dict)
+                return result
+            except:
+                # Fallback to parse_value
+                return self.parse_value(expr)
+        
+        # It's a real number expression - evaluate it
+        try:
+            # Safe evaluation for real numbers
+            safe_dict = {'__builtins__': {}}
+            result = eval(expr_eval, safe_dict)
+            return result
+        except:
+            # Last resort - try parse_value
+            return self.parse_value(expr)
+    
+    def _calc_operate(self, a, b, op):
+        """Perform operation between two complex numbers."""
+        if op == '+':
+            return a + b
+        elif op == '-':
+            return a - b
+        elif op == '*':
+            return a * b
+        elif op == '/':
+            if abs(b) < 1e-10:
+                raise ValueError("Division by zero")
+            return a / b
+        elif op == '^' or op == '**':
+            return a ** b
+        else:
+            raise ValueError(f"Unknown operation: {op}")
         
 
 if __name__ == "__main__":
