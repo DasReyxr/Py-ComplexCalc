@@ -1,0 +1,16 @@
+/*
+ * HALTecMat4x4.h
+ *
+ *  Created on: Dec 17, 2025
+ *      Author: dasre
+ */
+
+#ifndef INC_HALTECMAT4X4_H_
+#define INC_HALTECMAT4X4_H_
+
+#include <stm32f4xx.h>
+extern char* gotKey(void);
+extern char* toggleAlternateMode(void);
+
+
+#endif /* INC_HALTECMAT4X4_H_ */

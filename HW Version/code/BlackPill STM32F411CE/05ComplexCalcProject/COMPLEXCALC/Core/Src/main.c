@@ -1,0 +1,544 @@
+/* USER CODE BEGIN Header */
+
+/* USER CODE END Header */
+/* Includes ------------------------------------------------------------------*/
+#include "main.h"
+
+/* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
+#include "stm32f4xx_hal.h"
+#include <stdlib.h>
+#include <string.h>
+#include "TecMat4x4.h"
+#include "st7735.h"
+#include "COMPLEX_SYS.h"
+#include "fonts.h"
+/* USER CODE END Includes */
+
+/* Private typedef -----------------------------------------------------------*/
+/* USER CODE BEGIN PTD */
+
+/* USER CODE END PTD */
+
+/* Private define ------------------------------------------------------------*/
+/* USER CODE BEGIN PD */
+#define BUFFER_SIZE 16
+/* USER CODE END PD */
+
+/* Private macro -------------------------------------------------------------*/
+/* USER CODE BEGIN PM */
+
+/* USER CODE END PM */
+
+/* Private variables ---------------------------------------------------------*/
+SPI_HandleTypeDef hspi1;
+
+/* USER CODE BEGIN PV */
+
+uint8_t level = 0 ;
+uint8_t index_Var = 0;
+char buffer[BUFFER_SIZE];
+uint8_t navigating = 0;
+uint8_t matSize;
+cplx A[N_MAX][N_MAX] = {0};
+cplx b[N_MAX] = {0};
+cplx x[N_MAX] = {0};
+// Variables de control de pantalla
+uint8_t needsRedraw = 1;
+uint8_t editingReal = 1; // 1 = editando real, 0 = editando imaginario
+uint8_t Polar_rectangular = 0; // 0 = rectangular, 1 = polar
+double real = 0.0, imag = 0.0;
+/* USER CODE END PV */
+
+/* Private function prototypes -----------------------------------------------*/
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+static void MX_SPI1_Init(void);
+/* USER CODE BEGIN PFP */
+uint8_t readPad(char *);
+void initTheme(void);
+void toggleTheme(void);
+/* USER CODE END PFP */
+
+/* Private user code ---------------------------------------------------------*/
+/* USER CODE BEGIN 0 */
+
+/* USER CODE END 0 */
+
+/**
+  * @brief  The application entry point.
+  * @retval int
+  */
+int main(void)
+{
+
+  /* USER CODE BEGIN 1 */
+
+  /* USER CODE END 1 */
+
+  /* MCU Configuration--------------------------------------------------------*/
+
+  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+  HAL_Init();
+
+  /* USER CODE BEGIN Init */
+
+  /* USER CODE END Init */
+
+  /* Configure the system clock */
+  SystemClock_Config();
+
+  /* USER CODE BEGIN SysInit */
+
+  /* USER CODE END SysInit */
+
+  /* Initialize all configured peripherals */
+  MX_GPIO_Init();
+  MX_SPI1_Init();
+  /* USER CODE BEGIN 2 */
+  ST7735_Init();
+  initTheme();  // Initialize color theme
+  char *keypress = NULL;
+  	char *endptr;
+  	uint8_t messageReady = 1;
+  	// Matriz
+  	uint8_t colMat = 0, rowMat = 0;
+  	double real, imag = 0.0;
+  	memset(buffer, 0, sizeof(buffer));
+  /* USER CODE END 2 */
+
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
+  while (1)
+  {
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
+
+	switch (level){
+    case 0:
+        // Dibujar pantalla solo cuando sea necesario
+        if(needsRedraw) {
+            drawLevel0();
+            needsRedraw = 0;
+        }
+
+        keypress = gotKey();
+        messageReady = readPad(keypress);
+
+        if(messageReady == 0){
+            // Actualizar solo el buffer en pantalla
+
+            break;
+        }
+
+        // Conversión a entero
+        matSize = (uint8_t)strtol(buffer, &endptr, 10);
+
+        if ((endptr == buffer) || (matSize == 0)) {
+            level = 0;
+            needsRedraw = 1;
+        }
+
+        else if(matSize > N_MAX){
+            level = 0;
+            needsRedraw = 1;
+        }
+        else if(matSize<2) matSize = 2;
+
+        if(matSize >= 2 && matSize <= N_MAX) {
+        	drawLevel0();
+
+
+        	memset(buffer, 0, sizeof(buffer));
+            index_Var = 0;
+            colMat = 0;
+            rowMat = 0;
+            editingReal = 1;
+            level = 1;
+            needsRedraw = 1;
+        }
+
+        break;
+
+    case 1:
+        if(needsRedraw) {
+            drawLevel1(colMat, rowMat);
+            needsRedraw = 0;
+        }
+
+        keypress = gotKey();
+        messageReady = readPad(keypress);
+
+		// Si se presionó una tecla pero no es un mensaje completo
+		if(messageReady == 2) {
+			// Buffer cambió (se agregó/borró un dígito)
+			needsRedraw = 1;
+			break;
+		}
+
+
+		// Si no hay nada en el buffer, permitir navegación
+        if(index_Var == 0 && navigating) {
+            switch (*keypress){
+                case 'W':
+                    if(colMat > 0) colMat--;
+                    needsRedraw = 1;
+                    break;
+                case 'B':
+                    if(colMat < matSize - 1) colMat++;
+                    needsRedraw = 1;
+                    break;
+                case 'L':
+                    if(rowMat > 0) rowMat--;
+                    needsRedraw = 1;
+                    break;
+                case 'R':
+                    if(rowMat < matSize) rowMat++;
+                    needsRedraw = 1;
+                    break;
+            }
+            break;
+        }
+
+        // Si no hay mensaje (no se presionó un número o tecla especial) salir
+        if(!(messageReady == 1))
+            break;
+
+        if(*keypress == '=') {
+            // Manejo del  real
+            if(editingReal) {
+                // Termina ingreso de parte real, pasa a imaginario
+                if(index_Var > 0) {
+                    // Solo guardar si hay datos en el buffer
+                    real = strtod(buffer, &endptr);
+                    if(rowMat < matSize) A[colMat][rowMat].r = real;
+                    else b[colMat].r = real;
+                }
+                memset(buffer, 0, sizeof(buffer));
+                index_Var = 0;
+                editingReal = 0;
+                needsRedraw = 1;
+            }
+            // Manejo del imaginaria
+            else {
+                // Termina ingreso de parte imaginaria, guarda y avanza
+                if(index_Var > 0) {
+                    // Coordenadas polares
+                    if(Polar_rectangular == 1){
+                     // Extraer coordenadas polares
+                        double imag_polar = strtod(buffer, &endptr);
+                        if(rowMat < matSize) real = A[colMat][rowMat].r;
+                        else real = b[colMat].r;
+
+                        needsRedraw = 1;
+                        // Conversion de polar a cartesiano
+                        imag = real * sin((imag_polar * PI) / 180.0);
+                        real = real * cos(imag_polar * PI / 180.0);
+                        if(rowMat < matSize) A[colMat][rowMat].i = imag;
+                        else b[colMat].i = imag;
+                        if(rowMat < matSize) A[colMat][rowMat].r = real;
+                        else b[colMat].r = real;
+
+                    }
+                        // Coordenadas cartesianas
+                    else{
+                        // Solo guardar si hay datos en el buffer
+                        imag = strtod(buffer, &endptr);
+                        if(rowMat < matSize) A[colMat][rowMat].i = imag;
+                        else b[colMat].i = imag;
+                        }
+                    }
+                // Reset y avanzar
+                memset(buffer, 0, sizeof(buffer));
+                index_Var = 0;
+                editingReal = 1;
+                Polar_rectangular = 0;
+                real = 0.0;
+                imag = 0.0;
+
+                // Avanzar a siguiente celda (por COLUMNAS primero)
+                rowMat++;
+                if(rowMat > matSize) {
+                    rowMat = 0;
+                    colMat++;
+                }
+                // Si terminamos, ir a resolver
+                if(colMat >= matSize) {
+                    level = 2;
+                }
+                needsRedraw = 1;
+            }
+        }
+        break;
+
+    case 2:
+        // Resolver el sistema
+        int success = solve_complex_system(matSize, A, b, x);
+        drawLevel2(success == 0);
+
+        // Esperar tecla para volver
+        messageReady = 0;
+        while(!(messageReady)){
+            keypress = gotKey();
+            messageReady = readPad(keypress);
+        }
+
+        // // Reset para nuevo sistema - limpiar matrices
+        // memset(A, 0, sizeof(A));
+        // memset(b, 0, sizeof(b));
+        // memset(x, 0, sizeof(x));
+        level = 0;
+         matSize = 0;
+        colMat = 0;  // Reset matrix position
+        rowMat = 0;  // Reset matrix position
+        memset(buffer, 0, sizeof(buffer));
+        index_Var = 0;
+        editingReal = 1;
+        needsRedraw = 1;
+        break;
+
+		}
+  }
+  /* USER CODE END 3 */
+}
+
+/**
+  * @brief System Clock Configuration
+  * @retval None
+  */
+void SystemClock_Config(void)
+{
+  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+
+  /** Configure the main internal regulator output voltage
+  */
+  __HAL_RCC_PWR_CLK_ENABLE();
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+
+  /** Initializes the RCC Oscillators according to the specified parameters
+  * in the RCC_OscInitTypeDef structure.
+  */
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLM = 12;
+  RCC_OscInitStruct.PLL.PLLN = 96;
+  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+  RCC_OscInitStruct.PLL.PLLQ = 4;
+  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Initializes the CPU, AHB and APB buses clocks
+  */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+}
+
+/**
+  * @brief SPI1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_SPI1_Init(void)
+{
+
+  /* USER CODE BEGIN SPI1_Init 0 */
+
+  /* USER CODE END SPI1_Init 0 */
+
+  /* USER CODE BEGIN SPI1_Init 1 */
+
+  /* USER CODE END SPI1_Init 1 */
+  /* SPI1 parameter configuration*/
+  hspi1.Instance = SPI1;
+  hspi1.Init.Mode = SPI_MODE_MASTER;
+  hspi1.Init.Direction = SPI_DIRECTION_2LINES;
+  hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
+  hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
+  hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
+  hspi1.Init.NSS = SPI_NSS_SOFT;
+  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
+  hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
+  hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
+  hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+  hspi1.Init.CRCPolynomial = 10;
+  if (HAL_SPI_Init(&hspi1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN SPI1_Init 2 */
+
+  /* USER CODE END SPI1_Init 2 */
+
+}
+
+/**
+  * @brief GPIO Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_GPIO_Init(void)
+{
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+  /* USER CODE BEGIN MX_GPIO_Init_1 */
+
+  /* USER CODE END MX_GPIO_Init_1 */
+
+  /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOH_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOA, CS_Pin|DC_Pin|RES_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6|GPIO_PIN_7|GPIO_PIN_8|GPIO_PIN_9, GPIO_PIN_RESET);
+
+  /*Configure GPIO pins : CS_Pin DC_Pin RES_Pin */
+  GPIO_InitStruct.Pin = CS_Pin|DC_Pin|RES_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : PB10 PB12 PB13 PB14
+                           PB15 */
+  GPIO_InitStruct.Pin = GPIO_PIN_10|GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14
+                          |GPIO_PIN_15;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : PB6 PB7 PB8 PB9 */
+  GPIO_InitStruct.Pin = GPIO_PIN_6|GPIO_PIN_7|GPIO_PIN_8|GPIO_PIN_9;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /* USER CODE BEGIN MX_GPIO_Init_2 */
+
+  /* USER CODE END MX_GPIO_Init_2 */
+}
+
+/* USER CODE BEGIN 4 */
+
+uint8_t readPad(char *keypress){
+
+    if (!keypress) return 0;
+    char key = *keypress;
+    // Ignore special value
+    if ((unsigned char)keypress == 0x27) return 0;
+
+    // Handle control keys
+    if (key == '=') {
+        /*if (level < 2) level++;
+        if (level == 2) level--;*/
+        return 1;
+    }
+	if (*keypress == '-') {
+    // Only allow '-' as the first character in the buffer
+    if (index_Var == 0) {
+        buffer[index_Var++] = '-';
+        return 2;}
+	else return 0; // Ignore if not at start
+	}
+    if (key == 'T') {
+        if (level > 0) level--;
+        memset(buffer, 0, sizeof(buffer));
+        index_Var = 0;
+        return 2;
+    }
+    if (key == 'D') {
+        if (index_Var > 0) {
+            index_Var--;
+            buffer[index_Var] = 0;
+        }
+        return 2;
+    }
+    // Parte imaginaria
+    if (key == 'I') {
+        return 1;
+    }
+    // Parte real
+    if (*keypress == 'O') {
+    // Only allow '-' as the first character in the buffer
+
+        Polar_rectangular = 1;
+        return 2;
+    }
+
+    if (key == 'F') {
+        navigating ^= 1;
+        return 2;
+    }
+    if (key == 'S'){
+        level = 2;
+        return 2;
+    }
+    if (key == 'P') {
+        toggleTheme();
+        needsRedraw = 1;
+        return 2;
+    }
+
+    // Handle numbers and dot
+    if ((key >= '0' && key <= '9') || key == '.') {
+        if (index_Var < BUFFER_SIZE) {
+            buffer[index_Var++] = key;
+        }
+        return 2;
+    }
+
+    // Unknown key
+    return 0;
+
+}
+
+/* USER CODE END 4 */
+
+/**
+  * @brief  This function is executed in case of error occurrence.
+  * @retval None
+  */
+void Error_Handler(void)
+{
+  /* USER CODE BEGIN Error_Handler_Debug */
+  /* User can add his own implementation to report the HAL error return state */
+  __disable_irq();
+  while (1)
+  {
+  }
+  /* USER CODE END Error_Handler_Debug */
+}
+#ifdef USE_FULL_ASSERT
+/**
+  * @brief  Reports the name of the source file and the source line number
+  *         where the assert_param error has occurred.
+  * @param  file: pointer to the source file name
+  * @param  line: assert_param error line source number
+  * @retval None
+  */
+void assert_failed(uint8_t *file, uint32_t line)
+{
+  /* USER CODE BEGIN 6 */
+  /* User can add his own implementation to report the file name and line number,
+     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+  /* USER CODE END 6 */
+}
+#endif /* USE_FULL_ASSERT */

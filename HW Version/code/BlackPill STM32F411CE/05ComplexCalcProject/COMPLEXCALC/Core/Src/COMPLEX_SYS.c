@@ -1,0 +1,101 @@
+#include "COMPLEX_SYS.h"
+
+void cplx_to_str(cplx num, char* buffer, int* index) {
+    // Parte real
+    ftoa_for_oled(num.r, buffer, index, 2);
+    
+    // Signo de la parte imaginaria
+    if(num.i >= 0) {
+        buffer[(*index)++] = '+';
+    }
+    
+    // Parte imaginaria
+    ftoa_for_oled(num.i, buffer, index, 2);
+    buffer[(*index)++] = 'i';
+    buffer[(*index)] = '\0';
+}
+
+
+static void swap_rows(cplx A[N_MAX][N_MAX], cplx b[N_MAX], int n, int r1, int r2) {
+    for (int j = 0; j < n; j++) {
+        cplx tmp = A[r1][j];
+        A[r1][j] = A[r2][j];
+        A[r2][j] = tmp;
+    }
+    cplx tmpb = b[r1];
+    b[r1] = b[r2];
+    b[r2] = tmpb;
+}
+
+int solve_complex_system(int n, cplx A[N_MAX][N_MAX], cplx b[N_MAX], cplx x[N_MAX]) {
+    if (n <= 0 || n > N_MAX) return 1;
+
+    // Create local copies to avoid modifying originals
+    cplx A_copy[N_MAX][N_MAX];
+    cplx b_copy[N_MAX];
+    
+    // Copy A matrix
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            A_copy[i][j] = A[i][j];
+        }
+        b_copy[i] = b[i];
+    }
+
+    // Gaussian elimination with partial pivoting
+    for (int k = 0; k < n; k++) {
+        int p = k;
+        float maxv = fabsf(A_copy[k][k].r) + fabsf(A_copy[k][k].i);
+        for (int i = k + 1; i < n; i++) {
+            float v = fabsf(A_copy[i][k].r) + fabsf(A_copy[i][k].i);
+            if (v > maxv) { maxv = v; p = i; }
+        }
+        if (maxv < 1e-7f) return 1;
+
+        if (p != k) swap_rows(A_copy, b_copy, n, k, p);
+
+        cplx pivot = A_copy[k][k];
+        for (int i = k + 1; i < n; i++) {
+            cplx m = c_div(A_copy[i][k], pivot);
+            for (int j = k; j < n; j++)
+                A_copy[i][j] = c_sub(A_copy[i][j], c_mul(m, A_copy[k][j]));
+            b_copy[i] = c_sub(b_copy[i], c_mul(m, b_copy[k]));
+        }
+    }
+
+    // Back substitution
+    for (int i = n - 1; i >= 0; i--) {
+        cplx sum = {0,0};
+        for (int j = i + 1; j < n; j++)
+            sum = c_add(sum, c_mul(A_copy[i][j], x[j]));
+        x[i] = c_div(c_sub(b_copy[i], sum), A_copy[i][i]);
+    }
+    return 0;
+}
+
+void itoa_simple(int n, char* buf, int* index) {
+    if(n == 0) { buf[(*index)++] = '0'; return; }
+    if(n < 0) { buf[(*index)++] = '-'; n = -n; }
+    char temp[10]; int t = 0;
+    while(n > 0) { temp[t++] = '0' + (n % 10); n /= 10; }
+    for(int i = t-1; i >=0; i--) buf[(*index)++] = temp[i];
+}
+
+
+void ftoa_for_oled(float f, char* buf, int* index, int digits) {
+    if(f < 0) { buf[(*index)++] = '-'; f = -f; }
+    else  {buf[(*index)++] = '+';}
+
+    int int_part = (int)f;
+    float frac_part = f - int_part;
+    itoa_simple(int_part, buf, index);
+
+    buf[(*index)++] = '.';  // decimal point
+
+    for(int i=0; i<digits; i++){
+        frac_part *= 10;
+        int d = (int)frac_part;
+        buf[(*index)++] = '0' + d;
+        frac_part -= d;
+    }
+}

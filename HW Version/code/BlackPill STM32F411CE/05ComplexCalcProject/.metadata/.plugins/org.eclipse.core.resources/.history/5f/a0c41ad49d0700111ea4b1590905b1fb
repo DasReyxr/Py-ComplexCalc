@@ -1,0 +1,77 @@
+#include "TecMat4x4.h"
+#define ROWS 4
+#define COLS 4
+#define ROW_INIT 6
+#define COL_END 8
+uint8_t toggle_Altern = 0;
+
+char *keyHexa[ROWS][COLS]={
+{"7","8","9","D"},
+{"4","5","6","-"},
+{"1","2","3","T"},
+{"F","0",".","="},
+};
+char *keyHexaAltern[ROWS][COLS]={
+{" ","W"," ","I"},
+{"L"," ","R","P"},
+{" ","B"," "," "},
+{" "," "," ","S"},
+};
+
+uint8_t keyPolling[ROWS][COLS]={
+// 1110 X | 1100 X| 1010 X | 0110 X
+	{0XEE,0XDE,0XBE,0X7E}, // X 1110
+	{0XED,0XDD,0XBD,0X7D}, // X 1100
+	{0XEB,0XDB,0XBB,0X7B}, // X 1010
+	{0XE7,0XD7,0XB7,0X77}, // X 0110
+};
+
+
+
+uint8_t rowPins[ROWS] = {0XE,0XD,0XB,0X7};
+
+char* gotKey(void){
+	for(uint8_t i = 0; i<ROWS; i++){
+		//limpia de lo que nos interesa
+		/*0x272727
+		B15 B14 B13 B12 | B11 B10 B9 B8 | B7 B6 B5 B4 | B3 B2 B1 B0
+		 1   1   1   1  |  0  0  0  0 |  X  X  X  X | X  X  X  X 
+		 0   0   0   0  |  0  0  1  1 |  1  1  0  0 | 0  0  0  0
+		 */
+		
+		GPIOB->ODR = (GPIOB->ODR & (0xF0<<COL_END)) | (rowPins[i]<<ROW_INIT);
+		// Debounce
+		
+		//Checamos la presion de alguna columna 
+		uint16_t key = GPIOB->IDR & (0xF0<<COL_END);
+		// Checa si se detecto una columna 
+		if(key != (0xF0<<COL_END)){
+			key |= ((GPIOB->ODR & (0x0F<<ROW_INIT)) << 2);
+			key=key>>8;
+			// Si se presiono la funcion alterna
+			if((key ==0XE7)){
+				toggle_Altern ^= 1;
+				while((GPIOB->IDR & (0xF0<<COL_END)) != (0xF0<<COL_END));
+				return "F";
+			}
+
+			//Busca si existe la presion 
+				for(uint8_t j = 0; j<COLS; j++){
+					if(key == keyPolling[i][j])	{
+						if(toggle_Altern == 0){
+							while((GPIOB->IDR & (0xF0<<COL_END)) != (0xF0<<COL_END));
+							return keyHexa[i][j];}
+						if(toggle_Altern == 1){
+							while((GPIOB->IDR & (0xF0<<COL_END)) != (0xF0<<COL_END));
+							return keyHexaAltern[i][j];
+							}
+						}
+					}
+				}
+	}
+	return 0x27;
+}
+
+
+
+

@@ -1,0 +1,23 @@
+2026-02-11 15:59:47,172 [INFO] Activator:176 - 
+
+
+2026-02-11 15:59:47,175 [INFO] Activator:177 - !SESSION log4j initialized
+2026-02-11 15:59:49,209 [INFO] LogOutputStream:77 - [STDOUT_REDIRECT] 
+2026-02-11 16:15:46,502 [ERROR] AdobePublisher:162 - Exception while opening the connection: java.net.SocketTimeoutException: Read timed out
+2026-02-11 16:28:33,501 [INFO] Activator:176 - 
+
+
+2026-02-11 16:28:33,504 [INFO] Activator:177 - !SESSION log4j initialized
+2026-02-11 16:28:37,037 [INFO] LogOutputStream:77 - [STDOUT_REDIRECT] 
+2026-02-11 16:28:39,668 [ERROR] ConfigurationRetriever:142 - IOException on connection: Read timed out
+2026-02-11 17:05:39,495 [ERROR] ConfigurationRetriever:142 - IOException on connection: Read timed out
+2026-02-11 17:06:50,250 [ERROR] AdobePublisher:162 - Exception while opening the connection: java.net.SocketTimeoutException: Read timed out
+2026-02-11 17:07:53,851 [ERROR] ConfigurationRetriever:142 - IOException on connection: Read timed out
+2026-02-11 17:08:28,835 [ERROR] ConfigurationRetriever:142 - IOException on connection: Read timed out
+2026-02-11 17:08:30,843 [ERROR] ConfigurationRetriever:142 - IOException on connection: Read timed out
+2026-02-11 17:08:32,850 [ERROR] ConfigurationRetriever:142 - IOException on connection: Read timed out
+2026-02-11 17:12:30,545 [ERROR] AdobePublisher:162 - Exception while opening the connection: java.net.SocketTimeoutException: Read timed out
+2026-02-11 17:36:56,445 [ERROR] AdobePublisher:162 - Exception while opening the connection: java.net.SocketTimeoutException: Read timed out
+2026-02-11 18:07:57,884 [ERROR] AdobePublisher:162 - Exception while opening the connection: java.net.SocketTimeoutException: Read timed out
+2026-02-11 18:15:46,771 [ERROR] AdobePublisher:162 - Exception while opening the connection: java.net.SocketTimeoutException: Read timed out
+2026-02-11 18:15:52,146 [ERROR] AdobePublisher:187 - Exception while getting the server answer: java.net.SocketTimeoutException: Read timed out

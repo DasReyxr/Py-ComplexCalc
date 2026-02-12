@@ -1,0 +1,9 @@
+../Core/Inc/COMPLEX_SYS.h:15:20:c_add	1
+../Core/Inc/COMPLEX_SYS.h:16:20:c_sub	1
+../Core/Inc/COMPLEX_SYS.h:17:20:c_mul	1
+../Core/Inc/COMPLEX_SYS.h:20:20:c_div	1
+../Core/Src/COMPLEX_SYS.c:3:6:cplx_to_str	2
+../Core/Src/COMPLEX_SYS.c:19:13:swap_rows	2
+../Core/Src/COMPLEX_SYS.c:30:5:solve_complex_system	14
+../Core/Src/COMPLEX_SYS.c:76:6:itoa_simple	5
+../Core/Src/COMPLEX_SYS.c:85:6:ftoa_for_oled	3
