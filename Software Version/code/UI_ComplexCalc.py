@@ -15,6 +15,7 @@ import customtkinter as ctk
 from tkinter import messagebox, simpledialog, filedialog
 from ComplexCalc import FasorCalculatorCore, complejo_rect, complejo_a_fasor
 import os
+import json
 from PIL import Image
 import sys
 import webbrowser
@@ -357,97 +358,18 @@ class FasorCalculator(ctk.CTk):
                 pass
 
     def setup_colors(self):
-            """Define all color variables for easy customization."""
-            # Dark Mode Colors (Gray / White)
-            self.colors_dark = {
-                "bg": "#0f0f10",           # deep dark background
-                "frame": "#1f1f20",        # frame dark gray
-                "text": "#FFFFFF",         # primary text white
-                "button": "#3a3a3a",       # button gray
-                "button_hover": "#4a4a4a", # button hover
-                "entry": "#191919",        # entry bg
-                "entry_text": "#FFFFFF",   # entry text
-                "border": "#333333",       # borders
-                "textbox": "#141414",      # textbox bg
-                "label_text": "#FFFFFF",   # labels
-                "button_text": "#FFFFFF",  # button label color (dark theme)
-            }
-
-            # Light Mode Colors (Light Gray / White)
-            self.colors_light = {
-                "bg": "#f7f7f8",           # light background
-                "frame": "#ffffff",        # frame white
-                "text": "#222222",         # dark text
-                "button": "#e0e0e0",       # light button
-                "button_hover": "#cccccc", # button hover
-                "entry": "#ffffff",        # entry bg
-                "entry_text": "#222222",   # entry text
-                "border": "#dddddd",       # borders
-                "textbox": "#ffffff",      # textbox bg
-                "label_text": "#222222",   # labels
-                "button_text": "#222222",  # button label color (light theme: dark text)
-            }
-
-            # Pink Mode Colors
-            self.colors_pink = {
-                "bg": "#FFE4F0",           # light pink background
-                "frame": "#FFF0F5",        # lavender blush
-                "text": "#8B4789",         # purple text
-                "button": "#FF69B4",       # hot pink
-                "button_hover": "#FF1493", # deep pink
-                "entry": "#FFFFFF",        # white entry
-                "entry_text": "#8B4789",   # purple text
-                "border": "#FFB6D9",       # light pink border
-                "textbox": "#FFFFFF",      # white textbox
-                "label_text": "#8B4789",   # purple labels
-                "button_text": "#FFFFFF",  # white button text
-            }
-            
-            # Mint Mode Colors
-            self.colors_mint = {
-                "bg": "#E8F8F5",           # mint cream background
-                "frame": "#D5F4E6",        # light mint
-                "text": "#154734",         # dark green text
-                "button": "#52BE80",       # emerald green
-                "button_hover": "#45B571", # darker emerald
-                "entry": "#FFFFFF",        # white entry
-                "entry_text": "#154734",   # dark green text
-                "border": "#A3E4D7",       # mint border
-                "textbox": "#FFFFFF",      # white textbox
-                "label_text": "#154734",   # dark green labels
-                "button_text": "#FFFFFF",  # white button text
-            }
-            
-            # Purple Mode Colors
-            self.colors_purple = {
-                "bg": "#F4ECF7",           # light lavender background
-                "frame": "#E8DAEF",        # lavender
-                "text": "#4A235A",         # dark purple text
-                "button": "#9B59B6",       # amethyst purple
-                "button_hover": "#8E44AD", # darker purple
-                "entry": "#FFFFFF",        # white entry
-                "entry_text": "#4A235A",   # dark purple text
-                "border": "#D7BDE2",       # light purple border
-                "textbox": "#FFFFFF",      # white textbox
-                "label_text": "#4A235A",   # dark purple labels
-                "button_text": "#FFFFFF",  # white button text
-            }
-            
-            # Ocean Mode Colors
-            self.colors_ocean = {
-                "bg": "#EBF5FB",           # light sky blue background
-                "frame": "#D6EAF8",        # pale blue
-                "text": "#1B4F72",         # navy blue text
-                "button": "#3498DB",       # blue
-                "button_hover": "#2E86C1", # darker blue
-                "entry": "#FFFFFF",        # white entry
-                "entry_text": "#1B4F72",   # navy text
-                "border": "#AED6F1",       # light blue border
-                "textbox": "#FFFFFF",      # white textbox
-                "label_text": "#1B4F72",   # navy labels
-                "button_text": "#FFFFFF",  # white button text
-            }
-            
+        """Load color themes from themes.json"""
+        theme_path = resource_path("themes.json")
+        with open(theme_path, 'r') as f:
+            themes = json.load(f)
+        
+        self.colors_dark = themes["dark"]
+        self.colors_light = themes["light"]
+        self.colors_pink = themes["pink"]
+        self.colors_mint = themes["mint"]
+        self.colors_purple = themes["purple"]
+        self.colors_ocean = themes["ocean"]
+                
     def change_theme(self, theme_name):
         """Change the application theme based on selection."""
         ctk.set_appearance_mode("dark")  # Always use dark appearance for CustomTkinter
@@ -1002,7 +924,7 @@ class FasorCalculator(ctk.CTk):
         new_height = min(new_height, int(screen_height * 0.9))
         
         # Apply new geometry
-        self.geometry(f"{new_width}x{new_height}")
+        #self.geometry(f"{new_width}x{new_height}")
         
         # Center window on screen after resize
         self.center_window()
@@ -1021,7 +943,7 @@ class FasorCalculator(ctk.CTk):
         x = max(0, min(x, screen_width - width))
         y = max(0, min(y, screen_height - height))
         
-        self.geometry(f"{width}x{height}+{x}+{y}")
+        #self.geometry(f"{width}x{height}+{x}+{y}")
 
     # ============================
     # CALCULATOR METHODS

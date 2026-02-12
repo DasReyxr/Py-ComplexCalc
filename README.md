@@ -1,4 +1,4 @@
-# Py-ComplexCalc 🧮⚡
+# Py-ComplexCalc 
 
 **A complete ecosystem for solving n×n complex linear systems (Ax=b)** with both desktop GUI and embedded hardware solutions.
 

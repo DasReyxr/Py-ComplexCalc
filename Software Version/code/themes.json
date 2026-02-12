@@ -1,0 +1,80 @@
+{
+  "dark": {
+    "bg": "#0f0f10",
+    "frame": "#1f1f20",
+    "text": "#FFFFFF",
+    "button": "#3a3a3a",
+    "button_hover": "#4a4a4a",
+    "entry": "#191919",
+    "entry_text": "#FFFFFF",
+    "border": "#333333",
+    "textbox": "#141414",
+    "label_text": "#FFFFFF",
+    "button_text": "#FFFFFF"
+  },
+  "light": {
+    "bg": "#f7f7f8",
+    "frame": "#ffffff",
+    "text": "#222222",
+    "button": "#e0e0e0",
+    "button_hover": "#cccccc",
+    "entry": "#ffffff",
+    "entry_text": "#222222",
+    "border": "#dddddd",
+    "textbox": "#ffffff",
+    "label_text": "#222222",
+    "button_text": "#222222"
+  },
+  "pink": {
+    "bg": "#FFE4F0",
+    "frame": "#FFF0F5",
+    "text": "#8B4789",
+    "button": "#FF69B4",
+    "button_hover": "#FF1493",
+    "entry": "#FFFFFF",
+    "entry_text": "#8B4789",
+    "border": "#FFB6D9",
+    "textbox": "#FFFFFF",
+    "label_text": "#8B4789",
+    "button_text": "#FFFFFF"
+  },
+  "mint": {
+    "bg": "#E8F8F5",
+    "frame": "#D5F4E6",
+    "text": "#154734",
+    "button": "#52BE80",
+    "button_hover": "#45B571",
+    "entry": "#FFFFFF",
+    "entry_text": "#154734",
+    "border": "#A3E4D7",
+    "textbox": "#FFFFFF",
+    "label_text": "#154734",
+    "button_text": "#FFFFFF"
+  },
+  "purple": {
+    "bg": "#F4ECF7",
+    "frame": "#E8DAEF",
+    "text": "#4A235A",
+    "button": "#9B59B6",
+    "button_hover": "#8E44AD",
+    "entry": "#FFFFFF",
+    "entry_text": "#4A235A",
+    "border": "#D7BDE2",
+    "textbox": "#FFFFFF",
+    "label_text": "#4A235A",
+    "button_text": "#FFFFFF"
+  },
+  "ocean": {
+    "bg": "#EBF5FB",
+    "frame": "#D6EAF8",
+    "text": "#1B4F72",
+    "button": "#3498DB",
+    "button_hover": "#2E86C1",
+    "entry": "#FFFFFF",
+    "entry_text": "#1B4F72",
+    "border": "#AED6F1",
+    "textbox": "#FFFFFF",
+    "label_text": "#1B4F72",
+    "button_text": "#FFFFFF"
+  }
+}
