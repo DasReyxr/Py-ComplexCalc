@@ -191,6 +191,7 @@ class FasorCalculator(ctk.CTk):
         )
         self.calc_display.pack(pady=3, padx=8)
         self.calc_display.insert(0, "0")
+        self.calc_display.bind("<Return>", lambda _e: self.calc_button_click("="))
         
         # Calculator state
         self.calc_memory = 0
@@ -207,8 +208,7 @@ class FasorCalculator(ctk.CTk):
             ['7', '8', '9', '/', 'C'],
             ['4', '5', '6', '*', '('],
             ['1', '2', '3', '-', ')'],
-            ['0', '.', 'j', '+', '='],
-            ['M+', 'MR', 'MC', '√', '^']
+            ['0', '.', 'j', '+', '=']
         ]
         
         self.calc_buttons = []
@@ -236,10 +236,6 @@ class FasorCalculator(ctk.CTk):
         self.apply_dark_mode_colors()
 
       
-
-       
-       
-
     def apply_dark_mode_colors(self):
         """Apply current theme colors to all widgets on startup."""
         self.configure(fg_color=self.current_colors["bg"])
@@ -594,7 +590,7 @@ class FasorCalculator(ctk.CTk):
             self.update_history_menu_session()
 
             '''# Popup solution (rectangular numeric)
-            result_str = "\n".join([f"x{i+1} = {val}" for i, val in enumerate(result["x"])])
+            result_sztr = "\n".join([f"x{i+1} = {val}" for i, val in enumerate(result["x"])])
             messagebox.showinfo("Solución", result_str)
             '''
             # Add to GUI history using formatted strings from core
@@ -992,52 +988,7 @@ class FasorCalculator(ctk.CTk):
                     operator = '**' if btn_text == '^' else btn_text
                     self.calc_display.insert("end", operator)
                     
-            elif btn_text == '√':
-                # Square root of current expression
-                try:
-                    result = self._evaluate_expression(current)
-                    result = np.sqrt(result)
-                    if isinstance(result, complex):
-                        if abs(result.imag) < 1e-10:
-                            display_result = f"{result.real:.6g}"
-                        else:
-                            display_result = complejo_rect(result)
-                    else:
-                        display_result = f"{result:.6g}"
-                    self.calc_display.delete(0, "end")
-                    self.calc_display.insert(0, display_result)
-                except Exception as e:
-                    messagebox.showerror("Error", f"Error: {e}")
-                    
-            elif btn_text == 'M+':
-                # Memory add
-                try:
-                    val = self._evaluate_expression(current)
-                    self.calc_memory = val
-                    messagebox.showinfo("Memoria", f"Guardado: {current}")
-                except Exception as e:
-                    messagebox.showerror("Error", f"Error: {e}")
-                    
-            elif btn_text == 'MR':
-                # Memory recall
-                if self.calc_memory != 0:
-                    if isinstance(self.calc_memory, complex):
-                        if abs(self.calc_memory.imag) < 1e-10:
-                            display_result = f"{self.calc_memory.real:.6g}"
-                        else:
-                            display_result = complejo_rect(self.calc_memory)
-                    else:
-                        display_result = f"{self.calc_memory:.6g}"
-                    self.calc_display.delete(0, "end")
-                    self.calc_display.insert(0, display_result)
-                else:
-                    messagebox.showinfo("Memoria", "Memoria vacía")
-                    
-            elif btn_text == 'MC':
-                # Memory clear
-                self.calc_memory = 0
-                messagebox.showinfo("Memoria", "Memoria borrada")
-                
+        
             elif btn_text in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', 'j', '(', ')']:
                 # Number or symbol input - show what you're typing
                 if current == "0" and btn_text != '.':
@@ -1063,10 +1014,11 @@ class FasorCalculator(ctk.CTk):
             return self.parse_value(expr)
         
         # Replace 'j' with 'J' temporarily to avoid conflicts
-        expr_eval = expr.replace('j', 'J')
+        expr_eval = expr.replace('J', 'j')
+        expr_eval = expr.replace('i', 'j')
         
         # Check if it's a complex number expression (contains J)
-        if 'J' in expr_eval:
+        if 'j' in expr_eval:
             # Replace J back to j and parse as complex
             expr_eval = expr_eval.replace('J', 'j')
             # Try to evaluate as Python expression with complex numbers
