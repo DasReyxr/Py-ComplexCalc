@@ -1,0 +1,90 @@
+#include "TecMat4x4.h"
+#define ROWS 5
+#define COLS 4
+#define ROW_INIT 6
+#define COL_END 8
+#define numButtons 3
+
+char *Button[numButtons]= {"S","P","O"};
+
+char *keyHexa[ROWS][COLS]={
+{"7","8","9","D"},
+{"4","5","6","T"},
+{"1","2","3","-"},
+{"F","0",".","="},
+{"W","A","S","D"},
+};
+/*char *keyHexaAltern[ROWS][COLS]={
+{" ","W"," ","I"},
+{"L"," ","R","P"},
+{" ","B"," ","O"},
+{" "," "," ","S"},
+};*/
+
+
+/* Donde 
+I -> Parte polar imaginario
+O -> Angulo 
+S ->
+p->
+*/
+uint16_t keyPolling[ROWS][COLS]={
+// 1110 X | 1011 X| 1101 X | 1110 X
+	{((0xE<<5)|(0x1E)),((0xD<<5)|(0x1E)),((0xB<<5)|(0x1E)),((0x7<<5)|(0x1E))}, // X 1110
+
+	{((0xE<<5)|(0x1D)),((0xD<<5)|(0x1D)),((0xB<<5)|(0x1D)),((0x7<<5)|(0x1D))}, // X 1100
+	
+	{((0xE<<5)|(0x1B)),((0xD<<5)|(0x1B)),((0xB<<5)|(0x1B)),((0x7<<5)|(0x1B))}, // X 1010
+	
+	{((0xE<<5)|(0x17)),((0xD<<5)|(0x17)),((0xB<<5)|(0x17)),((0x7<<5)|(0x17))}, // X 0110
+	
+	{((0xE<<5)|(0x0F)),((0xD<<5)|(0x0F)),((0xB<<5)|(0x0F)),((0x7<<5)|(0x0F))}, // X 0110
+};
+
+
+uint8_t rowPins[ROWS] = {0X1E,0X1D,0X1B,0X17, 0X0F};
+
+char* gotKey(void){
+	if((GPIOA->ODR & 0x7) != (0x07)){
+
+	}
+	for(uint8_t i = 0; i<ROWS; i++){
+		//limpia de lo que nos interesa
+		/*0x272727
+		B15 B14 B13 B12 | B11 B10 B9 B8 | B7 B6 B5 B4 | B3 B2 B1 B0
+		 1   1   1   1  |  0  0  0  0 |  X  X  X  X | X  X  X  X 
+		 0   0   0   0  |  0  1  1  1 |  1  1  0  0 | 0  0  0  0
+		 */
+		
+		GPIOB->ODR = (GPIOB->ODR & (0xF0<<COL_END)) | (rowPins[i]<<ROW_INIT);
+		// Debounce
+		
+		//Checamos la presion de alguna columna 
+		uint16_t key = GPIOB->IDR & (0xF0<<COL_END);
+		// Checa si se detecto una columna 
+		if(key != (0xF0<<COL_END)){
+			key |= ((GPIOB->ODR & (0x1F<<ROW_INIT)) << 1);
+			key=key>>8;
+			//Busca si existe la presion 
+		for(uint8_t j = 0; j<COLS; j++){
+			if(key == keyPolling[i][j])	{
+				while((GPIOB->IDR & (0x1F0<<COL_END)) != (0x1F0<<COL_END));
+				return keyHexa[i][j];}
+			}
+		}
+	}
+	return 0x27;
+}
+
+
+
+
+extern void config4x4(void){
+	/*PB[6-9] Scan
+	PB[12-15] Read*/
+	RCC->AHB1ENR |= (1<<1); // Enable GPIOB clock
+	GPIOB->MODER |= (0X55 << 6*2);//SCAN
+	GPIOB->PUPDR |= (0X55 << 12*2);//READ
+	// PA1-PA3 teclas de P, S, O
+	GPIOA->PUPDR |= (0X15 << 0);//READ
+}
