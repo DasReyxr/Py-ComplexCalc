@@ -7,6 +7,8 @@ Improvement
 NUM
 ---
 DEN
+PyInstaller template (run from this folder):
+python -m PyInstaller --noconfirm --clean --onefile --windowed --name "DasCalculator" --icon "ALU.ico" --add-data "ALU.ico;." --add-data "ALU.png;." mainUI.py
 
 """
 # ------- Main Library -------
@@ -20,6 +22,9 @@ import customtkinter as ctk
 import tkinter as tk
 import traceback
 import re
+import sys
+import ctypes
+from pathlib import Path
 import tkinter.font as tkfont
 
 from Eng import *
@@ -48,9 +53,11 @@ DIVISIONLINE = "----"
 class EngCalculator(ctk.CTk):
     def __init__(self):
         super().__init__()
+        self._set_windows_app_id()
         self.title("Das Calculator")
         self.geometry("900x700")
         self.resizable(False, False)
+        self._set_window_icon()
 
         # ------ THEME SETUP ---------
         self.setup_colors()
@@ -147,6 +154,44 @@ class EngCalculator(ctk.CTk):
 
         self.build_keypad_for_mode(self.calc_mode)
         self.apply_dark_mode_colors()
+        self.after(100, self._set_window_icon)
+
+    def _set_windows_app_id(self):
+        if sys.platform != "win32":
+            return
+        try:
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("AufDas.DasCalculator")
+        except Exception:
+            pass
+
+    def _set_window_icon(self):
+        base_dir = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent))
+        icon_ico = base_dir / "ALU.ico"
+        icon_png = base_dir / "ALU.png"
+
+        try:
+            if icon_ico.exists():
+                self.iconbitmap(default=str(icon_ico))
+                self.iconbitmap(str(icon_ico))
+                return
+        except Exception:
+            pass
+
+        try:
+            if not icon_png.exists():
+                return
+
+            self._app_icon = tk.PhotoImage(file=str(icon_png))
+            w = max(1, self._app_icon.width())
+            h = max(1, self._app_icon.height())
+            subsample_32 = max(1, min(w // 32, h // 32))
+            subsample_16 = max(1, min(w // 16, h // 16))
+            self._app_icon_32 = self._app_icon.subsample(subsample_32, subsample_32)
+            self._app_icon_16 = self._app_icon.subsample(subsample_16, subsample_16)
+            self.iconphoto(True, self._app_icon, self._app_icon_32, self._app_icon_16)
+            self.wm_iconphoto(True, self._app_icon, self._app_icon_32, self._app_icon_16)
+        except Exception:
+            pass
 
     def configure_tab_grid(self, cell_chars=6, max_cells=40):
         try:
