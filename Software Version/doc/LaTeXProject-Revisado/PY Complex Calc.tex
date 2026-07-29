@@ -1,0 +1,276 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{listings}
+\input{ConfigAC.tex}
+\usepackage{graphicx}
+\usepackage{float} % permite [H]: figuras en línea con el texto, sin flotar
+
+\begin{document}
+
+\begingroup
+\setstretch{1.15}
+\begin{center}
+  {\fontsize{16}{18}\bfseries \MakeUppercase{Proyecto Calculadora de Complejos}}\\[0.5cm]
+  {\fontsize{14}{16}\itshape \MakeUppercase{Complex Calculator Project}}\\[1cm]
+
+    \titulos{Contreras Reyes Orando}{Universidad Autónoma de Aguascalientes}{al348390@edu.uaa.mx}
+
+    \titulos{García Barrera Iker Emiliano}{Universidad Autónoma de Aguascalientes}{al307630@edu.uaa.mx}
+
+\end{center}
+\endgroup
+
+\section*{Resumen}
+
+Como proyecto integrador, se desarrolló una calculadora capaz de resolver sistemas de ecuaciones con números complejos, con el objetivo de facilitar los cálculos en métodos de análisis de circuitos como mallas o nodos.  
+El programa se implementó en Python utilizando diversas librerías especializadas, con apoyo de herramientas de inteligencia artificial para acelerar el desarrollo. Además, se compiló como un ejecutable con interfaz gráfica compatible con los sistemas operativos Windows y GNU/Linux. La calculadora permite visualizar los resultados de forma clara e intuitiva para el usuario.
+
+\noindent \textbf{Palabras clave:} Calculadora, Manual, Números complejos, Python, Sistema de ecuaciones.
+
+\section*{\itshape Abstract}
+\textit{
+As an integrative project, a calculator was developed to solve systems of equations with complex numbers, with the goal of facilitating calculations in circuit analysis methods such as mesh and nodal analysis. The program was developed in Python using various specialized libraries and with the support of AI tools to accelerate development. It was implemented as an executable with a graphical user interface compatible with Windows and GNU/Linux. The calculator allows users to visualize results in a clear and intuitive manner.
+}
+
+\noindent \textit{\textbf{Keywords:} Calculator, Complex numbers, Manual, Python, System of equations.}
+
+\section{Introducción}
+
+\subsection{Sistema de ecuaciones lineales}
+
+Un sistema de ecuaciones es un conjunto de dos o más ecuaciones que comparten las mismas variables. La solución de un sistema consiste en encontrar los valores de dichas variables de manera que satisfagan simultáneamente cada una de las ecuaciones que lo conforman.
+
+Los sistemas pueden clasificarse de diversas maneras; sin embargo, para este proyecto resultan de interés los \textbf{sistemas de ecuaciones lineales}. En este tipo de sistemas cada ecuación es de primer grado, es decir, todas las incógnitas aparecen con exponente uno.
+
+Para describir de forma general la estructura de un sistema, se emplean las letras $m$ y $n$, donde $m$ representa el número de ecuaciones y $n$ el número de incógnitas. Un sistema de tipo $m \times n$ indica que existen $m$ ecuaciones con $n$ incógnitas.
+
+Como ejemplo, en la Ecuación~\ref{eq:sistema2x2} se muestra un sistema lineal de $2 \times 2$.
+\begin{equation}
+\begin{cases}
+a_1 x + b_1 y = c_1, \\
+a_2 x + b_2 y = c_2.
+\end{cases}
+\label{eq:sistema2x2}
+\end{equation}
+
+\subsection{Eliminación de Gauss-Jordan}
+
+Existen diversos algoritmos y métodos para resolver sistemas de ecuaciones lineales. Algunos de los más utilizados son: la regla de Cramer, el método de igualación, el método de sustitución y el método de eliminación de Gauss-Jordan.
+
+El método de eliminación de Gauss-Jordan consiste en transformar la matriz de coeficientes del sistema en una matriz diagonal o escalonada reducida. Gracias a ello se obtiene directamente la solución del sistema sin necesidad de realizar sustituciones posteriores [Lay, 2012].
+
+Un sistema de ecuaciones lineales se representa de forma matricial mediante una matriz aumentada. En esta matriz, cada fila corresponde a una ecuación del sistema, mientras que cada columna representa una incógnita. Además, se añade una columna adicional destinada a los términos independientes.
+
+A continuación, en la Ecuación~\ref{eq:sistema3x3} se presenta un sistema de ecuaciones lineales con tres incógnitas.
+\begin{equation}
+\begin{cases}
+2x + 3y - z = 5, \\
+-\,x + 4y + 2z = 1, \\
+3x - y + z = 0.
+\end{cases}
+\label{eq:sistema3x3}
+\end{equation}
+
+Matriz aumentada del sistema de ecuaciones antes visto.
+\[
+\left(
+\begin{array}{ccc|c}
+2 & 3 & -1 & 5 \\
+-1 & 4 & 2 & 1 \\
+3 & -1 & 1 & 0
+\end{array}
+\right).
+\]
+
+La reducción de filas en una matriz se logra a través de una secuencia de operaciones elementales. Existen tres tipos de operaciones elementales de fila:
+
+\begin{enumerate}
+    \item \textbf{Intercambio de dos filas.}  
+    Esta operación consiste en cambiar la posición de dos filas dentro de la matriz. Si se tienen las filas $F_i$ y $F_j$, su intercambio se denota como:  
+   
+    \[
+    F_i \leftrightarrow F_j
+    \]
+    \[
+\begin{pmatrix}
+1 & 2 & 3 \\
+4 & 5 & 6 \\
+7 & 8 & 9
+\end{pmatrix}
+\xrightarrow{F_1 \leftrightarrow F_3}
+\begin{pmatrix}
+7 & 8 & 9 \\
+4 & 5 & 6 \\
+1 & 2 & 3
+\end{pmatrix}
+\]
+
+    \item \textbf{Multiplicación por un escalar.}  
+    Se puede multiplicar cualquier elemento de una fila por una constante escalar $k$ diferente de cero. Se denota como:
+    \[
+    F_i \leftarrow k F_i, \qquad k \neq 0
+    \]
+\[
+\begin{pmatrix}
+1 & 2 & 3 \\
+4 & 5 & 6 \\
+7 & 8 & 9
+\end{pmatrix}
+\xrightarrow{F_2 \leftarrow 3F_2}
+\begin{pmatrix}
+1 & 2 & 3 \\
+12 & 15 & 18 \\
+7 & 8 & 9
+\end{pmatrix}
+\]
+
+\item \textbf{Suma de filas.}  
+    Se reemplaza una fila por la suma de esta con un múltiplo de otra fila. Se expresa como:
+    \[
+    F_i \leftarrow F_i + k F_j
+    \]
+\[
+\begin{pmatrix}
+1 & 2 & 3 \\
+4 & 5 & 6 \\
+7 & 8 & 9
+\end{pmatrix}
+\xrightarrow{F_3 \leftarrow F_3 - 2F_1}
+\begin{pmatrix}
+1 & 2 & 3 \\
+4 & 5 & 6 \\
+5 & 4 & 3
+\end{pmatrix}
+\]
+\end{enumerate}
+
+
+Mediante estas operaciones es posible reorganizar la matriz para que los elementos debajo de la diagonal principal sean cero y los coeficientes principales de la diagonal sean 1, obteniendo así una matriz escalonada. Finalmente, se normaliza la parte superior hasta obtener una matriz escalonada reducida.
+
+\[
+\text{Matriz escalonada:\quad \quad \quad \quad}\quad
+\begin{pmatrix}
+1 & 2 & 3 & | & 4 \\
+0 & 1 & -1 & | & 2 \\
+0 & 0 & 1 & | & -3
+\end{pmatrix}
+\]
+
+
+\[
+\text{Matriz escalonada reducida:}\quad
+\begin{pmatrix}
+1 & 0 & 0 & | & 5 \\
+0 & 1 & 0 & | & -1 \\
+0 & 0 & 1 & | & -3
+\end{pmatrix}
+\]
+
+\subsection{Números Complejos}
+
+Los números complejos son una extensión de los números reales permitiendo representar y operar cantidades que no pueden expresarse únicamente dentro del conjunto real [Anton, 2013].
+
+Un número complejo se define como se muestra en la Ecuación~\ref{eq:complejo}.
+\begin{equation}
+z = a + bi,
+\label{eq:complejo}
+\end{equation}
+donde $a$ y $b$ son números reales, e $i$ es la unidad imaginaria, definida por la propiedad mostrada en la Ecuación~\ref{eq:unidadimaginaria}.
+\begin{equation}
+i^2 = -1.
+\label{eq:unidadimaginaria}
+\end{equation}
+
+%En esta expresión, $a$ se conoce como la \textit{parte real} de $z$, mientras que $b$ corresponde a la \textit{parte imaginaria}. El conjunto de todos los números complejos se denota por $\mathbb{C}$.
+
+Una característica importante es que los números complejos pueden representarse tanto en su forma rectangular ($a + bi$) como en su forma polar, mostrada en la Ecuación~\ref{eq:polar}.
+\begin{equation}
+z = r \angle \theta,
+\label{eq:polar}
+\end{equation}
+donde $r$ es el \textit{módulo} o magnitud del número complejo, y $\theta$ es su \textit{argumento} o ángulo de fase. Esta representación facilita operaciones como la multiplicación, división y potenciación, ya que convierte los cálculos en simples sumas o restas de ángulos y productos de magnitudes.
+
+
+
+\section{Métodos}
+
+\subsection{Materiales y herramientas}
+\begin{itemize}
+    \item Visual Studio Code
+    \item Python
+    \item Librerias (numpy, customtkinter, tkinter, os, PIL)
+\end{itemize}
+
+\subsection{Desarrollo del proyecto}
+
+El desarrollo del proyecto surgió de la necesidad de contar con una calculadora capaz de resolver sistemas de ecuaciones con números complejos. En una primera etapa se elaboró una versión básica y funcional de la aplicación. Para acelerar el proceso y evitar tiempo invertido en tareas repetitivas —como la generación de estructuras de interfaz o segmentos de código estándar— se utilizó apoyo de herramientas de inteligencia artificial, específicamente ChatGPT. \\
+
+Posteriormente, el enfoque se dirigió a mejorar la interfaz gráfica y la experiencia del usuario. Se incorporaron funciones adicionales, como la capacidad de almacenar matrices en memoria y exportarlas a archivos para su uso posterior. Asimismo, se personalizó la interfaz con el fin de ofrecer una apariencia visual más atractiva, compensando las limitaciones estéticas de la biblioteca Tkinter en su forma predeterminada. \\
+
+Finalmente, se incluye la siguiente aclaración respecto al código fuente:  
+\textit{Parte del código fue generado con ayuda de herramientas de inteligencia artificial (ChatGPT). El proyecto se publica bajo licencia MIT.}
+
+\section{Resultados}
+
+En la Figura~\ref{fig:interfaz2} se muestra la solución obtenida por la calculadora para un sistema de ecuaciones complejas expresado en forma rectangular, donde se observan tanto los valores ingresados como el resultado calculado para cada incógnita.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{Complex calc/RectSol.png}
+    \fuente{elaboración propia}
+    \caption{Solución de un sistema complejo de forma Rectangular.}
+    \label{fig:interfaz2}
+\end{figure}
+
+En la Figura~\ref{fig:interfaz4} se presenta el mismo tipo de solución, pero expresada en forma polar, lo que permite comprobar la conversión automática entre ambas representaciones que realiza la herramienta.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{Complex calc/SolDC.png}
+    \fuente{elaboración propia}
+    \caption{Solución de un sistema complejo de forma Polar.}
+    \label{fig:interfaz4}
+\end{figure}
+
+\newpage
+
+\section{Discusión}
+
+\subsection{Justificación y aportación de la herramienta}
+
+Esta calculadora fue desarrollada con el propósito de facilitar la resolución de sistemas de ecuaciones lineales, tanto con números reales como complejos, y de servir como apoyo en actividades académicas relacionadas con el análisis de circuitos eléctricos. La herramienta permite representar resultados en forma rectangular y polar, lo cual es especialmente útil en cursos como Análisis de Circuitos, Electrónica, Señales y Sistemas y Métodos Matemáticos para la Ingeniería, donde el manejo de cantidades fasoriales es fundamental. \\
+
+Se incorporó un historial para conservar las operaciones realizadas y evitar la pérdida de información durante la resolución de ejercicios. Además, la interfaz fue diseñada para optimizar el tiempo de trabajo del usuario mediante una interacción clara y eficiente. Al ser una herramienta gratuita y ejecutarse en cualquier equipo con Windows 10 o superior, se convierte en una alternativa accesible dentro del ámbito académico, contribuyendo a la comprensión y visualización de magnitudes complejas mediante su conversión automática entre formas. 
+
+\subsection{Proceso de diseño y desarrollo}
+
+Durante el desarrollo del proyecto se presentaron diversos retos. El primero consistió en asegurar la correcta representación de resultados en formas rectangular y polar. Esto incluyó la elección de un símbolo adecuado para indicar el ángulo en la notación polar, dado que la biblioteca utilizada no proporciona uno de manera predeterminada. Tras evaluar opciones como “$<$” o “L”, se seleccionó esta última por su claridad y legibilidad. \\
+
+Otro desafío relevante fue el diseño de una interfaz lo suficientemente intuitiva para usuarios sin experiencia previa con herramientas de cálculo de números complejos. Las primeras versiones incluían instrucciones dentro de la ventana principal; sin embargo, esto afectaba la claridad visual, por lo que se realizó una reorganización estructural que permitió presentar la información de manera más ordenada y profesional. \\
+
+Asimismo, se presentaron dificultades al implementar las funciones de almacenamiento y carga de matrices. Los errores iniciales durante las pruebas fueron corregidos mediante ajustes en la gestión de archivos y memoria, garantizando así un manejo estable de la información ingresada por el usuario. \\
+
+Finalmente, se detectaron limitaciones en la personalización visual de Tkinter, dado que la aplicación de temas y combinaciones de colores no es directa. Para alcanzar la estética requerida fue necesario modificar de forma manual el archivo \texttt{.json} correspondiente, lo que permitió obtener una interfaz más coherente con el propósito académico del proyecto.
+
+
+\section{Conclusiones}
+
+La realización de este proyecto permitió comprender de manera clara el comportamiento de los sistemas de ecuaciones complejos y su aplicación en métodos de análisis de circuitos eléctricos. Se evidenció la utilidad de representar cantidades complejas en forma rectangular y polar, así como la importancia de contar con herramientas que faciliten estos cálculos. Asimismo, el desarrollo de la aplicación permitió profundizar en el uso de interfaces gráficas, manipulación de matrices y técnicas de programación aplicadas a problemas de ingeniería.
+
+\section{Referencias y Bibliografía}
+\renewcommand{\refname}{} % evita el encabezado duplicado que \thebibliography inserta automáticamente
+
+\begin{thebibliography}{9}
+\setlength{\labelwidth}{0pt}
+\setlength{\labelsep}{0.15cm}
+\setlength{\leftmargin}{0.63cm}
+\setlength{\itemindent}{-0.63cm}
+
+\bibitem{anton}
+Anton, H., Rorres, C. Álgebra lineal con aplicaciones. Wiley, 2013.
+
+\bibitem{lay}
+Lay, D. C. Álgebra lineal y sus aplicaciones. 4.ª ed., Pearson, 2012.
+
+\end{thebibliography}
+
+\end{document}
