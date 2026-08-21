@@ -82,5 +82,5 @@ jobs:
             "artifacts/ComplexCalc-windows/UI_ComplexCalc.exe" \
             "artifacts/ComplexCalc-linux/UI_ComplexCalc" \
             --repo "${{ github.repository }}" \
-            --title "${{ github.ref_name }}" \
+            --title "${{ github.ref_name }} — Cat Update" \
             --generate-notes
