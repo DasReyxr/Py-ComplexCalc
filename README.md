@@ -1,128 +1,90 @@
-# Py-ComplexCalc 
+# Py-ComplexCalc
 
-**A complete ecosystem for solving n×n complex linear systems (Ax=b)** with both desktop GUI and embedded hardware solutions.
+**A complete, user-friendly GUI ecosystem for solving n×n complex linear systems (Ax=b)**—built for electronics engineers, circuit analysts, and students working with AC circuits, impedance calculations, and complex number mathematics.
 
-Built for electronics engineers, circuit analysts, and students working with **AC circuits, impedance calculations, and complex number mathematics**.
+**Solve Ax=b instantly** with dual-format output (polar & rectangular), flexible input, and full system persistence.
 
----
-
-## 📦 Project Structure
-
-```
-Py-ComplexCalc/
-├── Software Version/          # Desktop GUI application
-│   ├── code/                  # Python source files
-│   │   ├── UI_ComplexCalc.py  # Main GUI (customtkinter)
-│   │   ├── ComplexCalc.py     # Core solver & parsing logic
-│   │   ├── HK.jpg             # UI background
-│   │   └── IE.png             # Logo icon
-│   ├── dist/                  # Built .exe files
-│   ├── doc/                   # Documentation
-│   └── README.md              # Software-specific guide
-│
-├── HW Version/                # Embedded microcontroller solutions
-│   ├── code/
-│   │   ├── BlackPill STM32F411CE/    # Implementation for BlackPill
-│   │   └── RayPill STM32F446ZE/      # Implementation for RayPill
-│   ├── HW Files Schematic & Design/  # PCB schematics, layouts
-│   └── (README coming soon)
-│
-├── OtherCalcs/                # Alternative implementations
-├── LICENSE                    # MIT License
-└── README.md          # This file
-```
+| Dark theme | Light theme |
+|---|---|
+| ![Dark theme](images/app-screenshot.png) | ![Light theme](images/app-screenshot-light.png) |
 
 ---
 
-## 🚀 Quick Navigation
+## ✨ Features
 
-### **Want the Desktop Application?**
-→ See [Software Version/README.md](./Software%20Version/README.md)
+- **🔢 Dual Input Format**
+  - Rectangular: `3+4j`, `-j2`, `5` (supports both `i` and `j` for imaginary unit)
+  - Phasor: `10L30`, `5L-90°`, `3L0` (polar notation with degree angles)
+  - Mix both formats in the same system
+- **📊 Dual-Format Output**
+  - Solutions shown in **polar** and **rectangular** simultaneously
+- **🌓 Multiple Themes**
+  - Dark, Light, Pink, Mint, Purple, Ocean — toggle anytime
+- **💾 System Persistence**
+  - Auto-save/load all computed systems
+  - **File menu**: save current system, import from file, load saved system, refresh list
+  - Export results (`.py`, `.txt`)
+  - Session history with timestamps
+- **🎯 Dynamic Matrix Sizing**
+  - Solve 1×1 up to 10×10 systems
+- **🧮 Built-in Calculator**
+  - Quick complex-number scratchpad with backspace support
+- **🚀 Standalone Executables**
+  - Windows `.exe` and Linux binary — no Python install needed (see [Releases](https://github.com/IKGB105/Py-ComplexCalc/releases))
 
-**Features:**
-- ✅ Dual input format (rectangular & phasor notation)
-- ✅ Dual-format output (polar & rectangular)
-- ✅ Dark/Light themes
-- ✅ Solve 1×1 to 10×10 systems
-- ✅ Auto-save & system persistence
-- ✅ Windows standalone `.exe`
+---
 
-**Get Started:**
+## ℹ️ About
+
+| | |
+|---|---|
+| **Version** | 4.00 |
+| **Last updated** | 2026-08-21 |
+| **Repository** | [github.com/IKGB105/Py-ComplexCalc](https://github.com/IKGB105/Py-ComplexCalc) |
+| **Institution** | Universidad Autónoma de Aguascalientes |
+| **Department** | Ingeniería en Electrónica |
+
+Also available inside the app itself: **Help → About Complex Calc...**
+
+---
+
+## 🚀 Quick Start
+
+### Option 1: Standalone Executable
+
+1. Download `UI_ComplexCalc.exe` (Windows) or `UI_ComplexCalc` (Linux) from the latest [Release](https://github.com/IKGB105/Py-ComplexCalc/releases).
+2. Run it directly. No dependencies needed.
+
+### Option 2: Run from Source
+
+**Requirements:** Python 3.8+ (tested on 3.10, 3.11)
+
 ```bash
-# Option 1: Download .exe (no installation needed)
-# See releases: https://github.com/DasReyxr/Py-ComplexCalc/releases
+# Clone the repo
+git clone https://github.com/IKGB105/Py-ComplexCalc.git
+cd Py-ComplexCalc/code
 
-# Option 2: Run from source
-git clone https://github.com/DasReyxr/Py-ComplexCalc.git
-cd Py-ComplexCalc/Software\ Version/code
-pip install numpy customtkinter pillow
+# (Optional) Create virtual environment
+python -m venv .venv
+source .venv/bin/activate  # Linux/macOS
+# or: .\.venv\Scripts\Activate  # Windows PowerShell
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run the app
 python UI_ComplexCalc.py
 ```
 
 ---
 
-### **Want Embedded Hardware?**
-→ See [HW Version/](./HW%20Version/)
+## 📝 Input Format Guide
 
-**Supported Platforms:**
-- **BlackPill STM32F411CE** — Compact, cost-effective microcontroller
-- **RayPill STM32F446ZE** — More powerful ARM-based alternative
-
-**Features:**
-- Real-time n×n solver on microcontroller
-- Optimized floating-point arithmetic
-- Embedded persistent storage
-
----
-
-## ✨ Core Features (All Versions)
-
-### 🔢 **Flexible Input Formats**
-| Format | Examples | Notes |
-|--------|----------|-------|
-| **Rectangular** | `3+4j`, `-j2`, `5` | Supports `i` and `j` for imaginary unit |
-| **Phasor** | `10L30`, `5L-90°`, `3L0` | Polar notation with degree angles |
-| **Mixed** | Matrix rows can use both formats | Auto-converts internally |
-
-### 📊 **Dual-Format Output**
-Automatic conversion and display of results as:
-- **Polar Form:** `10 L 30°` (magnitude ∠ angle)
-- **Rectangular Form:** `8.66 + 5j` (real + imaginary)
-
-
-### 💾 **Persistence & History**
-- Auto-save all computed systems
-- Load previous calculations
-- Export results (`.py`, `.txt` formats)
-- Session timestamps for tracking
-
----
-
-## 🛠️ Technology Stack
-
-### **Software Version**
-| Component | Purpose | Version |
-|-----------|---------|---------|
-| **Python** | Runtime | 3.8+ (tested 3.10, 3.11) |
-| **NumPy** | Linear algebra (Gaussian elimination) | Latest |
-| **CustomTkinter** | Modern GUI widgets & theming | Latest |
-| **Pillow** | Image loading for UI | Latest |
-| **PyInstaller** | Windows executable packaging | Latest |
-
-### **Hardware Version**
-| Component | Purpose |
-|-----------|---------|
-| **STM32 HAL** | Microcontroller abstraction layer |
-| **Arm CMSIS-DSP** | Optimized DSP library for ARM |
-| **C/C++** | Core solver implementation |
-
----
-
-## 📚 Documentation
-
-- **[Software Version README](./Software%20Version/README.md)** — Complete GUI guide, features, troubleshooting
-- **[HW Version](./HW%20Version/)** — Microcontroller implementations, schematics
-- **[LICENSE](./LICENSE)** — MIT License
+| Format         | Examples         | Notes                                 |
+|---------------|------------------|---------------------------------------|
+| Rectangular   | `3+4j`, `-j2`, `5` | Supports `i` and `j` for imaginary unit |
+| Phasor        | `10L30`, `5L-90°`, `3L0` | Polar notation, degree angles         |
+| Mixed         | Any combination   | Rows/columns can mix formats          |
 
 ### Example: Solving a 3×3 Complex System
 
@@ -133,13 +95,12 @@ A = [2+1i    -1      0   ]      b = [1  ]
     [0      -1      2   ]          [1i ]
 ```
 
-**Using Software Version:**
-1. Launch `UI_ComplexCalc.exe`
+**Steps:**
+1. Launch the app
 2. Select **3×3** from size dropdown
-3. Enter matrix A values (supports both formats)
-4. Enter vector b values
-5. Click **Solve**
-6. View results in polar & rectangular forms simultaneously
+3. Enter matrix A and vector b values (any format)
+4. Click **Solve**
+5. View results in both forms
 
 **Output:**
 ```
@@ -155,78 +116,116 @@ x₃ = 0.2 - 0.4j
 
 ---
 
+## 🛠️ Building a Standalone Executable (Windows & Linux)
+
+PyInstaller builds a native executable for whatever OS you run it on — it
+does **not** cross-compile, so a Windows `.exe` must be built on Windows
+and a Linux binary must be built on Linux. This repo's GitHub Actions
+workflow (`.github/workflows/build.yml`) does both automatically — trigger
+it manually from the **Actions** tab, or push a tag like `v4.1` to also
+publish a Release.
+
+To build locally:
+
+```bash
+pip install pyinstaller
+cd code
+pyinstaller UI_ComplexCalc.spec
+# Output: code/dist/UI_ComplexCalc(.exe on Windows)
+```
+
+---
+
+## 📂 Project Structure
+
+```
+Py-ComplexCalc/
+├── code/
+│   ├── UI_ComplexCalc.py      # Main GUI (customtkinter)
+│   ├── ComplexCalc.py         # Core solver & parsing logic
+│   ├── UI_ComplexCalc.spec    # PyInstaller build spec
+│   ├── requirements.txt       # Python dependencies
+│   ├── HK.jpg                 # UI background / window icon
+│   ├── IE.png                 # Institution logo
+│   └── themes.json            # Color theme definitions
+├── tests/
+│   └── test_complexcalc_core.py  # Parser/solver robustness tests
+├── doc/                        # Manuals
+├── images/                     # README screenshots
+└── LICENSE
+```
+
+---
+
+## 🧪 Tests
+
+Robustness tests for the parser, solver and persistence core (malformed
+input, singular matrices, out-of-range sizes) — no extra dependencies:
+
+```bash
+python3 -m unittest discover -s tests -v
+```
+
+---
+
+## 📋 Dependencies
+
+| Package         | Purpose                                 |
+|-----------------|-----------------------------------------|
+| `numpy`         | Linear algebra (Gaussian elimination)   |
+| `customtkinter` | Modern, theme-aware GUI widgets         |
+| `pillow`        | Image loading for UI assets             |
+
+**Install all at once:**
+```bash
+pip install -r code/requirements.txt
+```
+
+---
+
+## 🎨 Customization
+
+- **Change Theme Colors:** Edit `code/themes.json`.
+- **Custom Images:** Replace `HK.jpg` and `IE.png` with your own (same filenames).
+
+---
+
 ## 🐛 Troubleshooting
 
-### General Issues
-
-| Problem | Solution |
-|---------|----------|
-| **Can't find the solver** | Check the folder you're in: `/Software Version/code/` for source or use `.exe` |
-| **"Singular matrix" error** | Matrix must be invertible; check for linearly dependent rows |
-| **Complex number parsing error** | Use `3+4j` (no spaces), `10L30` (not `10L30.5`) |
-
-### Software-Specific
-
-See [Software Version/README.md](./Software%20Version/README.md) for full troubleshooting guide.
-
-### Hardware-Specific
-
-See **HW Version/** for embedded debugging guides.
+| Problem                    | Solution                                                        |
+|----------------------------|-----------------------------------------------------------------|
+| GUI won't start            | Install/upgrade customtkinter: `pip install --upgrade customtkinter` |
+| "Singular matrix" error    | Matrix A must be invertible. Check for duplicate/linearly dependent rows. |
+| Parsing error              | Use `3+4j` (no spaces), `10L30` (not `10L30.5`).                |
+| Images not loading         | Ensure `HK.jpg` and `IE.png` exist in the same folder as `UI_ComplexCalc.py`. |
+| Executable blocked by antivirus | False positive (Windows). Add to antivirus whitelist or build from source. |
 
 ---
 
+## 📞 Support & Contributions
 
-**How to contribute:**
-1. **Fork** the repository
-2. **Create** a feature branch: `git checkout -b feature/your-feature`
-3. **Commit** changes: `git commit -m "Add your feature"`
-4. **Push** to branch: `git push origin feature/your-feature`
-5. **Open** a Pull Request
+- **Bug Reports:** [GitHub Issues](https://github.com/IKGB105/Py-ComplexCalc/issues)
+- **Feature Requests:** [GitHub Discussions](https://github.com/IKGB105/Py-ComplexCalc/discussions)
+- **Pull Requests:** Welcome! Fork, branch, and submit a PR.
 
-**Areas we need help:**
-- Linux/macOS builds
-- Phasor diagram visualization
-- CSV batch import/export
-- Additional theme designs
-- Hardware documentation
-- Bug fixes & optimizations
-
----
-
-## 📊 Roadmap
-
-### ✅ Completed (v2.7)
-- Dark & Light mode themes
-- Dual-format input/output
-- System persistence
-- 1×10 matrix sizing
-- Windows `.exe` distribution
-
-### 🚀 Planned
-- [ ] Linux/macOS standalone builds
+### Roadmap
 - [ ] CSV import/export for batch solving
 - [ ] Phasor diagram real-time visualization
-- [ ] Web-based solver (WebAssembly)
-- [ ] Mobile app (Qt/Flutter)
-- [ ] Hardware documentation & guides
 - [ ] Advanced matrix operations (eigenvalues, determinants)
 
 ---
 
 ## 👥 Credits
 
-**Development Team:**
-- **Das Reyes** — Lead developer, theming, Testing, documentation
-- **Iker Garcia** — GUI design, user experience, documentation
-- **Roberto Lopez** — PCB Design, core solver logic  
-- **Kevin Lara** — Hardware integration, embedded systems
+**Developers:**
+- Iker Garcia — [ikergarcia450@gmail.com](mailto:ikergarcia450@gmail.com)
+- Das Reyes — [das.reyxr@outlook.com](mailto:das.reyxr@outlook.com)
 
 **Built With:**
 - [NumPy](https://numpy.org/) — Numerical computing
 - [CustomTkinter](https://github.com/TomSchimansky/CustomTkinter) — Modern UI toolkit
 - [Pillow](https://python-pillow.org/) — Image processing
 - [PyInstaller](https://pyinstaller.org/) — Executable packaging
-- [STM32 HAL](https://www.st.com/) — Microcontroller support
 
 ---
 
@@ -235,39 +234,6 @@ See **HW Version/** for embedded debugging guides.
 MIT License — See [LICENSE](./LICENSE) for details.
 
 **TL;DR:** Use freely, attribute the authors, no warranty.
-
----
-
-## 💡 Use Cases
-
-**Who uses Py-ComplexCalc?**
-
-- 🔌 **Circuit Engineers** — Analyze AC circuits, impedance networks, power factor calculations
-- 📚 **Students** — Homework, exams, learning complex number algebra
-- 🎓 **Universities** — Teaching linear algebra with complex numbers
-- ⚡ **Hobbyists** — Electronics projects, signal processing experiments
-- 🏭 **Industry** — Embedded solutions for real-time signal analysis
-
----
-
-## 📞 Support
-
-- **🐛 Bug Reports:** [GitHub Issues](https://github.com/DasReyxr/Py-ComplexCalc/issues)
-- **💬 Feature Requests:** [GitHub Discussions](https://github.com/DasReyxr/Py-ComplexCalc/discussions)
-- **📬 Contact:** Open an issue with the `[QUESTION]` tag
-- **📖 Documentation:** Check [Software Version/README.md](./Software%20Version/README.md)
-
----
-
-## 🎯 Quick Links
-
-| Resource | Link |
-|----------|------|
-| **Latest Release** | [Download v2.7](https://github.com/DasReyxr/Py-ComplexCalc/releases) |
-| **Software Guide** | [Software Version/README.md](./Software%20Version/README.md) |
-| **Hardware Designs** | [HW Version/](./HW%20Version/) |
-| **Source Code** | [Software Version/code/](./Software%20Version/code/) |
-| **GitHub Repo** | [DasReyxr/Py-ComplexCalc](https://github.com/DasReyxr/Py-ComplexCalc) |
 
 ---
 
