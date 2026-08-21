@@ -111,18 +111,34 @@ Vector b:
 
 ---
 
-## 🛠️ Building the Windows EXE
+## 🛠️ Building a Standalone Executable (Windows & Linux)
 
-To create your own executable:
+PyInstaller builds a native executable for whatever OS you run it on — it
+does **not** cross-compile, so a Windows `.exe` must be built on Windows
+and a Linux binary must be built on Linux.
 
-```powershell
+```bash
 # Install PyInstaller
 pip install pyinstaller
 
-# Build EXE from project root
-python -m PyInstaller --onefile --windowed UI_ComplexCalc.py --add-data "HK.jpg;." --add-data "IE.png;."
+# Build from the .spec file (recommended — same command on both OSes,
+# already bundles HK.jpg, IE.png and themes.json)
+cd code
+pyinstaller UI_ComplexCalc.spec
 
-# Output: dist\UI_ComplexCalc.exe
+# Output: code/dist/UI_ComplexCalc(.exe on Windows)
+```
+
+Building with raw CLI flags instead of the `.spec` also works, but the
+`--add-data` separator differs by OS (`;` on Windows, `:` on Linux/macOS):
+
+```powershell
+# Windows
+python -m PyInstaller --onefile --windowed UI_ComplexCalc.py --add-data "HK.jpg;." --add-data "IE.png;." --add-data "themes.json;."
+```
+```bash
+# Linux / macOS
+python -m PyInstaller --onefile --windowed UI_ComplexCalc.py --add-data "HK.jpg:." --add-data "IE.png:." --add-data "themes.json:."
 ```
 
 ---
@@ -208,13 +224,23 @@ Replace `HK.jpg` and `IE.png` with your own assets (same filenames, place in pro
 
 ---
 
+## ℹ️ About
+
+| | |
+|---|---|
+| **Version** | 4.00 |
+| **Last updated** | 2026-08-20 |
+| **Repository** | [github.com/DasReyxr/Py-ComplexCalc](https://github.com/DasReyxr/Py-ComplexCalc) |
+| **Institution** | Universidad Autónoma de Aguascalientes |
+| **Department** | Ingeniería en Electrónica |
+
+Also available inside the app itself: **Help → About Complex Calc...**
+
 ## 👥 Credits
 
 **Developers:**
-- Das Reyes
-- Iker Garcia
-- Roberto Lopez
-- Kevin Lara
+- Das Reyes — [das.reyxr@outlook.com](mailto:das.reyxr@outlook.com)
+- Iker Garcia — [ikergarcia450@gmail.com](mailto:ikergarcia450@gmail.com)
 
 **Built with:**
 - [NumPy](https://numpy.org/) — Numerical computing

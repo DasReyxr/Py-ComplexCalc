@@ -7,8 +7,19 @@
 # ------- Main Library -------
 
 '''
-python -m PyInstaller --onefile --windowed UI_ComplexCalc.py  --add-data "HK.jpg;." --add-data "IE.png;." 
+Build a standalone executable using the .spec file (works the same on
+Windows and Linux — PyInstaller always builds for the OS it runs on, it
+does not cross-compile):
 
+    pyinstaller UI_ComplexCalc.spec
+
+Building via raw CLI flags instead of the .spec also works, but the
+--add-data separator is OS-specific (";" on Windows, ":" on Linux/macOS):
+
+    # Windows
+    python -m PyInstaller --onefile --windowed UI_ComplexCalc.py --add-data "HK.jpg;." --add-data "IE.png;." --add-data "themes.json;."
+    # Linux / macOS
+    python -m PyInstaller --onefile --windowed UI_ComplexCalc.py --add-data "HK.jpg:." --add-data "IE.png:." --add-data "themes.json:."
 '''
 import numpy as np
 import customtkinter as ctk
@@ -16,7 +27,7 @@ from tkinter import messagebox, simpledialog, filedialog
 from ComplexCalc import FasorCalculatorCore, complejo_rect, complejo_a_fasor
 import os
 import json
-from PIL import Image
+from PIL import Image, ImageTk
 import sys
 import webbrowser
 
@@ -29,6 +40,17 @@ def resource_path(relative):
 PINK_PATH_PHOTO = resource_path("HK.jpg")
 IE_PATH_PHOTO = resource_path("IE.png")
 
+# ------- Project metadata (used by the About dialog) -------
+APP_VERSION = "4.00"
+LAST_UPDATED = "2026-08-20"
+GITHUB_URL = "https://github.com/DasReyxr/Py-ComplexCalc"
+INSTITUTION = "Universidad Autónoma de Aguascalientes"
+DEPARTMENT = "Ingeniería en Electrónica"
+CREATORS = [
+    {"name": "Das Reyes", "email": "das.reyxr@outlook.com"},
+    {"name": "Iker Garcia", "email": "ikergarcia450@gmail.com"},
+]
+
 #DPINK_PATH_THEME = resource_path("DarkPink.json")
 #LPINK_PATH_THEME = fr"{CURRENT_PATH}\LightPink.json"
 
@@ -36,9 +58,19 @@ class FasorCalculator(ctk.CTk):
     def __init__(self):
         super().__init__()
         
-        self.title("Complex Calc v3.00")
+        self.title(f"Complex Calc v{APP_VERSION}")
         self.geometry("1400x850")  # Adjusted size to show calculator
-        
+
+        # Window/taskbar icon (HK.jpg is a JPEG, so it needs PIL -> PhotoImage; tkinter's
+        # native PhotoImage can't load JPEG directly)
+        try:
+            self._icon_image = ImageTk.PhotoImage(Image.open(PINK_PATH_PHOTO))
+            self.iconphoto(True, self._icon_image)
+        except Exception:
+            pass
+
+        self.build_menu_bar()
+
         self.size = 3
         self.history = []  # session history list of tuples (A, b, x, timestamp)
         self.saved_items = []  # loaded saved items from file (list of dicts)
@@ -79,7 +111,7 @@ class FasorCalculator(ctk.CTk):
         header_frame.pack(fill="x", pady=(0, 10), padx=12)
 
         # Main title (left)
-        self.header_title = ctk.CTkLabel(header_frame, text="Complex Calc 3.00", font=("Helvetica", 28, "bold"))
+        self.header_title = ctk.CTkLabel(header_frame, text=f"Complex Calc {APP_VERSION}", font=("Helvetica", 28, "bold"))
         self.header_title.pack(side="left", padx=(0, 12))
 
         # Smaller names subtitle (next to title)
@@ -205,7 +237,7 @@ class FasorCalculator(ctk.CTk):
         
         # Calculator buttons layout
         buttons = [
-            ['7', '8', '9', '/', 'C'],
+            ['7', '8', '9', '/', 'C', '⌫'],
             ['4', '5', '6', '*', '('],
             ['1', '2', '3', '-', ')'],
             ['0', '.', 'j', '+', '=']
@@ -235,7 +267,123 @@ class FasorCalculator(ctk.CTk):
         # Apply initial dark mode styling
         self.apply_dark_mode_colors()
 
-      
+    # ============================
+    # MENU BAR (File / About)
+    # ============================
+    def build_menu_bar(self):
+        """Native menu bar exposing File actions and the About dialog.
+        Reuses the same commands already wired to the on-screen buttons —
+        nothing here duplicates logic, it just gives another entry point.
+        """
+        import tkinter as tk
+        menubar = tk.Menu(self)
+
+        file_menu = tk.Menu(menubar, tearoff=0)
+        file_menu.add_command(label="Save current system (Solve & Save)", command=self.solve)
+        file_menu.add_command(label="Import from file...", command=self.import_from_file)
+        file_menu.add_command(label="Load saved system", command=self.load_saved_menu_popup)
+        file_menu.add_command(label="Refresh saved list", command=self.load_saved_systems)
+        file_menu.add_separator()
+        file_menu.add_command(label="Exit", command=self.destroy)
+        menubar.add_cascade(label="File", menu=file_menu)
+
+        help_menu = tk.Menu(menubar, tearoff=0)
+        help_menu.add_command(label="About Complex Calc...", command=self.show_about_dialog)
+        menubar.add_cascade(label="Help", menu=help_menu)
+
+        self.configure(menu=menubar)
+
+    def show_about_dialog(self):
+        """Themed modal with version, last update date, repo link, creators and institution."""
+        frame_color = self.current_colors.get("frame", "#2d2d2d")
+        label_color = self.current_colors.get("label_text", "#FFFFFF")
+        button_bg = self.current_colors.get("button", "#3a3a3a")
+        button_hover = self.current_colors.get("button_hover", "#4a4a4a")
+
+        dlg = ctk.CTkToplevel(self)
+        dlg.title("About Complex Calc")
+        dlg.transient(self)
+        dlg.configure(fg_color=frame_color)
+        dlg.resizable(False, False)
+
+        content = ctk.CTkFrame(dlg, fg_color=frame_color)
+        content.pack(padx=20, pady=16)
+
+        # Institution logo
+        try:
+            logo_img = ctk.CTkImage(
+                light_image=Image.open(IE_PATH_PHOTO),
+                dark_image=Image.open(IE_PATH_PHOTO),
+                size=(80, 80)
+            )
+            logo_label = ctk.CTkLabel(content, image=logo_img, text="", fg_color="transparent")
+            logo_label.image = logo_img
+            logo_label.pack(pady=(0, 8))
+        except Exception:
+            pass
+
+        ctk.CTkLabel(
+            content, text="Complex Calc", font=("Helvetica", 20, "bold"), text_color=label_color
+        ).pack()
+        ctk.CTkLabel(
+            content, text=f"Version {APP_VERSION}  •  Last updated: {LAST_UPDATED}",
+            font=("Helvetica", 12), text_color=label_color
+        ).pack(pady=(2, 10))
+
+        ctk.CTkLabel(
+            content, text=f"{INSTITUTION}\n{DEPARTMENT}",
+            font=("Helvetica", 12), text_color=label_color, justify="center"
+        ).pack(pady=(0, 10))
+
+        # GitHub link
+        gh_link = ctk.CTkLabel(
+            content, text="GitHub: DasReyxr/Py-ComplexCalc", font=("Helvetica", 12, "underline"),
+            text_color="#3498DB", cursor="hand2"
+        )
+        gh_link.pack(pady=(0, 12))
+        gh_link.bind("<Button-1>", lambda _e: webbrowser.open(GITHUB_URL))
+
+        ctk.CTkLabel(
+            content, text="Creators", font=("Helvetica", 13, "bold"), text_color=label_color
+        ).pack(pady=(0, 4))
+
+        for creator in CREATORS:
+            if creator["email"]:
+                row_text = f"{creator['name']}"
+                row = ctk.CTkLabel(content, text=row_text, font=("Helvetica", 12), text_color=label_color)
+                row.pack()
+                email_label = ctk.CTkLabel(
+                    content, text=creator["email"], font=("Helvetica", 11, "underline"),
+                    text_color="#3498DB", cursor="hand2"
+                )
+                email_label.pack(pady=(0, 6))
+                email_label.bind("<Button-1>", lambda _e, addr=creator["email"]: webbrowser.open(f"mailto:{addr}"))
+            else:
+                ctk.CTkLabel(
+                    content, text=creator["name"], font=("Helvetica", 12), text_color=label_color
+                ).pack(pady=(0, 6))
+
+        close_btn = ctk.CTkButton(
+            content, text="Close", width=100, command=dlg.destroy,
+            fg_color=button_bg, hover_color=button_hover, text_color=self.current_colors.get("button_text", "#FFFFFF")
+        )
+        close_btn.pack(pady=(10, 0))
+
+        dlg.bind("<Escape>", lambda _e: dlg.destroy())
+
+        # Center over parent
+        dlg.update_idletasks()
+        w = dlg.winfo_reqwidth()
+        h = dlg.winfo_reqheight()
+        px, py = self.winfo_rootx(), self.winfo_rooty()
+        pw, ph = self.winfo_width(), self.winfo_height()
+        x = px + (pw // 2) - (w // 2)
+        y = py + (ph // 2) - (h // 2)
+        dlg.geometry(f"+{x}+{y}")
+
+        dlg.update()
+        dlg.grab_set()
+
     def apply_dark_mode_colors(self):
         """Apply current theme colors to all widgets on startup."""
         self.configure(fg_color=self.current_colors["bg"])
@@ -956,7 +1104,13 @@ class FasorCalculator(ctk.CTk):
                 self.calc_current = ""
                 self.calc_operation = None
                 self.calc_first_operand = None
-                
+
+            elif btn_text == '⌫':
+                # Backspace: remove last character, fall back to "0" when empty
+                new_val = current[:-1]
+                self.calc_display.delete(0, "end")
+                self.calc_display.insert(0, new_val if new_val else "0")
+
             elif btn_text == '=':
                 # Evaluate expression
                 try:

@@ -5,7 +5,7 @@ a = Analysis(
     ['UI_ComplexCalc.py'],
     pathex=[],
     binaries=[],
-    datas=[('HK.jpg', '.'), ('IE.png', '.')],
+    datas=[('HK.jpg', '.'), ('IE.png', '.'), ('themes.json', '.')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
