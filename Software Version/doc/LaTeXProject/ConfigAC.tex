@@ -35,20 +35,20 @@
 \addto\captionsspanish{\renewcommand{\tablename}{Tabla}}
 
 % ----------------- Formato de títulos de figuras y tablas -----------------
-% Arial 11, sin dos puntos, punto únicamente al final, centrado
+% Arial 11, sin dos puntos, centrado. El punto final se escribe a mano
+% en cada \caption{...}: con format=puntofinal el punto se colocaba fuera
+% del bloque centrado del caption y aparecía huérfano en su propia línea.
 \DeclareCaptionFont{arial11}{\fontsize{11}{13}\selectfont}
-\DeclareCaptionFormat{puntofinal}{#1#2#3.}
 \captionsetup{
   font=arial11,
   labelfont=arial11,
   labelsep=space,
   justification=centering,
-  singlelinecheck=false,
-  format=puntofinal
+  singlelinecheck=false
 }
 
 % ----------------- Nota de fuente (Arial 9, cursiva, alineada a la derecha) -----------------
-\newcommand{\fuente}[1]{{\setstretch{1.15}\raggedleft\fontsize{9}{11}\selectfont\itshape Fuente: #1\par}}
+\newcommand{\fuente}[1]{\par\vspace{2pt}{\setstretch{1.15}\raggedleft\fontsize{9}{11}\selectfont\itshape Fuente: #1\par}\vspace{4pt}}
 
 % ----------------- Pie de página -----------------
 \pagestyle{fancy}

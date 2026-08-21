@@ -2,18 +2,22 @@
 \usepackage{listings}
 \input{ConfigAC.tex}
 \usepackage{graphicx}
+\usepackage{float} % permite [H]: figuras en línea con el texto, sin flotar
 
 \begin{document}
 
+\begingroup
+\setstretch{1.15}
 \begin{center}
-  {\fontsize{16}{18}\bfseries Proyecto Calculadora de Complejos}\\[0.5cm]
-  {\fontsize{14}{16}\itshape Complex Calculator Project}\\[1cm]
+  {\fontsize{16}{18}\bfseries \MakeUppercase{Proyecto Calculadora de Complejos}}\\[0.5cm]
+  {\fontsize{14}{16}\itshape \MakeUppercase{Complex Calculator Project}}\\[1cm]
 
-    \titulos{Contreras Reyes Orando}{Universidad Autónoma de Aguascalientes}{al348390@edu.uaa.mx}
+    \titulos{Orando Contreras Reyes}{Universidad Autónoma de Aguascalientes}{al348390@edu.uaa.mx}
 
-    \titulos{García Barrera Iker Emiliano}{Universidad Autónoma de Aguascalientes}{al307630@edu.uaa.mx}
+    \titulos{Iker Emiliano García Barrera}{Universidad Autónoma de Aguascalientes}{al307630@edu.uaa.mx}
 
 \end{center}
+\endgroup
 
 \section*{Resumen}
 
@@ -22,25 +26,58 @@ El programa se implementó en Python utilizando diversas librerías especializad
 
 \noindent \textbf{Palabras clave:} Calculadora, Manual, Números complejos, Python, Sistema de ecuaciones.
 
-\section*{Abstract}
+\section*{\itshape Abstract}
 \textit{
 As an integrative project, a calculator was developed to solve systems of equations with complex numbers, with the goal of facilitating calculations in circuit analysis methods such as mesh and nodal analysis. The program was developed in Python using various specialized libraries and with the support of AI tools to accelerate development. It was implemented as an executable with a graphical user interface compatible with Windows and GNU/Linux. The calculator allows users to visualize results in a clear and intuitive manner.
 }
 
-\noindent \textit{Keywords:} Calculator, Complex numbers, Manual, Python, System of equations.
+\noindent \textit{\textbf{Keywords:} Calculator, Complex numbers, Manual, Python, System of equations.}
 
 \section{Introducción}
+El análisis de circuitos es una de las tareas más importantes para un ingeniero, implica aplicar conceptos matemáticos y físicos para obtener parámetros como el voltaje o la corriente en un circuito. El análisis de circuitos es una aplicación directa de la ingeniería y gracias a él está formada la tecnología actual. Sin el análisis de circuitos no sería posible construir los dispositivos y las comodidades que se presentan en nuestro día a día. \\
+
+\noindent Desde simples sumas de corrientes hasta fasores complejos, la tarea del ingeniero, entonces, es resolver de forma práctica para sintetizar y conocer el comportamiento de estos sistemas. Es aquí donde intervienen diferentes métodos prácticos, como lo pueden ser las dos leyes de Kirchhoff (LCK y LVK). En esta ocasión nos centraremos en la ley de voltajes de Kirchhoff (LVK), que no es más que analizar los elementos de una trayectoria cerrada e integrarlos en un sistema de ecuaciones de $n \times n$, siendo $n$ el número de mallas o trayectorias cerradas a analizar. \\
+
+% TODO: sustituir por la imagen real del método de mallas / LVK
+% \begin{figure}[!h]
+%     \centering
+%     \includegraphics[width=0.6\linewidth]{ruta/a/imagen_metodo.png}
+%     \fuente{elaboración propia}
+%     \caption{Análisis de una trayectoria cerrada mediante la Ley de Voltajes de Kirchhoff}
+%     \label{fig:metodo_lvk}
+% \end{figure}
+
+\noindent Otro concepto importante en la actualidad es la distinción entre corriente alterna y corriente directa. Mientras que la corriente alterna es la corriente utilizada para alta potencia y para la alimentación de electrodomésticos o de uso diario, la corriente directa es aquella que utilizan las baterías para almacenar carga. La gran diferencia entre ambas radica en su comportamiento a través del tiempo: mientras que la corriente directa permanece invariable en el tiempo, la corriente alterna es una corriente que oscila de forma senoidal. Para poder analizar este comportamiento con facilidad, los matemáticos introducen el concepto de ondas temporales y, con ello, el término de fasores y números complejos, siendo estas herramientas las que facilitan la manipulación aritmética. \\
+
+\noindent Se reitera el concepto de practicidad y herramientas, pues en la labor del ingeniero es fundamental resolver problemas de forma eficiente. Es aquí donde entra el concepto de calculadora, una herramienta que permite la resolución de problemas matemáticos de forma eficiente. El ingeniero debe ser capaz, entonces, de crear herramientas que faciliten estos procesos. El problema que suele ocurrir con esta filosofía es la nula aplicación en el aula. En este caso, el problema que se abordó fue la necesidad de una solución para resolver circuitos de CA de forma efectiva y portátil. Las soluciones que han surgido a lo largo de los años para este problema son las siguientes:
+
+\begin{itemize}
+    \item Comprar una calculadora específica que permita resolver este tipo de sistemas de ecuaciones complejas.
+    \item Utilizar simuladores de calculadoras en el celular.
+    \item Utilizar métodos de resolución, como la regla de Cramer, y aplicarlos manualmente.
+\end{itemize}
+
+\noindent Los problemas encontrados en estas soluciones fueron los siguientes:
+
+\begin{itemize}
+    \item Regla de Cramer: método poco eficiente.
+    \item Simuladores de calculadoras y calculadoras físicas: método de ingreso de datos poco eficiente, y obtención de resultados solo en forma rectangular o solo en forma polar.
+    \item Uso de calculadoras o simuladores para resolver de forma deshonesta, apoyándose en IA o en compañeros de clase, sin comprender el proceso. \\
+\end{itemize}
+
+\noindent Es por ello que un equipo de estudiantes se dedicó a atender estas problemáticas directamente mediante la creación de una aplicación de escritorio, empaquetada en un ejecutable (.exe) como primer prototipo, para después implementarla como aplicación de Android y una versión en hardware. Todo esto siguiendo una filosofía open source y open hardware, para facilitar la personalización y una reproducción accesible hacia el rubro que se está atendiendo: los ingenieros del mañana. \\
+
+\noindent Cabe destacar que el primer prototipo (.exe) fue diseñado en conjunto con la IA. Es importante destacar esto, pues demuestra el alcance de un ingeniero electrónico apoyado en inteligencia artificial: esta sinergia permite desarrollar prototipos de hardware y software de forma óptima y práctica.
 
 \subsection{Sistema de ecuaciones lineales}
 
-Un sistema de ecuaciones es un conjunto de dos o más ecuaciones que comparten las mismas variables. La solución de un sistema consiste en encontrar los valores de dichas variables de manera que satisfagan simultáneamente cada una de las ecuaciones que lo conforman.
+Un sistema de ecuaciones es un conjunto de dos o más ecuaciones que comparten las mismas variables. La solución de un sistema consiste en encontrar los valores de dichas variables de manera que satisfagan simultáneamente cada una de las ecuaciones que lo conforman. \\
 
-Los sistemas pueden clasificarse de diversas maneras; sin embargo, para este proyecto resultan de interés los \textbf{sistemas de ecuaciones lineales}. En este tipo de sistemas cada ecuación es de primer grado, es decir, todas las incógnitas aparecen con exponente uno.
+\noindent Los sistemas pueden clasificarse de diversas maneras; sin embargo, para este proyecto resultan de interés los \textbf{sistemas de ecuaciones lineales}. En este tipo de sistemas cada ecuación es de primer grado, es decir, todas las incógnitas aparecen con exponente uno. \\
 
-Para describir de forma general la estructura de un sistema, se emplean las letras $m$ y $n$, donde $m$ representa el número de ecuaciones y $n$ el número de incógnitas. Un sistema de tipo $m \times n$ indica que existen $m$ ecuaciones con $n$ incógnitas.
+\noindent Para describir de forma general la estructura de un sistema, se emplean las letras $m$ y $n$, donde $m$ representa el número de ecuaciones y $n$ el número de incógnitas. Un sistema de tipo $m \times n$ indica que existen $m$ ecuaciones con $n$ incógnitas. \\
 
-Como ejemplo, en la Ecuación 1 se muestra un sistema lineal de $2 \times 2$.
-
+\noindent Como ejemplo, en la Ecuación~\ref{eq:sistema2x2} se muestra un sistema lineal de $2 \times 2$.
 \begin{equation}
 \begin{cases}
 a_1 x + b_1 y = c_1, \\
@@ -51,14 +88,13 @@ a_2 x + b_2 y = c_2.
 
 \subsection{Eliminación de Gauss-Jordan}
 
-Existen diversos algoritmos y métodos para resolver sistemas de ecuaciones lineales. Algunos de los más utilizados son: la regla de Cramer, el método de igualación, el método de sustitución y el método de eliminación de Gauss-Jordan.
+Existen diversos algoritmos y métodos para resolver sistemas de ecuaciones lineales. Algunos de los más utilizados son: la regla de Cramer, el método de igualación, el método de sustitución y el método de eliminación de Gauss-Jordan. \\
 
-El método de eliminación de Gauss-Jordan consiste en transformar la matriz de coeficientes del sistema en una matriz diagonal o escalonada reducida. Gracias a ello se obtiene directamente la solución del sistema sin necesidad de realizar sustituciones posteriores.
+\noindent El método de eliminación de Gauss-Jordan consiste en transformar la matriz de coeficientes del sistema en una matriz diagonal o escalonada reducida. Gracias a ello se obtiene directamente la solución del sistema sin necesidad de realizar sustituciones posteriores [Lay, 2012]. \\
 
-Un sistema de ecuaciones lineales se representa de forma matricial mediante una matriz aumentada. En esta matriz, cada fila corresponde a una ecuación del sistema, mientras que cada columna representa una incógnita. Además, se añade una columna adicional destinada a los términos independientes.
+\noindent Un sistema de ecuaciones lineales se representa de forma matricial mediante una matriz aumentada. En esta matriz, cada fila corresponde a una ecuación del sistema, mientras que cada columna representa una incógnita. Además, se añade una columna adicional destinada a los términos independientes. \\
 
-A continuación, en la Ecuación 2 se presenta un sistema de ecuaciones lineales con tres incógnitas.
-
+\noindent A continuación, en la Ecuación~\ref{eq:sistema3x3} se presenta un sistema de ecuaciones lineales con tres incógnitas.
 \begin{equation}
 \begin{cases}
 2x + 3y - z = 5, \\
@@ -68,7 +104,7 @@ A continuación, en la Ecuación 2 se presenta un sistema de ecuaciones lineales
 \label{eq:sistema3x3}
 \end{equation}
 
-Matriz aumentada del sistema de ecuaciones antes visto.
+\noindent Matriz aumentada del sistema de ecuaciones antes visto.
 \[
 \left(
 \begin{array}{ccc|c}
@@ -79,7 +115,7 @@ Matriz aumentada del sistema de ecuaciones antes visto.
 \right).
 \]
 
-La reducción de filas en una matriz se logra a través de una secuencia de operaciones elementales. Existen tres tipos de operaciones elementales de fila:
+\noindent La reducción de filas en una matriz se logra a través de una secuencia de operaciones elementales. Existen tres tipos de operaciones elementales de fila:
 
 \begin{enumerate}
     \item \textbf{Intercambio de dos filas.}  
@@ -142,7 +178,7 @@ La reducción de filas en una matriz se logra a través de una secuencia de oper
 \end{enumerate}
 
 
-Mediante estas operaciones es posible reorganizar la matriz para que los elementos debajo de la diagonal principal sean cero y los coeficientes principales de la diagonal sean 1, obteniendo así una matriz escalonada. Finalmente, se normaliza la parte superior hasta obtener una matriz escalonada reducida.
+\noindent Mediante estas operaciones es posible reorganizar la matriz para que los elementos debajo de la diagonal principal sean cero y los coeficientes principales de la diagonal sean 1, obteniendo así una matriz escalonada. Finalmente, se normaliza la parte superior hasta obtener una matriz escalonada reducida.
 
 \[
 \text{Matriz escalonada:\quad \quad \quad \quad}\quad
@@ -163,18 +199,16 @@ Mediante estas operaciones es posible reorganizar la matriz para que los element
 \end{pmatrix}
 \]
 
-\subsection{Numeros Complejos}
+\subsection{Números Complejos}
 
-Los números complejos son una extensión de los números reales permitiendo representar y operar cantidades que no pueden expresarse únicamente dentro del conjunto real. 
+Los números complejos son una extensión de los números reales permitiendo representar y operar cantidades que no pueden expresarse únicamente dentro del conjunto real [Anton, 2013].
 
-Un número complejo se define como se muestra en la Ecuación 3.
-
+\noindent Un número complejo se define como se muestra en la Ecuación~\ref{eq:complejo}.
 \begin{equation}
 z = a + bi,
 \label{eq:complejo}
 \end{equation}
-donde $a$ y $b$ son números reales, e $i$ es la unidad imaginaria, definida por la propiedad mostrada en la Ecuación 4.
-
+donde $a$ y $b$ son números reales, e $i$ es la unidad imaginaria, definida por la propiedad mostrada en la Ecuación~\ref{eq:unidadimaginaria}.
 \begin{equation}
 i^2 = -1.
 \label{eq:unidadimaginaria}
@@ -182,8 +216,7 @@ i^2 = -1.
 
 %En esta expresión, $a$ se conoce como la \textit{parte real} de $z$, mientras que $b$ corresponde a la \textit{parte imaginaria}. El conjunto de todos los números complejos se denota por $\mathbb{C}$.
 
-Una característica importante es que los números complejos pueden representarse tanto en su forma rectangular ($a + bi$) como en su forma polar, mostrada en la Ecuación 5.
-
+\noindent Una característica importante es que los números complejos pueden representarse tanto en su forma rectangular ($a + bi$) como en su forma polar, mostrada en la Ecuación~\ref{eq:polar}.
 \begin{equation}
 z = r \angle \theta,
 \label{eq:polar}
@@ -205,28 +238,32 @@ donde $r$ es el \textit{módulo} o magnitud del número complejo, y $\theta$ es 
 
 El desarrollo del proyecto surgió de la necesidad de contar con una calculadora capaz de resolver sistemas de ecuaciones con números complejos. En una primera etapa se elaboró una versión básica y funcional de la aplicación. Para acelerar el proceso y evitar tiempo invertido en tareas repetitivas —como la generación de estructuras de interfaz o segmentos de código estándar— se utilizó apoyo de herramientas de inteligencia artificial, específicamente ChatGPT. \\
 
-Posteriormente, el enfoque se dirigió a mejorar la interfaz gráfica y la experiencia del usuario. Se incorporaron funciones adicionales, como la capacidad de almacenar matrices en memoria y exportarlas a archivos para su uso posterior. Asimismo, se personalizó la interfaz con el fin de ofrecer una apariencia visual más atractiva, compensando las limitaciones estéticas de la biblioteca Tkinter en su forma predeterminada. \\
+\noindent Posteriormente, el enfoque se dirigió a mejorar la interfaz gráfica y la experiencia del usuario. Se incorporaron funciones adicionales, como la capacidad de almacenar matrices en memoria y exportarlas a archivos para su uso posterior. Asimismo, se personalizó la interfaz con el fin de ofrecer una apariencia visual más atractiva, compensando las limitaciones estéticas de la biblioteca Tkinter en su forma predeterminada. \\
 
-Finalmente, se incluye la siguiente aclaración respecto al código fuente:  
+\noindent Finalmente, se incluye la siguiente aclaración respecto al código fuente:  
 \textit{Parte del código fue generado con ayuda de herramientas de inteligencia artificial (ChatGPT). El proyecto se publica bajo licencia MIT.}
 
 \section{Resultados}
 
-\begin{figure}[!h]
+En la Figura~\ref{fig:interfaz2} se muestra la solución obtenida por la calculadora para un sistema de ecuaciones complejas expresado en forma rectangular, donde se observan tanto los valores ingresados como el resultado calculado para cada incógnita.
+
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.7\linewidth]{Complex calc/RectSol.png}
     \fuente{elaboración propia}
-    \caption{Solución de un sistema complejo de forma Rectangular}
+    \caption{Solución de un sistema complejo de forma Rectangular.}
     \label{fig:interfaz2}
 \end{figure}
 
-\begin{figure}[!h]
+\noindent En la Figura~\ref{fig:interfaz4} se presenta el mismo tipo de solución, pero expresada en forma polar, lo que permite comprobar la conversión automática entre ambas representaciones que realiza la herramienta.
+
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.7\linewidth]{Complex calc/SolDC.png}
     \fuente{elaboración propia}
-    \caption{Solución de un sistema complejo de forma Polar}
+    \caption{Solución de un sistema complejo de forma Polar.}
     \label{fig:interfaz4}
-\end{figure}  
+\end{figure}
 
 \newpage
 
@@ -236,17 +273,17 @@ Finalmente, se incluye la siguiente aclaración respecto al código fuente:
 
 Esta calculadora fue desarrollada con el propósito de facilitar la resolución de sistemas de ecuaciones lineales, tanto con números reales como complejos, y de servir como apoyo en actividades académicas relacionadas con el análisis de circuitos eléctricos. La herramienta permite representar resultados en forma rectangular y polar, lo cual es especialmente útil en cursos como Análisis de Circuitos, Electrónica, Señales y Sistemas y Métodos Matemáticos para la Ingeniería, donde el manejo de cantidades fasoriales es fundamental. \\
 
-Se incorporó un historial para conservar las operaciones realizadas y evitar la pérdida de información durante la resolución de ejercicios. Además, la interfaz fue diseñada para optimizar el tiempo de trabajo del usuario mediante una interacción clara y eficiente. Al ser una herramienta gratuita y ejecutarse en cualquier equipo con Windows 10 o superior, se convierte en una alternativa accesible dentro del ámbito académico, contribuyendo a la comprensión y visualización de magnitudes complejas mediante su conversión automática entre formas. 
+\noindent Se incorporó un historial para conservar las operaciones realizadas y evitar la pérdida de información durante la resolución de ejercicios. Además, la interfaz fue diseñada para optimizar el tiempo de trabajo del usuario mediante una interacción clara y eficiente. Al ser una herramienta gratuita y ejecutarse en cualquier equipo con Windows 10 o superior, se convierte en una alternativa accesible dentro del ámbito académico, contribuyendo a la comprensión y visualización de magnitudes complejas mediante su conversión automática entre formas. 
 
 \subsection{Proceso de diseño y desarrollo}
 
 Durante el desarrollo del proyecto se presentaron diversos retos. El primero consistió en asegurar la correcta representación de resultados en formas rectangular y polar. Esto incluyó la elección de un símbolo adecuado para indicar el ángulo en la notación polar, dado que la biblioteca utilizada no proporciona uno de manera predeterminada. Tras evaluar opciones como “$<$” o “L”, se seleccionó esta última por su claridad y legibilidad. \\
 
-Otro desafío relevante fue el diseño de una interfaz lo suficientemente intuitiva para usuarios sin experiencia previa con herramientas de cálculo de números complejos. Las primeras versiones incluían instrucciones dentro de la ventana principal; sin embargo, esto afectaba la claridad visual, por lo que se realizó una reorganización estructural que permitió presentar la información de manera más ordenada y profesional. \\
+\noindent Otro desafío relevante fue el diseño de una interfaz lo suficientemente intuitiva para usuarios sin experiencia previa con herramientas de cálculo de números complejos. Las primeras versiones incluían instrucciones dentro de la ventana principal; sin embargo, esto afectaba la claridad visual, por lo que se realizó una reorganización estructural que permitió presentar la información de manera más ordenada y profesional. \\
 
-Asimismo, se presentaron dificultades al implementar las funciones de almacenamiento y carga de matrices. Los errores iniciales durante las pruebas fueron corregidos mediante ajustes en la gestión de archivos y memoria, garantizando así un manejo estable de la información ingresada por el usuario. \\
+\noindent Asimismo, se presentaron dificultades al implementar las funciones de almacenamiento y carga de matrices. Los errores iniciales durante las pruebas fueron corregidos mediante ajustes en la gestión de archivos y memoria, garantizando así un manejo estable de la información ingresada por el usuario. \\
 
-Finalmente, se detectaron limitaciones en la personalización visual de Tkinter, dado que la aplicación de temas y combinaciones de colores no es directa. Para alcanzar la estética requerida fue necesario modificar de forma manual el archivo \texttt{.json} correspondiente, lo que permitió obtener una interfaz más coherente con el propósito académico del proyecto.
+\noindent Finalmente, se detectaron limitaciones en la personalización visual de Tkinter, dado que la aplicación de temas y combinaciones de colores no es directa. Para alcanzar la estética requerida fue necesario modificar de forma manual el archivo \texttt{.json} correspondiente, lo que permitió obtener una interfaz más coherente con el propósito académico del proyecto.
 
 
 \section{Conclusiones}
@@ -254,15 +291,19 @@ Finalmente, se detectaron limitaciones en la personalización visual de Tkinter,
 La realización de este proyecto permitió comprender de manera clara el comportamiento de los sistemas de ecuaciones complejos y su aplicación en métodos de análisis de circuitos eléctricos. Se evidenció la utilidad de representar cantidades complejas en forma rectangular y polar, así como la importancia de contar con herramientas que faciliten estos cálculos. Asimismo, el desarrollo de la aplicación permitió profundizar en el uso de interfaces gráficas, manipulación de matrices y técnicas de programación aplicadas a problemas de ingeniería.
 
 \section{Referencias y Bibliografía}
+\renewcommand{\refname}{} % evita el encabezado duplicado que \thebibliography inserta automáticamente
 
 \begin{thebibliography}{9}
-
-
-\bibitem{lay}
-Lay, D. C. (2012). \textit{Álgebra lineal y sus aplicaciones} (4.ª ed.). Pearson.
+\setlength{\labelwidth}{0pt}
+\setlength{\labelsep}{0.15cm}
+\setlength{\leftmargin}{0.63cm}
+\setlength{\itemindent}{-0.63cm}
 
 \bibitem{anton}
-Anton, H., \& Rorres, C. (2013). \textit{Álgebra lineal con aplicaciones}. Wiley.
+Anton, H., Rorres, C. Álgebra lineal con aplicaciones. Wiley, 2013.
+
+\bibitem{lay}
+Lay, D. C. Álgebra lineal y sus aplicaciones. 4.ª ed., Pearson, 2012.
 
 \end{thebibliography}
 

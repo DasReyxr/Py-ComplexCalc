@@ -83,7 +83,7 @@ class FasorCalculator(ctk.CTk):
         self.header_title.pack(side="left", padx=(0, 12))
 
         # Smaller names subtitle (next to title)
-        names_text = "Das Reyes  •  Iker Garcia  •  Roberto Lopez  •  Kevin Lara"
+        names_text = "Das Reyes  •  Iker Garcia"
         self.header_names = ctk.CTkLabel(header_frame, text=names_text, font=("Helvetica", 17))
         self.header_names.pack(side="left", padx=(0, 8), pady=(8,0))
 
