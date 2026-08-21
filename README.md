@@ -1,14 +1,32 @@
 # Py-ComplexCalc
 
-**A complete, user-friendly GUI ecosystem for solving n×n complex linear systems (Ax=b)**—built for electronics engineers, circuit analysts, and students working with AC circuits, impedance calculations, and complex number mathematics.
+**A complete ecosystem for solving n×n complex linear systems (Ax=b)** with both desktop GUI and embedded hardware solutions.
 
 **Solve Ax=b instantly** with dual-format output (polar & rectangular), flexible input, and full system persistence.
 
-| Dark theme | Light theme |
-|---|---|
-| ![Dark theme](images/app-screenshot.png) | ![Light theme](images/app-screenshot-light.png) |
 
----
+```
+Py-ComplexCalc/
+├── Software Version/          # Desktop GUI application
+│   ├── code/                  # Python source files
+│   │   ├── UI_ComplexCalc.py  # Main GUI (customtkinter)
+│   │   ├── ComplexCalc.py     # Core solver & parsing logic
+│   │   ├── HK.jpg             # UI background
+│   │   └── IE.png             # Logo icon
+│   ├── doc/                   # Documentation
+│   └── README.md              # Software-specific guide
+│
+├── HW Version/                # Embedded microcontroller solutions
+│   ├── code/
+│   │   ├── BlackPill STM32F411CE/    # Implementation for BlackPill
+│   │   └── RayPill STM32F446ZE/      # Implementation for RayPill
+│   ├── HW Files Schematic & Design/  # PCB schematics, layouts
+│   └── (README coming soon)
+│
+├── OtherCalcs/                # Alternative implementations
+├── LICENSE                    # MIT License
+└── README.md          # This file
+```
 
 ## ✨ Features
 
@@ -30,7 +48,7 @@
 - **🧮 Built-in Calculator**
   - Quick complex-number scratchpad with backspace support
 - **🚀 Standalone Executables**
-  - Windows `.exe` and Linux binary — no Python install needed (see [Releases](https://github.com/IKGB105/Py-ComplexCalc/releases))
+  - Windows `.exe` and Linux binary — no Python install needed (see [Releases](https://github.com/DasReyxr/Py-ComplexCalc/releases))
 
 ---
 
@@ -40,7 +58,7 @@
 |---|---|
 | **Version** | 4.00 |
 | **Last updated** | 2026-08-21 |
-| **Repository** | [github.com/IKGB105/Py-ComplexCalc](https://github.com/IKGB105/Py-ComplexCalc) |
+| **Repository** | [github.com/DasReyxr/Py-ComplexCalc](https://github.com/DasReyxr/Py-ComplexCalc) |
 | **Institution** | Universidad Autónoma de Aguascalientes |
 | **Department** | Ingeniería en Electrónica |
 
@@ -52,7 +70,7 @@ Also available inside the app itself: **Help → About Complex Calc...**
 
 ### Option 1: Standalone Executable
 
-1. Download `UI_ComplexCalc.exe` (Windows) or `UI_ComplexCalc` (Linux) from the latest [Release](https://github.com/IKGB105/Py-ComplexCalc/releases).
+1. Download `UI_ComplexCalc.exe` (Windows) or `UI_ComplexCalc` (Linux) from the latest [Release](https://github.com/DasReyxr/Py-ComplexCalc/releases).
 2. Run it directly. No dependencies needed.
 
 ### Option 2: Run from Source
@@ -61,7 +79,7 @@ Also available inside the app itself: **Help → About Complex Calc...**
 
 ```bash
 # Clone the repo
-git clone https://github.com/IKGB105/Py-ComplexCalc.git
+git clone https://github.com/DasReyxr/Py-ComplexCalc.git
 cd Py-ComplexCalc/code
 
 # (Optional) Create virtual environment
@@ -204,8 +222,8 @@ pip install -r code/requirements.txt
 
 ## 📞 Support & Contributions
 
-- **Bug Reports:** [GitHub Issues](https://github.com/IKGB105/Py-ComplexCalc/issues)
-- **Feature Requests:** [GitHub Discussions](https://github.com/IKGB105/Py-ComplexCalc/discussions)
+- **Bug Reports:** [GitHub Issues](https://github.com/DasReyxr/Py-ComplexCalc/issues)
+- **Feature Requests:** [GitHub Discussions](https://github.com/DasReyxr/Py-ComplexCalc/discussions)
 - **Pull Requests:** Welcome! Fork, branch, and submit a PR.
 
 ### Roadmap
@@ -220,6 +238,13 @@ pip install -r code/requirements.txt
 **Developers:**
 - Iker Garcia — [ikergarcia450@gmail.com](mailto:ikergarcia450@gmail.com)
 - Das Reyes — [das.reyxr@outlook.com](mailto:das.reyxr@outlook.com)
+
+**Development Team:**
+- **Das Reyes** — Lead developer, theming, Testing, documentation [das.reyxr@outlook.com](mailto:das.reyxr@outlook.com)
+- **Iker Garcia** — GUI design, user experience, documentation [ikergarcia450@gmail.com](mailto:ikergarcia450@gmail.com)
+- **Roberto Lopez** — PCB Design, core solver logic  
+- **Kevin Lara** — Hardware integration, embedded systems
+
 
 **Built With:**
 - [NumPy](https://numpy.org/) — Numerical computing
